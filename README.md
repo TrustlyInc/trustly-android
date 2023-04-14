@@ -1,11 +1,12 @@
 # Trustly Android SDK
 
-This repository contains all source code from our Android SDK, like interfaces and views that creates the integration with Trustly.
+This repository contains the source code for the Trustly Android SDK, including interfaces and views that integrated with the web-based Trustly user interface module.
 
-### Guides
+### Documentation and Guides
 
-Instalation guide [Developers Trustly](https://developers.trustly.com/)
-Guide from [Trustly Android Quickstart](https://amer.developers.trustly.com/payments/docs/android-quickstart) using the library SDK
+[Get started](https://amer.developers.trustly.com/payments/docs/getting-started) with Trustly concepts and sandbox environment testing.
+Understand the functions and user flows of [Trustly UI](https://amer.developers.trustly.com/payments/docs/sdk).
+Quickly start integrating this SDK with the [Android Quickstart](https://amer.developers.trustly.com/payments/docs/android-quickstart) guide.
 
 ## License
 
