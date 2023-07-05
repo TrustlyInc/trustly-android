@@ -32,11 +32,11 @@ afterEvaluate {
                 version PUBLISH_VERSION
 
                 // Two artifacts, the `aar` (or `jar`) and the sources
-                if (project.plugins.findPlugin("com.android.library")) {
-                    from components.release
-                } else {
-                    from components.java
-                }
+                // if (project.plugins.findPlugin("com.android.library")) {
+                //     from components.release
+                // } else {
+                //     from components.java
+                // }
 
                 artifact androidSourcesJar
 //                artifacts javaDocJar
@@ -72,11 +72,11 @@ afterEvaluate {
     }
 }
 
-// signing {
-//     useInMemoryPgpKeys(
-//             rootProject.ext["signing.keyId"],
-//             rootProject.ext["signing.key"],
-//             rootProject.ext["signing.password"]
-//     )
-//     sign publishing.publications
-// }
+signing {
+    useInMemoryPgpKeys(
+            rootProject.ext["signing.keyId"],
+            rootProject.ext["signing.key"],
+            rootProject.ext["signing.password"]
+    )
+    sign publishing.publications
+}
