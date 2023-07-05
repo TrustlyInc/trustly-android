@@ -1,9 +1,12 @@
 plugins {
     id 'maven-publish'
-    id 'com.android.library'
+    id 'com.android.library' version '8.0.0'
+    id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
 }
 
 android {
+    namespace 'net.trustly.android.sdk'
+
     compileSdkVersion 33
 
     defaultConfig {
@@ -58,4 +61,5 @@ ext {
     PUBLISH_ARTIFACT_ID = 'trustly-android-sdk'
 }
 
+apply from: 'publish-root.gradle'
 apply from: 'publish-remote.gradle'
