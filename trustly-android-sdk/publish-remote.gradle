@@ -32,14 +32,14 @@ afterEvaluate {
                 version PUBLISH_VERSION
 
                 // Two artifacts, the `aar` (or `jar`) and the sources
-                // if (project.plugins.findPlugin("com.android.library")) {
-                //     from components.release
-                // } else {
-                //     from components.java
-                // }
+                if (project.plugins.findPlugin("com.android.library")) {
+                    from components.release
+                } else {
+                    from components.java
+                }
 
-                artifact androidSourcesJar
-//                artifacts javaDocJar
+                //artifact androidSourcesJar
+                //artifacts javaDocJar
 
                 // Mostly self-explanatory metadata
                 pom {
@@ -54,9 +54,9 @@ afterEvaluate {
                     }
                     developers {
                         developer {
-                            id = 'andre.guedes@trustly'
-                            name = 'Andre Guedes'
-                            email = 'andre.guedes@trustly.com'
+                            id = 'ops-root@paywithmybank.com'
+                            name = 'TrustlyInc'
+                            email = 'ops-root@paywithmybank.com'
                         }
                     }
 
