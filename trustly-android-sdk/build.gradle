@@ -5,6 +5,11 @@ plugins {
 }
 
 android {
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+        }
+    }
     namespace 'net.trustly.android.sdk'
 
     compileSdkVersion 33
@@ -55,37 +60,12 @@ task javadoc(type: Javadoc) {
     exclude '**/TrustlyPanel.java'
 }
 
+apply from: 'publish-root.gradle'
+
 ext {
     PUBLISH_GROUP_ID = 'io.github.TrustlyInc'
     PUBLISH_VERSION = '2.2.1'
     PUBLISH_ARTIFACT_ID = 'trustly-android-sdk'
 }
 
-publishing {
-    publications {
-        sdk(MavenPublication) {
-            artifactId 'trustly-android-sdk'
-            artifact("$buildDir/outputs/aar/trustly-android-sdk-release.aar")
-            pom.withXml {
-                def dependenciesNode = asNode().appendNode('dependencies')
-                //Iterate over the compile dependencies (we don't want the test ones), adding a <dependency> node for each
-                configurations.implementation.allDependencies.each {
-                    if (it.group != null && (it.name != null || "unspecified" == it.name) && it.version != null) {
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        dependencyNode.appendNode('groupId', it.group)
-                        dependencyNode.appendNode('artifactId', it.name)
-                        dependencyNode.appendNode('version', it.version)
-                    }
-                }
-            }
-        }
-    }
-    repositories {
-        maven {
-            url "$buildDir/repo"
-        }
-    }
-}
-
-apply from: 'publish-root.gradle'
 apply from: 'publish-remote.gradle'
