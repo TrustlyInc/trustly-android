@@ -38,8 +38,8 @@ afterEvaluate {
                     from components.java
                 }
 
-                artifact androidSourcesJar
-//                artifacts javaDocJar
+                //artifact androidSourcesJar
+                //artifacts javaDocJar
 
                 // Mostly self-explanatory metadata
                 pom {
@@ -54,9 +54,9 @@ afterEvaluate {
                     }
                     developers {
                         developer {
-                            id = 'andre.guedes@trustly'
-                            name = 'Andre Guedes'
-                            email = 'andre.guedes@trustly.com'
+                            id = 'ops-root@paywithmybank.com'
+                            name = 'TrustlyInc'
+                            email = 'ops-root@paywithmybank.com'
                         }
                     }
 
@@ -72,11 +72,11 @@ afterEvaluate {
     }
 }
 
-// signing {
-//     useInMemoryPgpKeys(
-//             rootProject.ext["signing.keyId"],
-//             rootProject.ext["signing.key"],
-//             rootProject.ext["signing.password"]
-//     )
-//     sign publishing.publications
-// }
+signing {
+    useInMemoryPgpKeys(
+            rootProject.ext["signing.keyId"],
+            rootProject.ext["signing.key"],
+            rootProject.ext["signing.password"]
+    )
+    sign publishing.publications
+}
