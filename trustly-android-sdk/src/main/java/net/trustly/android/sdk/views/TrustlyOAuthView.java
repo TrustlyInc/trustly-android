@@ -43,7 +43,7 @@ public class TrustlyOAuthView extends LinearLayout {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 String url = request.getUrl().toString();
-                if ((url.contains("paywithmybank.com") || url.contains("trustly.one")) && url.contains("/oauth/login/")) {
+                if (TrustlyView.isLocalEnvironment() || ((url.contains("paywithmybank.com") || url.contains("trustly.one")) && url.contains("/oauth/login/"))) {
                     CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
                     CustomTabsIntent customTabsIntent = builder.build();
                     customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
