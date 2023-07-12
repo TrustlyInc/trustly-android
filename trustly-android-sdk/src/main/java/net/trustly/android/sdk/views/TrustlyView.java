@@ -20,6 +20,7 @@ import android.widget.RelativeLayout;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import net.trustly.android.sdk.TrustlyJsInterface;
+import net.trustly.android.sdk.util.CidManager;
 import net.trustly.android.sdk.interfaces.Trustly;
 import net.trustly.android.sdk.interfaces.TrustlyCallback;
 import net.trustly.android.sdk.interfaces.TrustlyListener;
@@ -329,6 +330,12 @@ public class TrustlyView extends FrameLayout implements Trustly {
                 data.put("widgetLoaded", "true");
             }
 
+            String sessionCid = new CidManager().getOrCreateSessionCid(getContext());
+            if (sessionCid != null) {
+                data.put("sessionCid", sessionCid);
+                data.put("cid", sessionCid);
+            }
+
             notifyOpen();
 
             if ("local".equals(data.get("env"))) {
@@ -399,6 +406,13 @@ public class TrustlyView extends FrameLayout implements Trustly {
             if (establishData.get("customer.address.country") == null || "us".equals(establishData.get("customer.address.country").toLowerCase())) {
                 d.put("customer.address.state", establishData.get("customer.address.state"));
             }
+
+            String sessionCid = new CidManager().getOrCreateSessionCid(getContext());
+            if (sessionCid != null) {
+                d.put("sessionCid", sessionCid);
+                d.put("cid", sessionCid);
+            }
+            
             Map<String, String> hash = new HashMap<>();
 
             hash.put("merchantReference", establishData.get("merchantReference"));
