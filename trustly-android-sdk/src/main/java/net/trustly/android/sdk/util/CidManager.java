@@ -7,20 +7,19 @@ import java.util.UUID;
 
 public class CidManager {
 
-    private String SESSION_CID_KEY = "PayWithMyBank.sessionCid";
-    private static int EXPIRATION_TIME_LIMIT = 1;
+    private static final int EXPIRATION_TIME_LIMIT = 1;
 
     public String getOrCreateSessionCid(Context context) {
-        // Verify if theres a valid CID locally, if not, create one
         String sessionCid = CidStorage.readDataFrom(context);
-        if (sessionCid != null) {
-            // If the CID is expired, create a new one and replace it
-            if (!isValid(sessionCid.split("-")[2])) {
-                // Get the CID value from the required parameters
-                sessionCid = getFingerPrint() + "-" + getRandomKey() + "-" + getTimestampBase36();
-                CidStorage.saveData(context, sessionCid);
-            }
+        if (sessionCid == null || !isValid(sessionCid.split("-")[2])) {
+            sessionCid = generateNewSession(context);
         }
+        return sessionCid;
+    }
+
+    private String generateNewSession(Context context) {
+        String sessionCid = getFingerPrint() + "-" + getRandomKey() + "-" + getTimestampBase36();
+        CidStorage.saveData(context, sessionCid);
         return sessionCid;
     }
 
@@ -43,7 +42,14 @@ public class CidManager {
     private boolean isValid(String timestamp) {
         Calendar lastTime = Calendar.getInstance();
         lastTime.setTimeInMillis(Long.parseLong(timestamp, 36));
-        return Calendar.getInstance().compareTo(lastTime) > 0;
+        return hoursAgo(lastTime) <= EXPIRATION_TIME_LIMIT;
+    }
+
+    public static int hoursAgo(Calendar datetime) {
+        Calendar now = Calendar.getInstance(); // Get time now
+        long differenceInMillis = now.getTimeInMillis() - datetime.getTimeInMillis();
+        long differenceInHours = (differenceInMillis) / 1000L / 60L / 60L;
+        return (int) differenceInHours;
     }
 
 }
