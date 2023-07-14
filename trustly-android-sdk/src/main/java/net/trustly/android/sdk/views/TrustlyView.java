@@ -40,6 +40,7 @@ public class TrustlyView extends FrameLayout implements Trustly {
     static String PROTOCOL = "https://";
     static String DOMAIN = "paywithmybank.com";
     static String version = "2.2.1";
+    private static boolean isLocalEnvironment = false;
 
     enum Status {
         START,
@@ -219,7 +220,7 @@ public class TrustlyView extends FrameLayout implements Trustly {
                     onCancel.handle(self, new HashMap<>());
                 }
 
-                if (onCancel != null && isNotAssetFile) {
+                if (!isLocalEnvironment() && onCancel != null && isNotAssetFile) {
                     onCancel.handle(self, new HashMap<>());
                 }
             }
@@ -340,6 +341,7 @@ public class TrustlyView extends FrameLayout implements Trustly {
 
             if ("local".equals(data.get("env"))) {
                 webView.setWebContentsDebuggingEnabled(true);
+                isLocalEnvironment = true;
             }
 
             webView.postUrl(url, UrlUtils.getParameterString(data).getBytes("UTF-8"));
@@ -564,5 +566,9 @@ public class TrustlyView extends FrameLayout implements Trustly {
         eventDetails.put("type", "load");
 
         notifyListener("event", eventDetails);
+    }
+
+    public static boolean isLocalEnvironment() {
+        return isLocalEnvironment;
     }
 }
