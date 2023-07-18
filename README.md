@@ -27,7 +27,11 @@ Understand the functions and user flows of [Trustly UI](https://amer.developers.
 TrustlySDK is available through [Maven Central](https://search.maven.org). To install
 it, include the dependency below in your build.gradle file.
 
-implementation "net.trustly:android-sdk:3.0.0"
+```
+dependencies {
+    implementation "net.trustly:android-sdk:3.0.0"
+}
+``````
 
 </details>
 <br />
