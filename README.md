@@ -20,27 +20,21 @@ Understand the functions and user flows of [Trustly UI](https://amer.developers.
 
 ## Installation
 ---
-<details open>
-<summary>Maven Central</summary>
-<br />
+
+### Maven Central
 
 TrustlySDK is available through [Maven Central](https://search.maven.org). To install
 it, include the dependency below in your build.gradle file.
 
 ```
 dependencies {
-    implementation "net.trustly:android-sdk:3.0.0"
+    implementation 'net.trustly:android-sdk:3.0.0'
 }
-``````
-
-</details>
-<br />
+```
 
 ## Usage
 
 Quickly start integrating this SDK with the [Android Quickstart](https://amer.developers.trustly.com/payments/docs/android-quickstart) guide.
-
-<br />
 
 ## Versions
 ___
@@ -49,8 +43,6 @@ ___
 | :-------: | :-----------  | :----------- |
 3.0.0     | Add Maven Central package manager support | *main*
 
-
-<br />
 
 ## License
 ___
