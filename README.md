@@ -10,8 +10,10 @@ This repository contains the source code for the Trustly Android SDK, including 
 
 ## Requirements
 ---
-- Android API 21 or higher
-- Gradle 8.0 or higher
+* Android 5.0 (API level 21) and above
+* [Android Gradle Plugin](https://developer.android.com/studio/releases/gradle-plugin) 3.5.1
+* [Gradle](https://gradle.org/releases/) 5.4.1+
+* [AndroidX](https://developer.android.com/jetpack/androidx/) (as of v11.0.0)
 
 ### Documentation and Guides
 
@@ -24,7 +26,7 @@ Understand the functions and user flows of [Trustly UI](https://amer.developers.
 ### Maven Central
 
 TrustlySDK is available through [Maven Central](https://search.maven.org). To install
-it, include the dependency below in your build.gradle file.
+it, include the dependency below in your `build.gradle` file.
 
 ```
 dependencies {
