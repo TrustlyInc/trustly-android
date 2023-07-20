@@ -11,8 +11,7 @@ This repository contains the source code for the Trustly Android SDK, including 
 ## Requirements
 ---
 * Android 5.0 (API level 21) and above
-* [Android Gradle Plugin](https://developer.android.com/studio/releases/gradle-plugin) 3.5.1
-* [Gradle](https://gradle.org/releases/) 5.4.1+
+* [Gradle](https://gradle.org/releases/) 8+
 * [AndroidX](https://developer.android.com/jetpack/androidx/) (as of v11.0.0)
 
 ### Documentation and Guides
