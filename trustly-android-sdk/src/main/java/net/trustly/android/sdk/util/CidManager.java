@@ -3,18 +3,30 @@ package net.trustly.android.sdk.util;
 import android.content.Context;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class CidManager {
 
     private static final int EXPIRATION_TIME_LIMIT = 1;
 
-    public String getOrCreateSessionCid(Context context) {
+    public static final String CID_PARAM = "CID";
+    public static final String SESSION_CID_PARAM = "SESSION_CID";
+
+    public Map<String, String> getOrCreateSessionCid(Context context) {
+        String cid = generateNewSession(context);
         String sessionCid = CidStorage.readDataFrom(context);
-        if (sessionCid == null || !isValid(sessionCid.split("-")[2])) {
+        if (sessionCid == null) {
+            sessionCid = cid;
+        } else if (!isValid(sessionCid.split("-")[2])) {
             sessionCid = generateNewSession(context);
         }
-        return sessionCid;
+
+        Map<String, String> values = new HashMap<>();
+        values.put(CID_PARAM, cid);
+        values.put(SESSION_CID_PARAM, sessionCid);
+        return values;
     }
 
     private String generateNewSession(Context context) {
@@ -28,15 +40,19 @@ public class CidManager {
     }
 
     private String getFingerPrint() {
-        return getUUID().toString().split("-")[1].toUpperCase();
+        return getUUID().toString()
+                .split("-")[1].toUpperCase();
     }
 
     private String getRandomKey() {
-        return getUUID().toString().split("-")[2].toUpperCase();
+        return getUUID().toString()
+                .split("-")[2].toUpperCase();
     }
 
     private String getTimestampBase36() {
-        return Long.toString(Calendar.getInstance().getTimeInMillis(), 36).toUpperCase();
+        return Long.toString(Calendar.getInstance()
+                                     .getTimeInMillis(), 36)
+                .toUpperCase();
     }
 
     private boolean isValid(String timestamp) {

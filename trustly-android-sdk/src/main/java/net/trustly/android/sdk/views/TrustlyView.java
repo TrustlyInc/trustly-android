@@ -331,10 +331,10 @@ public class TrustlyView extends FrameLayout implements Trustly {
                 data.put("widgetLoaded", "true");
             }
 
-            String sessionCid = new CidManager().getOrCreateSessionCid(getContext());
-            if (sessionCid != null) {
-                data.put("sessionCid", sessionCid);
-                data.put("cid", sessionCid);
+            Map<String, String> sessionCidValues = new CidManager().getOrCreateSessionCid(getContext());
+            if (sessionCidValues != null) {
+                data.put("sessionCid", sessionCidValues.get(CidManager.SESSION_CID_PARAM));
+                data.put("metadata.cid", sessionCidValues.get(CidManager.CID_PARAM));
             }
 
             notifyOpen();
@@ -409,10 +409,10 @@ public class TrustlyView extends FrameLayout implements Trustly {
                 d.put("customer.address.state", establishData.get("customer.address.state"));
             }
 
-            String sessionCid = new CidManager().getOrCreateSessionCid(getContext());
-            if (sessionCid != null) {
-                d.put("sessionCid", sessionCid);
-                d.put("cid", sessionCid);
+            Map<String, String> sessionCidValues = new CidManager().getOrCreateSessionCid(getContext());
+            if (sessionCidValues != null) {
+                d.put("sessionCid", sessionCidValues.get(CidManager.SESSION_CID_PARAM));
+                d.put("cid", sessionCidValues.get(CidManager.CID_PARAM));
             }
             
             Map<String, String> hash = new HashMap<>();

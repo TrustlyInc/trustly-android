@@ -1,17 +1,16 @@
 package net.trustly.android.sdk.util;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
-import androidx.security.crypto.EncryptedSharedPreferences;
-import androidx.security.crypto.MasterKey;
-
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-
-public class CidStorage {
+class CidStorage {
 
     private static final String CID_STORAGE = "CID_STORAGE";
     private static final String SESSION_CID = "SESSION_CID";
+
+    private CidStorage() {
+        throw new IllegalStateException("Utility class cannot be instantiated");
+    }
 
     public static void saveData(Context context, String sessionCid) {
         getSharedPreferences(context).edit().putString(SESSION_CID, sessionCid).apply();
@@ -21,17 +20,8 @@ public class CidStorage {
         return getSharedPreferences(context).getString(SESSION_CID, null);
     }
 
-    private static EncryptedSharedPreferences getSharedPreferences(Context context) {
-        try {
-            MasterKey masterKey = new MasterKey.Builder(context, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
-                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                    .build();
-            return (EncryptedSharedPreferences) EncryptedSharedPreferences.create(context, CID_STORAGE, masterKey,
-                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM);
-        } catch (GeneralSecurityException | IOException e) {
-            throw new RuntimeException(e);
-        }
+    private static SharedPreferences getSharedPreferences(Context context) {
+        return context.getSharedPreferences(CID_STORAGE, Context.MODE_PRIVATE);
     }
 
 }
