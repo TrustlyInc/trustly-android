@@ -15,13 +15,15 @@ public class CidManager {
     public static final String SESSION_CID_PARAM = "SESSION_CID";
 
     public Map<String, String> getOrCreateSessionCid(Context context) {
-        String cid = generateNewSession(context);
+        String cid = generateNewSession();
         String sessionCid = CidStorage.readDataFrom(context);
         if (sessionCid == null) {
             sessionCid = cid;
         } else if (!isValid(sessionCid.split("-")[2])) {
-            sessionCid = generateNewSession(context);
+            sessionCid = generateNewSession();
         }
+
+        CidStorage.saveData(context, sessionCid);
 
         Map<String, String> values = new HashMap<>();
         values.put(CID_PARAM, cid);
@@ -29,10 +31,8 @@ public class CidManager {
         return values;
     }
 
-    private String generateNewSession(Context context) {
-        String sessionCid = getFingerPrint() + "-" + getRandomKey() + "-" + getTimestampBase36();
-        CidStorage.saveData(context, sessionCid);
-        return sessionCid;
+    private String generateNewSession() {
+        return getFingerPrint() + "-" + getRandomKey() + "-" + getTimestampBase36();
     }
 
     private UUID getUUID() {

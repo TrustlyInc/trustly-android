@@ -39,7 +39,7 @@ public class TrustlyView extends FrameLayout implements Trustly {
 
     static String PROTOCOL = "https://";
     static String DOMAIN = "paywithmybank.com";
-    static String version = "2.2.1";
+    static String version = "3.0.0";
     private static boolean isLocalEnvironment = false;
 
     enum Status {
@@ -414,7 +414,7 @@ public class TrustlyView extends FrameLayout implements Trustly {
                 d.put("sessionCid", sessionCidValues.get(CidManager.SESSION_CID_PARAM));
                 d.put("cid", sessionCidValues.get(CidManager.CID_PARAM));
             }
-            
+
             Map<String, String> hash = new HashMap<>();
 
             hash.put("merchantReference", establishData.get("merchantReference"));
