@@ -1,6 +1,4 @@
 
-L
-src/main/AndroidManifest.xml,0/6/066a3db98a4a279fde40d6ddf92c417b5c93198b
 ?
 settings.gradle,0/5/05efc8b1657769a27696d478ded1e95f38737233
 A

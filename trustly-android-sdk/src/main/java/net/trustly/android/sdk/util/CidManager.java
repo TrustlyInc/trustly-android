@@ -1,6 +1,8 @@
 package net.trustly.android.sdk.util;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.provider.Settings;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -14,16 +16,20 @@ public class CidManager {
     public static final String CID_PARAM = "CID";
     public static final String SESSION_CID_PARAM = "SESSION_CID";
 
+    public void generateCid(Context context) {
+        CidStorage.saveData(context, CidStorage.CID, generateNewSession(context));
+    }
+
     public Map<String, String> getOrCreateSessionCid(Context context) {
-        String cid = generateNewSession();
-        String sessionCid = CidStorage.readDataFrom(context);
+        String cid = CidStorage.readDataFrom(context, CidStorage.CID);
+        String sessionCid = CidStorage.readDataFrom(context, CidStorage.SESSION_CID);
         if (sessionCid == null) {
             sessionCid = cid;
         } else if (!isValid(sessionCid.split("-")[2])) {
-            sessionCid = generateNewSession();
+            sessionCid = generateNewSession(context);
         }
 
-        CidStorage.saveData(context, sessionCid);
+        CidStorage.saveData(context, CidStorage.SESSION_CID, sessionCid);
 
         Map<String, String> values = new HashMap<>();
         values.put(CID_PARAM, cid);
@@ -31,17 +37,18 @@ public class CidManager {
         return values;
     }
 
-    private String generateNewSession() {
-        return getFingerPrint() + "-" + getRandomKey() + "-" + getTimestampBase36();
+    private String generateNewSession(Context context) {
+        return getFingerPrint(context) + "-" + getRandomKey() + "-" + getTimestampBase36();
     }
 
     private UUID getUUID() {
         return UUID.randomUUID();
     }
 
-    private String getFingerPrint() {
-        return getUUID().toString()
-                .split("-")[1].toUpperCase();
+    @SuppressLint("HardwareIds")
+    private String getFingerPrint(Context context) {
+        return Settings.Secure.getString(context.getContentResolver(),
+                                  Settings.Secure.ANDROID_ID).substring(0, 4).toUpperCase();
     }
 
     private String getRandomKey() {

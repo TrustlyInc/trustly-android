@@ -1,6 +1,4 @@
 
-L
-src/main/AndroidManifest.xml,0/6/066a3db98a4a279fde40d6ddf92c417b5c93198b
 A
 gradle.properties,2/a/2afbb999f001938c88fa43fc2ef52abf0f8213e4
 ?

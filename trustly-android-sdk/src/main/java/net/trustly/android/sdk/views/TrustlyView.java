@@ -293,7 +293,6 @@ public class TrustlyView extends FrameLayout implements Trustly {
         });
 
         addView(webView);
-
     }
 
     /**
