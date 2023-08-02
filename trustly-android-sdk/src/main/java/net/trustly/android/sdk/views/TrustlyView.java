@@ -243,7 +243,7 @@ public class TrustlyView extends FrameLayout implements Trustly {
                     Pattern p = Pattern.compile("[0-9]+");
                     Matcher m = p.matcher(title);
                     while (m.find()) {
-                        int n = Integer.parseInt(m.group()) / 100;
+                        long n = Long.parseLong(m.group()) / 100;
                         if (onCancel != null && (n == 4 || n == 5)) {
                             onCancel.handle(self, new HashMap<>());
                         }
