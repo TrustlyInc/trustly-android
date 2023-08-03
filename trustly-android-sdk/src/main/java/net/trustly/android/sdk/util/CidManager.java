@@ -65,13 +65,13 @@ public class CidManager {
     private boolean isValid(String timestamp) {
         Calendar lastTime = Calendar.getInstance();
         lastTime.setTimeInMillis(Long.parseLong(timestamp, 36));
-        return hoursAgo(lastTime) <= EXPIRATION_TIME_LIMIT;
+        return hoursAgo(lastTime) < EXPIRATION_TIME_LIMIT;
     }
 
     public static int hoursAgo(Calendar datetime) {
         Calendar now = Calendar.getInstance(); // Get time now
         long differenceInMillis = now.getTimeInMillis() - datetime.getTimeInMillis();
-        long differenceInHours = (differenceInMillis) / 1000L / 60L / 60L;
+        long differenceInHours = (differenceInMillis) / (1000L * 60L * 60L);
         return (int) differenceInHours;
     }
 
