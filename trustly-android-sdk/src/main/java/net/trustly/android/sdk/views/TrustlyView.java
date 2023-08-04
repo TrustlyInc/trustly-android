@@ -20,6 +20,7 @@ import android.widget.RelativeLayout;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import net.trustly.android.sdk.TrustlyJsInterface;
+import net.trustly.android.sdk.util.CidManager;
 import net.trustly.android.sdk.interfaces.Trustly;
 import net.trustly.android.sdk.interfaces.TrustlyCallback;
 import net.trustly.android.sdk.interfaces.TrustlyListener;
@@ -292,7 +293,6 @@ public class TrustlyView extends FrameLayout implements Trustly {
         });
 
         addView(webView);
-
     }
 
     /**
@@ -328,6 +328,12 @@ public class TrustlyView extends FrameLayout implements Trustly {
 
             if (data.containsKey("paymentProviderId")) {
                 data.put("widgetLoaded", "true");
+            }
+
+            Map<String, String> sessionCidValues = new CidManager().getOrCreateSessionCid(getContext());
+            if (sessionCidValues != null) {
+                data.put("sessionCid", sessionCidValues.get(CidManager.SESSION_CID_PARAM));
+                data.put("metadata.cid", sessionCidValues.get(CidManager.CID_PARAM));
             }
 
             notifyOpen();
@@ -401,7 +407,13 @@ public class TrustlyView extends FrameLayout implements Trustly {
             if (establishData.get("customer.address.country") == null || "us".equals(establishData.get("customer.address.country").toLowerCase())) {
                 d.put("customer.address.state", establishData.get("customer.address.state"));
             }
-            
+
+            Map<String, String> sessionCidValues = new CidManager().getOrCreateSessionCid(getContext());
+            if (sessionCidValues != null) {
+                d.put("sessionCid", sessionCidValues.get(CidManager.SESSION_CID_PARAM));
+                d.put("cid", sessionCidValues.get(CidManager.CID_PARAM));
+            }
+
             Map<String, String> hash = new HashMap<>();
 
             hash.put("merchantReference", establishData.get("merchantReference"));
