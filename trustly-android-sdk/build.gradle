@@ -66,7 +66,7 @@ apply from: 'publish-root.gradle'
 ext {
     PUBLISH_GROUP_ID = 'net.trustly'
     PUBLISH_VERSION = '3.0.0'
-    PUBLISH_ARTIFACT_ID = 'android-sdk'
+    PUBLISH_ARTIFACT_ID = 'trustly-android-sdk'
 }
 
 apply from: 'publish-remote.gradle'
