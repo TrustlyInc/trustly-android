@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
+import net.trustly.android.sdk.BuildConfig;
 import net.trustly.android.sdk.TrustlyJsInterface;
 import net.trustly.android.sdk.util.CidManager;
 import net.trustly.android.sdk.interfaces.Trustly;
@@ -39,7 +40,7 @@ public class TrustlyView extends FrameLayout implements Trustly {
 
     static String PROTOCOL = "https://";
     static String DOMAIN = "paywithmybank.com";
-    static String version = "3.0.0";
+    static String version = BuildConfig.SDK_VERSION;
     private static boolean isLocalEnvironment = false;
 
     enum Status {
