@@ -39,7 +39,7 @@ public class TrustlyView extends FrameLayout implements Trustly {
 
     static String PROTOCOL = "https://";
     static String DOMAIN = "paywithmybank.com";
-    static String version = "3.0.0";
+    static String version = "3.1.0";
     private static boolean isLocalEnvironment = false;
 
     enum Status {
