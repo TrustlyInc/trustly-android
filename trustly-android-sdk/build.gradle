@@ -4,6 +4,8 @@ plugins {
     id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
 }
 
+def sdkVersion = "\"3.0.1\""
+
 android {
     publishing {
         singleVariant('release') {
@@ -17,13 +19,16 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 33
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            buildConfigField "String", "SDK_VERSION", sdkVersion
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "SDK_VERSION", sdkVersion
         }
     }
     testOptions {
@@ -65,7 +70,7 @@ apply from: 'publish-root.gradle'
 
 ext {
     PUBLISH_GROUP_ID = 'net.trustly'
-    PUBLISH_VERSION = '3.0.0'
+    PUBLISH_VERSION = sdkVersion
     PUBLISH_ARTIFACT_ID = 'trustly-android-sdk'
 }
 
