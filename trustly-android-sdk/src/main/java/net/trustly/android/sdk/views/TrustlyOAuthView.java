@@ -46,6 +46,7 @@ public class TrustlyOAuthView extends LinearLayout {
                 if (TrustlyView.isLocalEnvironment() || ((url.contains("paywithmybank.com") || url.contains("trustly.one")) && url.contains("/oauth/login/"))) {
                     CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
                     CustomTabsIntent customTabsIntent = builder.build();
+                    customTabsIntent.intent.setPackage("com.android.chrome");
                     customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     customTabsIntent.launchUrl(view.getContext(), Uri.parse(url));
                 }
