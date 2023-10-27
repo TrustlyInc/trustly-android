@@ -1,6 +1,5 @@
 package net.trustly.android.sdk.views;
 
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -14,7 +13,7 @@ import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -36,7 +35,7 @@ import java.util.regex.Pattern;
 /**
  * TrustlyView is a view class that implements the Trustly SDK interface
  */
-public class TrustlyView extends FrameLayout implements Trustly {
+public class TrustlyView extends LinearLayout implements Trustly {
 
     static String PROTOCOL = "https://";
     static String DOMAIN = "paywithmybank.com";
@@ -153,11 +152,6 @@ public class TrustlyView extends FrameLayout implements Trustly {
             grp = 1;
         }
 
-        RelativeLayout.LayoutParams paramsPanel = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        paramsPanel.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-        setLayoutParams(paramsPanel);
-
         webView = new WebView(context);
 
         webView.setScrollContainer(false);
@@ -228,6 +222,8 @@ public class TrustlyView extends FrameLayout implements Trustly {
 
             @Override
             public void onPageFinished(WebView view, String url) {
+                webView.loadUrl("javascript:TrustlyNativeSDK.resize(document.body.scrollWidth, document.body.scrollHeight)");
+
                 switch (status) {
                     case PANEL_LOADING:
                         status = Status.PANEL_LOADED;
