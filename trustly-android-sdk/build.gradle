@@ -4,7 +4,7 @@ plugins {
     id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
 }
 
-def sdkVersion = "\"3.0.1\""
+def sdkVersion = "3.0.1"
 
 android {
     publishing {
@@ -23,12 +23,12 @@ android {
     }
     buildTypes {
         debug {
-            buildConfigField "String", "SDK_VERSION", sdkVersion
+            buildConfigField "String", "SDK_VERSION", "\"$sdkVersion\""
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField "String", "SDK_VERSION", sdkVersion
+            buildConfigField "String", "SDK_VERSION", "\"$sdkVersion\""
         }
     }
     testOptions {
