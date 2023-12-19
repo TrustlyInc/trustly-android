@@ -29,7 +29,7 @@ it, include the dependency below in your `build.gradle` file.
 
 ```
 dependencies {
-    implementation 'net.trustly:trustly-android-sdk:3.0.1'
+    implementation 'net.trustly:trustly-android-sdk:3.0.2'
 }
 ```
 
@@ -42,6 +42,7 @@ ___
 
 | VERSION   | DESCRIPTION   | BRANCH |
 | :-------: | :-----------  | :----------- |
+3.0.2     | Widget adjustment by it's content | *main*
 3.0.1     | Add Gradle configuration to release version | *main*
 3.0.0     | Add Maven Central package manager support | *main*
 
