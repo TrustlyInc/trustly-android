@@ -1,5 +1,6 @@
 package net.trustly.android.sdk.util;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -24,7 +25,18 @@ public class CustomTabsManager {
             customTabsIntent.launchUrl(context, Uri.parse(url));
         } catch (Exception e) {
             Log.e("CustomTabsManager", e.toString());
+            showDisabledBrowserMessage(context);
         }
+    }
+
+    private static void showDisabledBrowserMessage(Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage(context.getString(R.string.chrome_disabled_message))
+                .setTitle(context.getString(R.string.chrome_disabled_title))
+                .setPositiveButton(context.getString(R.string.chrome_disabled_button),
+                        (dialog, which) -> dialog.dismiss());
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
 }

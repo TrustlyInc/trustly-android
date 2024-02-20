@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Trustly Android SDK Library</string>
     <string name="chrome_package">com.android.chrome</string>
+    <string name="chrome_disabled_title">Google Chrome app is required</string>
+    <string name="chrome_disabled_message">This application needs Google Chrome app, and it seems disabled or not installed in your device. \nPlease enable or install Google Chrome app to proceed.</string>
+    <string name="chrome_disabled_button">OK</string>
 </resources>
