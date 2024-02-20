@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Trustly Android SDK Library</string>
+    <string name="chrome_package">com.android.chrome</string>
 </resources>
