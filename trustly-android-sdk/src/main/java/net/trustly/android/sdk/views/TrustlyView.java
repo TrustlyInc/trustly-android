@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
@@ -16,14 +15,13 @@ import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import androidx.browser.customtabs.CustomTabsIntent;
-
 import net.trustly.android.sdk.BuildConfig;
 import net.trustly.android.sdk.TrustlyJsInterface;
-import net.trustly.android.sdk.util.CidManager;
 import net.trustly.android.sdk.interfaces.Trustly;
 import net.trustly.android.sdk.interfaces.TrustlyCallback;
 import net.trustly.android.sdk.interfaces.TrustlyListener;
+import net.trustly.android.sdk.util.CidManager;
+import net.trustly.android.sdk.util.CustomTabsManager;
 import net.trustly.android.sdk.util.UrlUtils;
 
 import java.util.HashMap;
@@ -190,9 +188,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                         params.put("url", url);
                         self.onExternalUrl.handle(self, params);
                     } else {
-                        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-                        CustomTabsIntent customTabsIntent = builder.build();
-                        customTabsIntent.launchUrl(view.getContext(), Uri.parse(url));
+                        CustomTabsManager.openCustomTabs(view.getContext(), url);
                     }
                     return false;
                 }

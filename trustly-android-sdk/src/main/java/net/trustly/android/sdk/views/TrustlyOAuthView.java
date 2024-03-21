@@ -2,8 +2,6 @@ package net.trustly.android.sdk.views;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.webkit.WebResourceRequest;
@@ -13,7 +11,7 @@ import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import androidx.browser.customtabs.CustomTabsIntent;
+import net.trustly.android.sdk.util.CustomTabsManager;
 
 public class TrustlyOAuthView extends LinearLayout {
 
@@ -44,11 +42,7 @@ public class TrustlyOAuthView extends LinearLayout {
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 String url = request.getUrl().toString();
                 if (TrustlyView.isLocalEnvironment() || ((url.contains("paywithmybank.com") || url.contains("trustly.one")) && url.contains("/oauth/login/"))) {
-                    CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-                    CustomTabsIntent customTabsIntent = builder.build();
-                    customTabsIntent.intent.setPackage("com.android.chrome");
-                    customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    customTabsIntent.launchUrl(view.getContext(), Uri.parse(url));
+                    CustomTabsManager.openCustomTabs(view.getContext(), url);
                 }
                 return true;
             }
