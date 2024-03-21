@@ -336,7 +336,10 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 isLocalEnvironment = true;
             }
 
-            webView.postUrl(url, UrlUtils.getParameterString(data).getBytes("UTF-8"));
+            String jsonParameters = UrlUtils.getJsonFromParameters(data);
+            String encodedParameters = UrlUtils.encodeStringToBase64(jsonParameters);
+
+            CustomTabsManager.openCustomTabs(getContext(), url + "&token=" + encodedParameters);
         } catch (Exception e) {
         }
         return this;
