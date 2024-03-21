@@ -54,6 +54,15 @@ public interface Trustly {
     Trustly establish(Map<String, String> establishData);
 
     /**
+     * Establishes a new transaction. Shows the Trustly bank authentication on the ChromeCustomTabs
+     *
+     * @param establishData The map containing the establish data. Similar to the establishData object on the
+     *                      JavaScript API.
+     * @return this
+     */
+    Trustly establishCustomTabs(Map<String, String> establishData);
+
+    /**
      * Opens a hybrid application page
      *
      * @param url
