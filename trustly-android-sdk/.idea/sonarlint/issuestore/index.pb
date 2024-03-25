@@ -29,8 +29,6 @@ j
 q
 Asrc/androidTest/java/net/trustly/android/sdk/ApplicationTest.java,4/8/4815cf4e97a70eda6a82a44692e308085aa03132
 j
-:src/main/java/net/trustly/android/sdk/MainApplication.java,8/5/85df335f8772fd1b47fec053c9dcd180e191334f
-j
 :src/main/java/net/trustly/android/sdk/util/CidStorage.java,e/2/e26467833817346eab82da053bf120493bc3ad33
 ?
 settings.gradle,0/5/05efc8b1657769a27696d478ded1e95f38737233
@@ -50,11 +48,7 @@ A
 gradlew,5/b/5bbfa66edb4db3c7c33c5181f43510990d3307f9
 X
 (gradle/wrapper/gradle-wrapper.properties,f/b/fbe448ebfc3eb2d4e308f6b8b043666f5b57235e
-O
-src/main/res/values/strings.xml,d/4/d455defca3e3d1f54adeca4ac58df0cbe2d06654
 ;
 gradlew.bat,2/a/2a45a911a8f1836b0b6c5b758962572012d8f8c3
 h
 8src/main/java/net/trustly/android/sdk/util/UrlUtils.java,6/d/6d987e9bec5437ae839af8d5803a20c2ab2600c3
-m
-=src/main/java/net/trustly/android/sdk/views/TrustlyPanel.java,c/b/cbbfc9ea3915126206ecc260408e3e8c90e772d5
