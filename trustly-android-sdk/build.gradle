@@ -65,7 +65,6 @@ tasks.register('javadoc', Javadoc) {
     exclude '**/R.java'
     exclude '**/BrowserPopup.java'
     exclude '**/UrlUtils.java'
-    exclude '**/TrustlyPanel.java'
 }
 
 apply from: 'publish-root.gradle'
