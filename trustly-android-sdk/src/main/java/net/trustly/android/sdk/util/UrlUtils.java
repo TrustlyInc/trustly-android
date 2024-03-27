@@ -1,8 +1,12 @@
 package net.trustly.android.sdk.util;
 
 import android.net.Uri;
+import android.util.Base64;
+
+import com.google.gson.Gson;
 
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -70,6 +74,15 @@ public class UrlUtils {
         } catch (Exception e) {
             return URLEncoder.encode(str);
         }
+    }
+
+    public static String getJsonFromParameters(Map<String, String> parameters) {
+        return new Gson().toJson(parameters);
+    }
+
+    public static String encodeStringToBase64(String value) {
+        byte[] encode = Base64.encode(value.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
+        return new String(encode, StandardCharsets.UTF_8);
     }
 
 }

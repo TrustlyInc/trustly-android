@@ -58,3 +58,5 @@ h
 8src/main/java/net/trustly/android/sdk/util/UrlUtils.java,6/d/6d987e9bec5437ae839af8d5803a20c2ab2600c3
 m
 =src/main/java/net/trustly/android/sdk/views/TrustlyPanel.java,c/b/cbbfc9ea3915126206ecc260408e3e8c90e772d5
+q
+Asrc/main/java/net/trustly/android/sdk/util/CustomTabsManager.java,2/e/2ec856d759c135a552ef3d4a2a878c99745fe87f

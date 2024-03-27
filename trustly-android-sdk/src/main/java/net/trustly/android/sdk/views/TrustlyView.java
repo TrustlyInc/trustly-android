@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
@@ -16,14 +15,13 @@ import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import androidx.browser.customtabs.CustomTabsIntent;
-
 import net.trustly.android.sdk.BuildConfig;
 import net.trustly.android.sdk.TrustlyJsInterface;
-import net.trustly.android.sdk.util.CidManager;
 import net.trustly.android.sdk.interfaces.Trustly;
 import net.trustly.android.sdk.interfaces.TrustlyCallback;
 import net.trustly.android.sdk.interfaces.TrustlyListener;
+import net.trustly.android.sdk.util.CidManager;
+import net.trustly.android.sdk.util.CustomTabsManager;
 import net.trustly.android.sdk.util.UrlUtils;
 
 import java.util.HashMap;
@@ -190,9 +188,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                         params.put("url", url);
                         self.onExternalUrl.handle(self, params);
                     } else {
-                        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-                        CustomTabsIntent customTabsIntent = builder.build();
-                        customTabsIntent.launchUrl(view.getContext(), Uri.parse(url));
+                        CustomTabsManager.openCustomTabs(view.getContext(), url);
                     }
                     return false;
                 }
@@ -341,6 +337,63 @@ public class TrustlyView extends LinearLayout implements Trustly {
             }
 
             webView.postUrl(url, UrlUtils.getParameterString(data).getBytes("UTF-8"));
+        } catch (Exception e) {
+        }
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Trustly establishCustomTabs(Map<String, String> establishData) {
+        status = Status.PANEL_LOADING;
+
+        data = new HashMap<>(establishData);
+        String url = getEndpointUrl("dynamic", establishData);
+
+        try {
+            String deviceType = establishData.get("deviceType");
+
+            if (deviceType != null) {
+                deviceType = deviceType + ":android:native";
+            } else {
+                deviceType = "mobile:android:native";
+            }
+
+            String lang = establishData.get("metadata.lang");
+            if (lang != null) data.put("lang", lang);
+
+            String integrationContext = establishData.get("metadata.integrationContext");
+            if (integrationContext == null || integrationContext.isEmpty()) {
+                data.put("metadata.integrationContext", "InAppBrowser");
+            }
+            data.put("metadata.sdkAndroidVersion", version);
+            data.put("deviceType", deviceType);
+            data.put("returnUrl", returnURL);
+            data.put("cancelUrl", cancelURL);
+            data.put("grp", Integer.toString(grp));
+
+            if (data.containsKey("paymentProviderId")) {
+                data.put("widgetLoaded", "true");
+            }
+
+            Map<String, String> sessionCidValues = new CidManager().getOrCreateSessionCid(getContext());
+            if (sessionCidValues != null) {
+                data.put("sessionCid", sessionCidValues.get(CidManager.SESSION_CID_PARAM));
+                data.put("metadata.cid", sessionCidValues.get(CidManager.CID_PARAM));
+            }
+
+            notifyOpen();
+
+            if ("local".equals(data.get("env"))) {
+                webView.setWebContentsDebuggingEnabled(true);
+                isLocalEnvironment = true;
+            }
+
+            String jsonParameters = UrlUtils.getJsonFromParameters(data);
+            String encodedParameters = UrlUtils.encodeStringToBase64(jsonParameters);
+
+            CustomTabsManager.openCustomTabs(getContext(), url + "accessId=" + establishData.get("accessId") + "&token=" + encodedParameters);
         } catch (Exception e) {
         }
         return this;
@@ -513,6 +566,9 @@ public class TrustlyView extends LinearLayout implements Trustly {
      * {@inheritDoc}
      */
     protected String getEndpointUrl(String function, Map<String, String> establishData) {
+        if ("dynamic".equals(function)) {
+            return PROTOCOL + establishData.get("localUrl") + "/start/app/establish?";
+        }
 
         String subDomain = establishData.get("env") != null
                 ? establishData.get("env").toLowerCase()
