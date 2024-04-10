@@ -52,3 +52,5 @@ X
 gradlew.bat,2/a/2a45a911a8f1836b0b6c5b758962572012d8f8c3
 h
 8src/main/java/net/trustly/android/sdk/util/UrlUtils.java,6/d/6d987e9bec5437ae839af8d5803a20c2ab2600c3
+q
+Asrc/main/java/net/trustly/android/sdk/util/CustomTabsManager.java,2/e/2ec856d759c135a552ef3d4a2a878c99745fe87f
