@@ -49,7 +49,12 @@ public class TrustlyJsInterface {
         new Handler(Looper.getMainLooper()).post(() -> {
             DisplayMetrics displayMetrics = trustlyView.getContext().getResources().getDisplayMetrics();
             float widthPixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, width, displayMetrics);
-            float heightPixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, height, displayMetrics);
+            float heightPixels = 0.0F;
+            if (height != heightPixels) {
+                heightPixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, height, displayMetrics);
+            } else {
+                heightPixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, width * 1.75F, displayMetrics);
+            }
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) widthPixels, (int) heightPixels);
             trustlyView.setLayoutParams(params);
         });

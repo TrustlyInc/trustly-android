@@ -8,8 +8,6 @@ import android.util.Log;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
-import net.trustly.android.sdk.R;
-
 public class CustomTabsManager {
 
     private CustomTabsManager() {
@@ -20,7 +18,7 @@ public class CustomTabsManager {
         try {
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
             CustomTabsIntent customTabsIntent = builder.build();
-            customTabsIntent.intent.setPackage(context.getString(R.string.chrome_package));
+            customTabsIntent.intent.setPackage("com.android.chrome");
             customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             customTabsIntent.launchUrl(context, Uri.parse(url));
         } catch (Exception e) {
@@ -31,10 +29,9 @@ public class CustomTabsManager {
 
     private static void showDisabledBrowserMessage(Context context) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage(context.getString(R.string.chrome_disabled_message))
-                .setTitle(context.getString(R.string.chrome_disabled_title))
-                .setPositiveButton(context.getString(R.string.chrome_disabled_button),
-                        (dialog, which) -> dialog.dismiss());
+        builder.setMessage("Please note: This app requires Google Chrome to function properly. If Google Chrome is not installed on your device, please install it from the Google Play Store or enable it in your system settings to ensure full compatibility and functionality.")
+                .setTitle("Google Chrome browser required")
+                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }

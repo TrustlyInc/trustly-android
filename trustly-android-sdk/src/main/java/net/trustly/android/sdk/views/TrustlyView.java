@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
@@ -14,6 +15,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+
+import androidx.annotation.RequiresApi;
 
 import net.trustly.android.sdk.BuildConfig;
 import net.trustly.android.sdk.TrustlyJsInterface;
@@ -73,7 +76,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
      * @param context Interface to global information about an application environment.
      */
     public TrustlyView(Context context) {
-        this(context, null, 0, null);
+        this(context, (String) null);
     }
 
     /**
@@ -83,7 +86,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
      * @param env     Set if environment different than production (such as "sandbox")
      */
     public TrustlyView(Context context, String env) {
-        this(context, null, 0, null);
+        this(context, null, 0, env);
     }
 
     /**
@@ -93,7 +96,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
      * @param attrs   A collection of attributes, as found associated with a tag in an XML document.
      */
     public TrustlyView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0, null);
+        this(context, attrs, null);
     }
 
     /**
@@ -199,14 +202,12 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
         webView.setWebViewClient(new WebViewClient() {
 
+            @Deprecated
             @Override
-            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                String url;
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 boolean isNotAssetFile = true;
-
                 try {
-                    url = request.getUrl().toString();
-                    isNotAssetFile = !url.matches(".*\\.svg\\.png\\.jpg\\.jpeg\\.css\\.gif\\.webp");
+                    isNotAssetFile = !failingUrl.matches(".*\\.svg\\.png\\.jpg\\.jpeg\\.css\\.gif\\.webp");
                 } catch (Exception e) {
                     onCancel.handle(self, new HashMap<>());
                 }
@@ -214,6 +215,13 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 if (!isLocalEnvironment() && onCancel != null && isNotAssetFile) {
                     onCancel.handle(self, new HashMap<>());
                 }
+            }
+
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                String url = request.getUrl().toString();
+                this.onReceivedError(view, 0, "", url);
             }
 
             @Override
@@ -291,8 +299,10 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Trustly establish(Map<String, String> establishData) {
         status = Status.PANEL_LOADING;
+        CidManager.generateCid(getContext());
 
         data = new HashMap<>(establishData);
         String url = getEndpointUrl("index", establishData);
@@ -323,7 +333,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 data.put("widgetLoaded", "true");
             }
 
-            Map<String, String> sessionCidValues = new CidManager().getOrCreateSessionCid(getContext());
+            Map<String, String> sessionCidValues = CidManager.getOrCreateSessionCid(getContext());
             if (sessionCidValues != null) {
                 data.put("sessionCid", sessionCidValues.get(CidManager.SESSION_CID_PARAM));
                 data.put("metadata.cid", sessionCidValues.get(CidManager.CID_PARAM));
@@ -369,6 +379,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Trustly selectBankWidget(Map<String, String> establishData) {
         data = new HashMap<>(establishData);
         try {
@@ -401,7 +412,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 d.put("customer.address.state", establishData.get("customer.address.state"));
             }
 
-            Map<String, String> sessionCidValues = new CidManager().getOrCreateSessionCid(getContext());
+            Map<String, String> sessionCidValues = CidManager.getOrCreateSessionCid(getContext());
             if (sessionCidValues != null) {
                 d.put("sessionCid", sessionCidValues.get(CidManager.SESSION_CID_PARAM));
                 d.put("cid", sessionCidValues.get(CidManager.CID_PARAM));
@@ -427,19 +438,12 @@ public class TrustlyView extends LinearLayout implements Trustly {
         return this;
     }
 
+    @Override
     public Trustly hybrid(String url, String returnURL, String cancelURL) {
         this.returnURL = returnURL;
         this.cancelURL = cancelURL;
         webView.loadUrl(url);
         return this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Trustly verify(Map<String, String> verifyData) {
-        verifyData.put("paymentType", "Verification");
-        return establish(verifyData);
     }
 
     @Override
@@ -452,6 +456,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Trustly onReturn(TrustlyCallback<Trustly, Map<String, String>> handler) {
         this.onReturn = handler;
         return this;
@@ -471,6 +476,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Trustly onBankSelected(TrustlyCallback<Trustly, Map<String, String>> handler) {
         this.onWidgetBankSelected = handler;
         return this;
@@ -479,6 +485,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Trustly onCancel(TrustlyCallback<Trustly, Map<String, String>> handler) {
         this.onCancel = handler;
         return this;
@@ -487,6 +494,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Trustly onExternalUrl(TrustlyCallback<Trustly, Map<String, String>> handler) {
         this.onExternalUrl = handler;
         return this;
@@ -495,20 +503,16 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
-    public Trustly notifyListener(String eventName, HashMap<String, String> eventDetails) {
-        if (this.trustlyListener == null) {
-            return this;
+    public void notifyListener(String eventName, HashMap<String, String> eventDetails) {
+        if (this.trustlyListener != null) {
+            this.trustlyListener.onChange(eventName, eventDetails);
         }
-
-        this.trustlyListener.onChange(eventName, eventDetails);
-
-        return this;
     }
 
     /**
      * {@inheritDoc}
      */
-    protected String getEndpointUrl(String function, Map<String, String> establishData) {
+    private String getEndpointUrl(String function, Map<String, String> establishData) {
 
         String subDomain = establishData.get("env") != null
                 ? establishData.get("env").toLowerCase()
@@ -536,15 +540,15 @@ public class TrustlyView extends LinearLayout implements Trustly {
         return PROTOCOL + subDomain + DOMAIN + "/start/selectBank/" + function + "?v=" + version + "-android-sdk";
     }
 
-    protected void notifyOpen() {
+    private void notifyOpen() {
         notifyListener("open", null);
     }
 
-    protected void notifyClose() {
+    private void notifyClose() {
         notifyListener("close", null);
     }
 
-    protected void notifyWidgetLoading() {
+    private void notifyWidgetLoading() {
         HashMap<String, String> eventDetails = new HashMap<>();
         eventDetails.put("page", "widget");
         eventDetails.put("type", "loading");
@@ -552,7 +556,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
         notifyListener("event", eventDetails);
     }
 
-    protected void notifyWidgetLoaded() {
+    private void notifyWidgetLoaded() {
         HashMap<String, String> eventDetails = new HashMap<>();
         eventDetails.put("page", "widget");
         eventDetails.put("type", "load");
@@ -560,7 +564,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
         notifyListener("event", eventDetails);
     }
 
-    public static boolean isLocalEnvironment() {
+    protected static boolean isLocalEnvironment() {
         return isLocalEnvironment;
     }
 }
