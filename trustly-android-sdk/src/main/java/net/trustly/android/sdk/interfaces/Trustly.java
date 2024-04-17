@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public interface Trustly {
 
-    class instance {
+    class Instance {
         /**
          * Creates a TrustlyView instance that implements Trustly interface
          *
@@ -101,13 +101,6 @@ public interface Trustly {
      * @return this
      */
     Trustly onExternalUrl(TrustlyCallback<Trustly, Map<String, String>> handler);
-
-    /**
-     * @param verifyData The map containing the verify data.
-     * @return this
-     * @deprecated Use establish with paymentType=Verify
-     */
-    Trustly verify(Map<String, String> verifyData);
 
     /**
      * Sets a listener to capture internal payment flow events

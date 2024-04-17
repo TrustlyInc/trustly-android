@@ -15,6 +15,10 @@ import java.util.Set;
 
 public class UrlUtils {
 
+    private UrlUtils() {
+        throw new IllegalStateException("Utility class cannot be instantiated");
+    }
+
     public static Set<String> getQueryParameterNames(Uri uri) {
         String query = uri.getEncodedQuery();
         if (query == null) {
