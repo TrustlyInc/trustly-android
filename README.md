@@ -2,7 +2,7 @@
 [![Java Version](https://badgen.net/badge/java/8/orange?icon=java)](https://www.oracle.com/java/technologies/javase/jdk8-naming.html)
 [![Platform](https://badgen.net/badge/Android/34/green?icon=java)](https://developer.android.com/about/versions/14)
 [![Gradle Plugin](https://badgen.net/badge/gradle/v8.0/green?icon=groovy)](https://gradle.org/whats-new/gradle-8)
-[![Maven Central Version](https://badgen.net/badge/maven/v1.0.0/yellow?icon=java)](https://central.sonatype.com/artifact/net.trustly/android-sdk/3.2.0)
+[![Maven Central Version](https://badgen.net/badge/maven/v1.0.0/yellow?icon=java)](https://central.sonatype.com/artifact/net.trustly/android-sdk/3.2.1)
 
 # Trustly Android SDK
 
@@ -29,7 +29,7 @@ it, include the dependency below in your `build.gradle` file.
 
 ```
 dependencies {
-    implementation 'net.trustly:trustly-android-sdk:3.2.0'
+    implementation 'net.trustly:trustly-android-sdk:3.2.1'
 }
 ```
 
@@ -42,6 +42,7 @@ ___
 
 | VERSION   | DESCRIPTION   | BRANCH |
 | :-------: | :-----------  | :----------- |
+3.2.1     | Removing allow backup flag from Application | *main*
 3.2.0     | Support for Android API 19 | *main*
 3.1.1     | Google Chrome app required message | *main*
 3.1.0     | Widget adjustment by it's content | *main*
