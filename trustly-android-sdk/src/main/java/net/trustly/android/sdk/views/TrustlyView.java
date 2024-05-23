@@ -357,6 +357,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
      */
     public Trustly establishCustomTabs(Map<String, String> establishData) {
         status = Status.PANEL_LOADING;
+        CidManager.generateCid(getContext());
 
         data = new HashMap<>(establishData);
         String url = getEndpointUrl("dynamic", establishData);

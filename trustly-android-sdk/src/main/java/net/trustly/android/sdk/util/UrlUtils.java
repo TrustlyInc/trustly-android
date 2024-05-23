@@ -5,6 +5,9 @@ import android.util.Base64;
 
 import com.google.gson.Gson;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -81,7 +84,37 @@ public class UrlUtils {
     }
 
     public static String getJsonFromParameters(Map<String, String> parameters) {
-        return new Gson().toJson(parameters);
+        try {
+            JSONObject jsonObject = build(parameters);
+            return jsonObject.toString().replace("\"nameValuePairs\":{", "")
+                    .replace(" }\n},", "}")
+                    .replace("\\/", "/");
+        } catch (JSONException e) {
+            return new Gson().toJson(parameters);
+        }
+    }
+
+    public static JSONObject build(Map<String, String> data) throws JSONException {
+        JSONObject json = new JSONObject();
+        for (Map.Entry<String, String> e : data.entrySet()) {
+            String[] keys = e.getKey().split("\\.");
+            JSONObject current = json;
+            for (int i = 0; i < keys.length; ++i) {
+                String key = keys[i];
+                try {
+                    current = current.getJSONObject(key);
+                } catch (JSONException ex) {
+                    if (i == keys.length - 1) {
+                        current.put(key, e.getValue());
+                    } else {
+                        JSONObject tmp = new JSONObject();
+                        current.put(key, tmp);
+                        current = tmp;
+                    }
+                }
+            }
+        }
+        return json;
     }
 
     public static String encodeStringToBase64(String value) {

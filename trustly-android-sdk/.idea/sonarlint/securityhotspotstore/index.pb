@@ -13,3 +13,5 @@ m
 =src/main/java/net/trustly/android/sdk/TrustlyJsInterface.java,2/b/2bd4abfbeee654aeab55c22942e5d3fdbce42249
 L
 src/main/AndroidManifest.xml,0/6/066a3db98a4a279fde40d6ddf92c417b5c93198b
+h
+8src/main/java/net/trustly/android/sdk/util/UrlUtils.java,6/d/6d987e9bec5437ae839af8d5803a20c2ab2600c3
