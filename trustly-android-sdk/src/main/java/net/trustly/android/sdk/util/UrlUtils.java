@@ -85,7 +85,7 @@ public class UrlUtils {
 
     public static String getJsonFromParameters(Map<String, String> parameters) {
         try {
-            JSONObject jsonObject = build(parameters);
+            JSONObject jsonObject = buildJsonObject(parameters);
             return jsonObject.toString().replace("\"nameValuePairs\":{", "")
                     .replace(" }\n},", "}")
                     .replace("\\/", "/");
@@ -94,7 +94,7 @@ public class UrlUtils {
         }
     }
 
-    public static JSONObject build(Map<String, String> data) throws JSONException {
+    public static JSONObject buildJsonObject(Map<String, String> data) throws JSONException {
         JSONObject json = new JSONObject();
         for (Map.Entry<String, String> e : data.entrySet()) {
             String[] keys = e.getKey().split("\\.");
