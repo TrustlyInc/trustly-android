@@ -534,7 +534,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
         }
 
         if (subDomain.equals("local.")) {
-            String domain = envHost != null ? envHost : "10.0.2.2";
+            String domain = (envHost != null && !envHost.equals("localhost")) ? envHost : "10.0.2.2";
             return "http://" + domain + ":8000/start/selectBank/" + function + "?v=" + version + "-android-sdk";
         } else if (subDomain.equals("dynamic.")) {
             String host = envHost != null ? envHost : "";
