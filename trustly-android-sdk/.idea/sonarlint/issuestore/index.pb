@@ -15,3 +15,7 @@ L
 src/main/AndroidManifest.xml,0/6/066a3db98a4a279fde40d6ddf92c417b5c93198b
 h
 8src/main/java/net/trustly/android/sdk/util/UrlUtils.java,6/d/6d987e9bec5437ae839af8d5803a20c2ab2600c3
+m
+=src/main/java/net/trustly/android/sdk/interfaces/Trustly.java,7/7/77461962160d9cc83e42b7cf7549c5942bdc69fc
+u
+Esrc/main/java/net/trustly/android/sdk/interfaces/TrustlyCallback.java,e/6/e64e679f47e1996288e19baba939f22a40ef0f7d

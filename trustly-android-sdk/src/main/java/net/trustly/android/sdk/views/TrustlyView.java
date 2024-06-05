@@ -572,7 +572,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
      */
     protected String getEndpointUrl(String function, Map<String, String> establishData) {
         if ("dynamic".equals(function)) {
-            return PROTOCOL + establishData.get("localUrl") + "/start/app/establish?";
+            return "http://" + establishData.get("localUrl") + "/start/app/establish?";
         }
 
         String subDomain = establishData.get("env") != null
