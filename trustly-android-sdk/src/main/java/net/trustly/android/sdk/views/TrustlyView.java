@@ -518,7 +518,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 ? establishData.get("env").toLowerCase()
                 : env;
 
-        String localUrl = establishData.get("localUrl");
+        String envHost = establishData.get("envHost");
 
         if (subDomain == null || "prod".equals(subDomain) || "production".equals(subDomain)) {
             subDomain = "";
@@ -533,8 +533,12 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
         }
 
-        if (localUrl != null && "local.".equals(subDomain)) {
-            return "http://" + localUrl + "/start/selectBank/" + function + "?v=" + version + "-android-sdk";
+        if (subDomain.equals("local.")) {
+            String domain = (envHost != null && !envHost.equals("localhost")) ? envHost : "10.0.2.2";
+            return "http://" + domain + ":8000/start/selectBank/" + function + "?v=" + version + "-android-sdk";
+        } else if (subDomain.equals("dynamic.")) {
+            String host = envHost != null ? envHost : "";
+            return "https://" + host + ".int.trustly.one/start/selectBank/" + function + "?v=" + version + "-android-sdk";
         }
 
         return PROTOCOL + subDomain + DOMAIN + "/start/selectBank/" + function + "?v=" + version + "-android-sdk";
