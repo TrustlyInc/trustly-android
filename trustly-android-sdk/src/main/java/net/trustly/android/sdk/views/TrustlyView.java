@@ -329,6 +329,11 @@ public class TrustlyView extends LinearLayout implements Trustly {
             data.put("cancelUrl", cancelURL);
             data.put("grp", Integer.toString(grp));
 
+            String allowedPaymentProviderTypes = establishData.get("allowedPaymentProviderTypes");
+            if (allowedPaymentProviderTypes != null) {
+                data.put("allowedPaymentProviderTypes", allowedPaymentProviderTypes);
+            }
+
             if (data.containsKey("paymentProviderId")) {
                 data.put("widgetLoaded", "true");
             }
