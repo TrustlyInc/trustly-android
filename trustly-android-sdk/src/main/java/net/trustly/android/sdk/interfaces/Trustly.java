@@ -32,17 +32,7 @@ public interface Trustly {
      *                      on the JavaScript API.
      * @return this
      */
-    @Deprecated(since = "3.3.2")
     Trustly selectBankWidget(Map<String, String> establishData);
-
-    /**
-     * Shows the select bank widget on the TrustlyView
-     *
-     * @param establishData The String containing the establish data. Similar to the establishData object
-     *                      on the JavaScript API.
-     * @return this
-     */
-    Trustly selectBankWidget(String establishData);
 
     /**
      * Sets the callback handler for when the user selects a bank on the widget.
@@ -61,17 +51,7 @@ public interface Trustly {
      *                      JavaScript API.
      * @return this
      */
-    @Deprecated(since = "3.3.2")
     Trustly establish(Map<String, String> establishData);
-
-    /**
-     * Establishes a new transaction. Shows the Trustly bank authentication on the TrustlyView
-     *
-     * @param establishData The String containing the establish data. Similar to the establishData object on the
-     *                      JavaScript API.
-     * @return this
-     */
-    Trustly establish(String establishData);
 
     /**
      * Opens a hybrid application page

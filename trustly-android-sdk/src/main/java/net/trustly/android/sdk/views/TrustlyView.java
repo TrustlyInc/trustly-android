@@ -357,11 +357,6 @@ public class TrustlyView extends LinearLayout implements Trustly {
         return this;
     }
 
-    @Override
-    public Trustly establish(String establishData) {
-        return establish(new HashMap<>());
-    }
-
     public String getInAppBrowserLaunchURL(Map<String, String> establishData) {
         Map<String, String> data = new HashMap<>(establishData);
         String deviceType = establishData.get("deviceType");
@@ -446,11 +441,6 @@ public class TrustlyView extends LinearLayout implements Trustly {
         } catch (Exception e) {
         }
         return this;
-    }
-
-    @Override
-    public Trustly selectBankWidget(String establishData) {
-        return selectBankWidget(new HashMap<>());
     }
 
     @Override
