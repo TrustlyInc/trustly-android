@@ -346,7 +346,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
             if ("local".equals(data.get("env"))) {
                 WebView.setWebContentsDebuggingEnabled(true);
-                isLocalEnvironment = true;
+                setIsLocalEnvironment();
             }
 
             webView.postUrl(getEndpointUrl("index", establishData), UrlUtils.getParameterString(data).getBytes("UTF-8"));
@@ -569,6 +569,10 @@ public class TrustlyView extends LinearLayout implements Trustly {
         eventDetails.put("type", "load");
 
         notifyListener("event", eventDetails);
+    }
+
+    private static void setIsLocalEnvironment() {
+        isLocalEnvironment = true;
     }
 
     protected static boolean isLocalEnvironment() {
