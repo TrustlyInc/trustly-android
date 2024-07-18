@@ -305,8 +305,6 @@ public class TrustlyView extends LinearLayout implements Trustly {
         CidManager.generateCid(getContext());
 
         data = new HashMap<>(establishData);
-        String url = getEndpointUrl("index", establishData);
-
         try {
             String deviceType = establishData.get("deviceType");
 
@@ -347,11 +345,11 @@ public class TrustlyView extends LinearLayout implements Trustly {
             notifyOpen();
 
             if ("local".equals(data.get("env"))) {
-                webView.setWebContentsDebuggingEnabled(true);
+                WebView.setWebContentsDebuggingEnabled(true);
                 isLocalEnvironment = true;
             }
 
-            webView.postUrl(url, UrlUtils.getParameterString(data).getBytes("UTF-8"));
+            webView.postUrl(getEndpointUrl("index", establishData), UrlUtils.getParameterString(data).getBytes("UTF-8"));
         } catch (Exception e) {
         }
         return this;
