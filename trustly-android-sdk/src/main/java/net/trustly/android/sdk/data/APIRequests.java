@@ -1,4 +1,4 @@
-package net.trustly.android.sdk.util;
+package net.trustly.android.sdk.data;
 
 import android.os.AsyncTask;
 
@@ -7,7 +7,17 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public abstract class APIRequests extends AsyncTask<String, String, String> {
+public class APIRequests extends AsyncTask<String, String, String> {
+
+    private final APIAsyncResponse delegate;
+
+    public interface APIAsyncResponse {
+        void processFinish(String output);
+    }
+
+    public APIRequests(APIAsyncResponse delegate) {
+        this.delegate = delegate;
+    }
 
     @Override
     protected String doInBackground(String... urls) {
@@ -15,7 +25,6 @@ public abstract class APIRequests extends AsyncTask<String, String, String> {
             URL url = new URL(urls[0]);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            connection.setDoOutput(true);
             connection.setConnectTimeout(5000);
             connection.setReadTimeout(5000);
             connection.connect();
@@ -27,8 +36,13 @@ public abstract class APIRequests extends AsyncTask<String, String, String> {
             }
             return content.toString();
         } catch (Exception e) {
-            return null;
+            return e.getMessage();
         }
+    }
+
+    @Override
+    protected void onPostExecute(String result) {
+        delegate.processFinish(result);
     }
 
 }

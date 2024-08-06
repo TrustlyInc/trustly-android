@@ -15,6 +15,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
@@ -23,6 +24,7 @@ import net.trustly.android.sdk.TrustlyJsInterface;
 import net.trustly.android.sdk.interfaces.Trustly;
 import net.trustly.android.sdk.interfaces.TrustlyCallback;
 import net.trustly.android.sdk.interfaces.TrustlyListener;
+import net.trustly.android.sdk.data.APIRequests;
 import net.trustly.android.sdk.util.CidManager;
 import net.trustly.android.sdk.util.CustomTabsManager;
 import net.trustly.android.sdk.util.UrlUtils;
@@ -305,7 +307,11 @@ public class TrustlyView extends LinearLayout implements Trustly {
         CidManager.generateCid(getContext());
 
         data = new HashMap<>(establishData);
-        String url = getEndpointUrl("index", establishData);
+
+        new APIRequests(output -> {
+            data.put("CHOOSE", output);
+            Toast.makeText(getContext(), output, Toast.LENGTH_LONG).show();
+        }).execute("https://dogapi.dog/api/v2/breeds");
 
         try {
             String deviceType = establishData.get("deviceType");
@@ -346,7 +352,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 isLocalEnvironment = true;
             }
 
-            webView.postUrl(url, UrlUtils.getParameterString(data).getBytes("UTF-8"));
+            webView.postUrl(getEndpointUrl("index", establishData), UrlUtils.getParameterString(data).getBytes("UTF-8"));
         } catch (Exception e) {
         }
         return this;
