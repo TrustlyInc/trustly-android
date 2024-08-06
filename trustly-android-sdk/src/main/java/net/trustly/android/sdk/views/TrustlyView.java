@@ -19,12 +19,15 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
+import com.google.gson.Gson;
+
 import net.trustly.android.sdk.BuildConfig;
 import net.trustly.android.sdk.TrustlyJsInterface;
+import net.trustly.android.sdk.data.APIRequests;
+import net.trustly.android.sdk.data.Setting;
 import net.trustly.android.sdk.interfaces.Trustly;
 import net.trustly.android.sdk.interfaces.TrustlyCallback;
 import net.trustly.android.sdk.interfaces.TrustlyListener;
-import net.trustly.android.sdk.data.APIRequests;
 import net.trustly.android.sdk.util.CidManager;
 import net.trustly.android.sdk.util.CustomTabsManager;
 import net.trustly.android.sdk.util.UrlUtils;
@@ -308,11 +311,6 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
         data = new HashMap<>(establishData);
 
-        new APIRequests(output -> {
-            data.put("CHOOSE", output);
-            Toast.makeText(getContext(), output, Toast.LENGTH_LONG).show();
-        }).execute("https://dogapi.dog/api/v2/breeds");
-
         try {
             String deviceType = establishData.get("deviceType");
 
@@ -352,34 +350,21 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 isLocalEnvironment = true;
             }
 
-            webView.postUrl(getEndpointUrl("index", establishData), UrlUtils.getParameterString(data).getBytes("UTF-8"));
+            byte[] parameters = UrlUtils.getParameterString(data).getBytes("UTF-8");
+
+            new APIRequests(output -> {
+                Setting setting = new Gson().fromJson(output, Setting.class);
+                Setting.LightBoxSetting lightBox = setting.getLightBox();
+                if (lightBox.getContext().equals("web_view")) {
+                    webView.postUrl(getEndpointUrl("index", establishData), parameters);
+                } else {
+                    //TODO Open the Custom Tabs here
+                    Toast.makeText(getContext(), output, Toast.LENGTH_LONG).show();
+                }
+            }).execute("TRUSTLY_CHOOSE_API_URL");
         } catch (Exception e) {
         }
         return this;
-    }
-
-    public String getInAppBrowserLaunchURL(Map<String, String> establishData) {
-        Map<String, String> data = new HashMap<>(establishData);
-        String deviceType = establishData.get("deviceType");
-
-        if (deviceType != null) {
-            deviceType = deviceType + ":android:iab";
-        } else {
-            deviceType = "mobile:android:iab";
-        }
-
-        String lang = establishData.get("metadata.lang");
-        if (lang != null) data.put("lang", lang);
-
-        data.put("metadata.sdkAndroidVersion", version);
-        data.put("deviceType", deviceType);
-        data.put("grp", Integer.toString(grp));
-
-        if (data.containsKey("paymentProviderId")) {
-            data.put("widgetLoaded", "true");
-        }
-
-        return UrlUtils.getParameterString(data);
     }
 
     /**

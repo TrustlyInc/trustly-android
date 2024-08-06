@@ -4,10 +4,17 @@ public class Setting {
 
     public LightBoxSetting lightBox;
 
-    class LightBoxSetting {
+    public LightBoxSetting getLightBox() {
+        return lightBox;
+    }
+
+    public class LightBoxSetting {
 
         public String context;
 
+        public String getContext() {
+            return context;
+        }
     }
 
 }
