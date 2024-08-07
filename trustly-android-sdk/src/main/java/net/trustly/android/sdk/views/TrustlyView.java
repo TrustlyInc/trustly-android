@@ -15,7 +15,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
@@ -353,13 +352,15 @@ public class TrustlyView extends LinearLayout implements Trustly {
             byte[] parameters = UrlUtils.getParameterString(data).getBytes("UTF-8");
 
             new APIRequests(output -> {
+                String url = getEndpointUrl("index", establishData);
                 Setting setting = new Gson().fromJson(output, Setting.class);
                 Setting.LightBoxSetting lightBox = setting.getLightBox();
                 if (lightBox.getContext().equals("web_view")) {
-                    webView.postUrl(getEndpointUrl("index", establishData), parameters);
+                    webView.postUrl(url, parameters);
                 } else {
-                    //TODO Open the Custom Tabs here
-                    Toast.makeText(getContext(), output, Toast.LENGTH_LONG).show();
+                    String jsonParameters = UrlUtils.getJsonFromParameters(data);
+                    String encodedParameters = UrlUtils.encodeStringToBase64(jsonParameters);
+                    CustomTabsManager.openCustomTabsIntent(getContext(), url + "accessId=" + establishData.get("accessId") + "&token=" + encodedParameters);
                 }
             }).execute("TRUSTLY_CHOOSE_API_URL");
         } catch (Exception e) {
@@ -503,7 +504,10 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
-    private String getEndpointUrl(String function, Map<String, String> establishData) {
+    protected String getEndpointUrl(String function, Map<String, String> establishData) {
+        if ("dynamic".equals(function)) {
+            return "http://" + establishData.get("localUrl") + "/start/app/establish?";
+        }
 
         String subDomain = establishData.get("env") != null
                 ? establishData.get("env").toLowerCase()
