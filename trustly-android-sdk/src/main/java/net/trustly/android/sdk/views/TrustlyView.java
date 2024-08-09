@@ -352,17 +352,23 @@ public class TrustlyView extends LinearLayout implements Trustly {
             byte[] parameters = UrlUtils.getParameterString(data).getBytes("UTF-8");
 
             new APIRequests(output -> {
-                String url = getEndpointUrl("index", establishData);
+                // TODO Remove this hardcoded JSON
+                output = "{'settings': {'lightbox': {'context': 'in-app-browser'}}}";
                 Setting setting = new Gson().fromJson(output, Setting.class);
-                Setting.LightBoxSetting lightBox = setting.getLightBox();
-                if (lightBox.getContext().equals("web_view")) {
-                    webView.postUrl(url, parameters);
-                } else {
+                Setting.LightBoxSetting lightBox = setting.getSetting();
+                Setting.LightBoxSetting.LightBoxContext lightbox = lightBox.getLightbox();
+                if (lightbox.getContext().equals("in-app-browser")) {
                     String jsonParameters = UrlUtils.getJsonFromParameters(data);
                     String encodedParameters = UrlUtils.encodeStringToBase64(jsonParameters);
-                    CustomTabsManager.openCustomTabsIntent(getContext(), url + "accessId=" + establishData.get("accessId") + "&token=" + encodedParameters);
+                    CustomTabsManager.openCustomTabsIntent(getContext(),
+                            getEndpointUrl("dynamic", establishData) + "accessId="
+                                    + establishData.get("accessId") + "&token=" + encodedParameters
+                    );
+                } else {
+                    webView.postUrl(getEndpointUrl("index", establishData), parameters);
                 }
-            }).execute("TRUSTLY_CHOOSE_API_URL");
+                // TODO Change this endpoint with the right one
+            }).execute("https://dogapi.dog/api/v2/breeds");
         } catch (Exception e) {
         }
         return this;
