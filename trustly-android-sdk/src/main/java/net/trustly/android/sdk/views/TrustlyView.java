@@ -23,7 +23,7 @@ import com.google.gson.Gson;
 import net.trustly.android.sdk.BuildConfig;
 import net.trustly.android.sdk.TrustlyJsInterface;
 import net.trustly.android.sdk.data.APIRequests;
-import net.trustly.android.sdk.data.Setting;
+import net.trustly.android.sdk.data.Settings;
 import net.trustly.android.sdk.interfaces.Trustly;
 import net.trustly.android.sdk.interfaces.TrustlyCallback;
 import net.trustly.android.sdk.interfaces.TrustlyListener;
@@ -354,10 +354,8 @@ public class TrustlyView extends LinearLayout implements Trustly {
             new APIRequests(output -> {
                 // TODO Remove this hardcoded JSON
                 output = "{'settings': {'lightbox': {'context': 'in-app-browser'}}}";
-                Setting setting = new Gson().fromJson(output, Setting.class);
-                Setting.LightBoxSetting lightBox = setting.getSetting();
-                Setting.LightBoxSetting.LightBoxContext lightbox = lightBox.getLightbox();
-                if (lightbox.getContext().equals("in-app-browser")) {
+                Settings setting = new Gson().fromJson(output, Settings.class);
+                if (setting.getSettings().getLightbox().getContext().equals("in-app-browser")) {
                     String jsonParameters = UrlUtils.getJsonFromParameters(data);
                     String encodedParameters = UrlUtils.encodeStringToBase64(jsonParameters);
                     CustomTabsManager.openCustomTabsIntent(getContext(),
