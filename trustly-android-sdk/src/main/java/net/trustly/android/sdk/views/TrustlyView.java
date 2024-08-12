@@ -20,7 +20,9 @@ import androidx.annotation.RequiresApi;
 
 import net.trustly.android.sdk.BuildConfig;
 import net.trustly.android.sdk.TrustlyJsInterface;
+import net.trustly.android.sdk.data.APIMethod;
 import net.trustly.android.sdk.data.APIRequest;
+import net.trustly.android.sdk.data.RetrofitInstance;
 import net.trustly.android.sdk.interfaces.Trustly;
 import net.trustly.android.sdk.interfaces.TrustlyCallback;
 import net.trustly.android.sdk.interfaces.TrustlyListener;
@@ -43,6 +45,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     static String DOMAIN = "paywithmybank.com";
     static String version = BuildConfig.SDK_VERSION;
     private static boolean isLocalEnvironment = false;
+    APIMethod apiInterface = RetrofitInstance.INSTANCE.getInstance().create(APIMethod.class);
 
     enum Status {
         START,
@@ -348,7 +351,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
             byte[] parameters = UrlUtils.getParameterString(data).getBytes("UTF-8");
 
-            new APIRequest(settings -> {
+            new APIRequest(apiInterface, settings -> {
                 if (settings.getSettings().getLightbox().getContext().equals("in-app-browser")) {
                     String jsonParameters = UrlUtils.getJsonFromParameters(data);
                     String encodedParameters = UrlUtils.encodeStringToBase64(jsonParameters);

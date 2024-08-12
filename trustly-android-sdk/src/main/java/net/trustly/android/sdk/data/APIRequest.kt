@@ -6,9 +6,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class APIRequest(private val settings: (Settings) -> Unit) {
-
-    private val apiInterface = RetrofitInstance.getInstance().create(APIInterface::class.java)
+class APIRequest(private val apiInterface: APIMethod, private val settings: (Settings) -> Unit) {
 
     fun getSettingsData() {
         apiInterface.getSettings().enqueue(object : Callback<Settings> {
