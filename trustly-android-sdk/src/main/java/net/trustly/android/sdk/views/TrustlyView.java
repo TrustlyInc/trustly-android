@@ -18,12 +18,9 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.RequiresApi;
 
-import com.google.gson.Gson;
-
 import net.trustly.android.sdk.BuildConfig;
 import net.trustly.android.sdk.TrustlyJsInterface;
-import net.trustly.android.sdk.data.APIRequests;
-import net.trustly.android.sdk.data.Settings;
+import net.trustly.android.sdk.data.APIRequest;
 import net.trustly.android.sdk.interfaces.Trustly;
 import net.trustly.android.sdk.interfaces.TrustlyCallback;
 import net.trustly.android.sdk.interfaces.TrustlyListener;
@@ -351,11 +348,8 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
             byte[] parameters = UrlUtils.getParameterString(data).getBytes("UTF-8");
 
-            new APIRequests(output -> {
-                // TODO Remove this hardcoded JSON
-                output = "{'settings': {'lightbox': {'context': 'in-app-browser'}}}";
-                Settings setting = new Gson().fromJson(output, Settings.class);
-                if (setting.getSettings().getLightbox().getContext().equals("in-app-browser")) {
+            new APIRequest(settings -> {
+                if (settings.getSettings().getLightbox().getContext().equals("in-app-browser")) {
                     String jsonParameters = UrlUtils.getJsonFromParameters(data);
                     String encodedParameters = UrlUtils.encodeStringToBase64(jsonParameters);
                     CustomTabsManager.openCustomTabsIntent(getContext(),
@@ -365,8 +359,8 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 } else {
                     webView.postUrl(getEndpointUrl("index", establishData), parameters);
                 }
-                // TODO Change this endpoint with the right one
-            }).execute("https://dogapi.dog/api/v2/breeds");
+                return null;
+            }).getSettingsData();
         } catch (Exception e) {
         }
         return this;
