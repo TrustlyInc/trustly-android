@@ -5,7 +5,7 @@ plugins {
     id 'org.jetbrains.kotlin.android' version '1.8.22'
 }
 
-def sdkVersion = "3.2.2"
+def sdkVersion = "3.3.0"
 
 android {
     publishing {
