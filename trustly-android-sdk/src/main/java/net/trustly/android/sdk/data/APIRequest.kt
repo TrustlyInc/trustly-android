@@ -1,7 +1,6 @@
 package net.trustly.android.sdk.data
 
 import android.util.Log
-import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -12,28 +11,15 @@ class APIRequest(private val apiInterface: APIMethod, private val settings: (Set
         apiInterface.getSettings().enqueue(object : Callback<Settings> {
             override fun onResponse(call: Call<Settings>, response: Response<Settings>) {
                 if (response.isSuccessful && response.body() != null) {
-                    //TODO Uncomment this lines
-//                    Log.d("APIRequestNew", response.body().toString())
-//                    settings.invoke(response.body() as Settings)
-
-                    //TODO Remove this lines used to mock information
-                    mockSettingsResult()
+                    Log.d("APIRequest", response.body().toString())
+                    settings.invoke(response.body() as Settings)
                 }
             }
 
             override fun onFailure(call: Call<Settings>, t: Throwable) {
-                Log.e("APIRequestNew", t.message.toString())
-
-                //TODO Remove this lines used to mock information
-                mockSettingsResult()
+                Log.e("APIRequest", t.message.toString())
             }
         })
-    }
-
-    private fun mockSettingsResult() {
-        //TODO Remove this lines used to mock information
-        val output = "{'settings': {'lightbox': {'context': 'in-app-browser'}}}";
-        settings.invoke(Gson().fromJson(output, Settings::class.java))
     }
 
 }
