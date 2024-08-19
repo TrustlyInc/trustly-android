@@ -7,8 +7,8 @@ import retrofit2.Response
 
 class APIRequest(private val apiInterface: APIMethod, private val settings: (Settings) -> Unit) {
 
-    fun getSettingsData() {
-        apiInterface.getSettings().enqueue(object : Callback<Settings> {
+    fun getSettingsData(merchantId: String, grp: String, flowType: String) {
+        apiInterface.getSettings(merchantId, grp, flowType).enqueue(object : Callback<Settings> {
             override fun onResponse(call: Call<Settings>, response: Response<Settings>) {
                 if (response.isSuccessful && response.body() != null) {
                     Log.d("APIRequest", response.body().toString())

@@ -10,6 +10,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito.any
+import org.mockito.Mockito.anyString
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import retrofit2.Call
@@ -29,12 +30,12 @@ class APIRequestTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
 
-        `when`(api.getSettings()).thenReturn(mockCall)
+        `when`(api.getSettings(anyString(), anyString(), anyString())).thenReturn(mockCall)
     }
 
     @After
     fun tearDown() {
-        api.getSettings().cancel()
+        api.getSettings("110005514", "1", "web-view").cancel()
         mockCall.cancel()
         settingsResult = null
     }
@@ -45,7 +46,7 @@ class APIRequestTest {
         val mockResponse = Response.success(settingsFake)
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api) { settingsResult = it }.getSettingsData()
+        APIRequest(api) { settingsResult = it }.getSettingsData("110005514", "1", "web-view")
 
         assertEquals(settingsFake, settingsResult)
     }
@@ -56,7 +57,7 @@ class APIRequestTest {
         val mockResponse = Response.success(settingsFake)
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api) { settingsResult = it }.getSettingsData()
+        APIRequest(api) { settingsResult = it }.getSettingsData("110005514", "1", "web-view")
 
         assertEquals(settingsFake, settingsResult)
         assertEquals("in-app-browser", settingsResult!!.settings.lightbox.context)
@@ -68,7 +69,7 @@ class APIRequestTest {
         val mockResponse = Response.success(settingsFake)
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api) { settingsResult = it }.getSettingsData()
+        APIRequest(api) { settingsResult = it }.getSettingsData("110005514", "1", "web-view")
 
         assertEquals(settingsFake, settingsResult)
         assertNotEquals("web-view", settingsResult!!.settings.lightbox.context)
@@ -82,7 +83,7 @@ class APIRequestTest {
         )
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api) { settingsResult = it }.getSettingsData()
+        APIRequest(api) { settingsResult = it }.getSettingsData("110005514", "1", "web-view")
 
         assertEquals(null, settingsResult)
     }
@@ -95,7 +96,7 @@ class APIRequestTest {
         )
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api) { settingsResult = it }.getSettingsData()
+        APIRequest(api) { settingsResult = it }.getSettingsData("110005514", "1", "web-view")
 
         assertEquals(null, settingsResult)
     }
