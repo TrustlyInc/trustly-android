@@ -26,7 +26,7 @@ import net.trustly.android.sdk.data.RetrofitInstance;
 import net.trustly.android.sdk.interfaces.Trustly;
 import net.trustly.android.sdk.interfaces.TrustlyCallback;
 import net.trustly.android.sdk.interfaces.TrustlyListener;
-import net.trustly.android.sdk.util.CidManager;
+import net.trustly.android.sdk.util.cid.CidManager;
 import net.trustly.android.sdk.util.CustomTabsManager;
 import net.trustly.android.sdk.util.UrlUtils;
 

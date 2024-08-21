@@ -1,4 +1,4 @@
-package net.trustly.android.sdk.util;
+package net.trustly.android.sdk.util.cid;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
