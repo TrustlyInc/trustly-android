@@ -40,7 +40,7 @@ class APIRequest(private val apiInterface: APIMethod, private val settings: (Set
 
     //TODO Remove this method used to mock information
     private fun mockSettingsResult() {
-        val output = "{'settings': {'lightbox': {'context': 'in-app-browser'}}}";
+        val output = "{'settings': {'lightbox': {'context': 'web-view'}}}";
         settings.invoke(Gson().fromJson(output, Settings::class.java))
     }
 
