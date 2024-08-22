@@ -55,6 +55,9 @@ class APIRequestManagerTest {
         `when`(mockedPrefs.edit()).thenReturn(mockedEdit)
         `when`(mockedContext.getSharedPreferences("API_STORAGE", Context.MODE_PRIVATE)).thenReturn(mockedPrefs)
 
+        val time = Calendar.getInstance().time
+        mockedCalendar.time = time
+
         mockStatic(Calendar::class.java, CALLS_REAL_METHODS).use { static ->
             static.`when`<Any> { Calendar.getInstance() }
                 .thenReturn(mockedCalendar)
@@ -62,7 +65,7 @@ class APIRequestManagerTest {
 
         mockStatic(APIRequestStorage::class.java, CALLS_REAL_METHODS).use { static ->
             static.`when`<Any> { APIRequestStorage.readDataFrom(mockedContext, "API_REQUEST") }
-                .thenReturn("1724337021051")
+                .thenReturn(time.time.toString())
         }
 
         val validateAPIRequest = APIRequestManager.validateAPIRequest(mockedContext)
