@@ -9,9 +9,7 @@ interface APIMethod {
     //TODO Change this one with the correct endpoint
     @GET("api/v2/breeds")
     fun getSettings(
-        @Query("merchantId") merchantId: String,
-        @Query("grp") grp: String,
-        @Query("metadata.flowtype") flowType: String
+        @Query("establish") establish: String
     ): Call<Settings>
 
 }

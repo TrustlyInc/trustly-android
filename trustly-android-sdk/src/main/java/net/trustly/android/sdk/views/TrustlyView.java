@@ -362,7 +362,9 @@ public class TrustlyView extends LinearLayout implements Trustly {
                     openWebViewOrCustomTabs(settings, establishData, parameters);
                     return null;
                 }).getSettingsMockData();
-//            }).getSettingsData(data.get("merchantId"), data.get("grp"), data.get("metadata.flowtype"));
+//            }).getSettingsData(
+//                    UrlUtils.encodeStringToBase64(UrlUtils.getJsonFromParameters(data))
+//                );
             }
         } catch (Exception e) {
         }

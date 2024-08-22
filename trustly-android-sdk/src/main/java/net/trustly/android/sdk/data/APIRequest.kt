@@ -10,7 +10,7 @@ class APIRequest(private val apiInterface: APIMethod, private val settings: (Set
 
     //TODO Remove this method used to mock information
     fun getSettingsMockData() {
-        apiInterface.getSettings("", "", "").enqueue(object : Callback<Settings> {
+        apiInterface.getSettings("").enqueue(object : Callback<Settings> {
             override fun onResponse(call: Call<Settings>, response: Response<Settings>) {
                 if (response.isSuccessful && response.body() != null) {
                     mockSettingsResult()
@@ -23,8 +23,8 @@ class APIRequest(private val apiInterface: APIMethod, private val settings: (Set
         })
     }
 
-    fun getSettingsData(merchantId: String, grp: String, flowType: String) {
-        apiInterface.getSettings(merchantId, grp, flowType).enqueue(object : Callback<Settings> {
+    fun getSettingsData(establish: String) {
+        apiInterface.getSettings(establish).enqueue(object : Callback<Settings> {
             override fun onResponse(call: Call<Settings>, response: Response<Settings>) {
                 if (response.isSuccessful && response.body() != null) {
                     Log.d("APIRequestNew", response.body().toString())
