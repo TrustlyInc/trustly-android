@@ -3,6 +3,7 @@ package net.trustly.android.sdk.util.api
 import android.content.Context
 import android.content.SharedPreferences
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -49,13 +50,14 @@ class APIRequestStorageTest {
     }
 
     @Test
-    fun testReadingDataAPIRequest() {
+    fun testReadingDataNullAPIRequest() {
         `when`(mockedPrefs.getString(anyString(), anyString())).thenReturn("1724258668")
         `when`(mockedContext.getSharedPreferences("API_STORAGE", Context.MODE_PRIVATE)).thenReturn(mockedPrefs)
 
-        APIRequestStorage.readDataFrom(mockedContext, "API_REQUEST")
+        val apiRequest = APIRequestStorage.readDataFrom(mockedContext, "API_REQUEST")
 
         verify(mockedPrefs, times(1)).getString("API_REQUEST", null)
+        assertEquals(null, apiRequest)
     }
 
 }

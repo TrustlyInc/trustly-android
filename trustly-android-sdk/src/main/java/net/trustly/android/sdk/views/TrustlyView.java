@@ -23,12 +23,14 @@ import net.trustly.android.sdk.TrustlyJsInterface;
 import net.trustly.android.sdk.data.APIMethod;
 import net.trustly.android.sdk.data.APIRequest;
 import net.trustly.android.sdk.data.RetrofitInstance;
+import net.trustly.android.sdk.data.Settings;
 import net.trustly.android.sdk.interfaces.Trustly;
 import net.trustly.android.sdk.interfaces.TrustlyCallback;
 import net.trustly.android.sdk.interfaces.TrustlyListener;
-import net.trustly.android.sdk.util.cid.CidManager;
 import net.trustly.android.sdk.util.CustomTabsManager;
 import net.trustly.android.sdk.util.UrlUtils;
+import net.trustly.android.sdk.util.api.APIRequestManager;
+import net.trustly.android.sdk.util.cid.CidManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -351,23 +353,33 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
             byte[] parameters = UrlUtils.getParameterString(data).getBytes("UTF-8");
 
-            new APIRequest(apiInterface, settings -> {
-                if (settings.getSettings().getLightbox().getContext().equals("in-app-browser")) {
-                    String jsonParameters = UrlUtils.getJsonFromParameters(data);
-                    String encodedParameters = UrlUtils.encodeStringToBase64(jsonParameters);
-                    CustomTabsManager.openCustomTabsIntent(getContext(),
-                            getEndpointUrl("dynamic", establishData) + "accessId="
-                                    + establishData.get("accessId") + "&token=" + encodedParameters
-                    );
-                } else {
-                    webView.postUrl(getEndpointUrl("index", establishData), parameters);
-                }
-                return null;
-            }).getSettingsMockData();
+            if (APIRequestManager.INSTANCE.validateAPIRequest(getContext())) {
+                Settings settings = APIRequestManager.INSTANCE.getAPIRequestSettings(getContext());
+                openWebViewOrCustomTabs(settings, establishData, parameters);
+            } else {
+                new APIRequest(apiInterface, settings -> {
+                    APIRequestManager.INSTANCE.saveAPIRequestSettings(getContext(), settings);
+                    openWebViewOrCustomTabs(settings, establishData, parameters);
+                    return null;
+                }).getSettingsMockData();
 //            }).getSettingsData(data.get("merchantId"), data.get("grp"), data.get("metadata.flowtype"));
+            }
         } catch (Exception e) {
         }
         return this;
+    }
+
+    private void openWebViewOrCustomTabs(Settings settings, Map<String, String> establishData, byte[] parameters) {
+        if (settings.getSettings().getLightbox().getContext().equals("in-app-browser")) {
+            String jsonParameters = UrlUtils.getJsonFromParameters(data);
+            String encodedParameters = UrlUtils.encodeStringToBase64(jsonParameters);
+            CustomTabsManager.openCustomTabsIntent(getContext(),
+                    getEndpointUrl("dynamic", establishData) + "accessId="
+                            + establishData.get("accessId") + "&token=" + encodedParameters
+            );
+        } else {
+            webView.postUrl(getEndpointUrl("index", establishData), parameters);
+        }
     }
 
     /**
