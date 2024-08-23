@@ -9,7 +9,7 @@ interface APIMethod {
     //TODO Change this one with the correct endpoint
     @GET("api/v2/breeds")
     fun getSettings(
-        @Query("establish") establish: String
+        @Query("token") token: String
     ): Call<Settings>
 
 }
