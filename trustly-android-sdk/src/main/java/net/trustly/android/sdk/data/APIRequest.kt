@@ -1,27 +1,11 @@
 package net.trustly.android.sdk.data
 
 import android.util.Log
-import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class APIRequest(private val apiInterface: APIMethod, private val settings: (Settings) -> Unit) {
-
-    //TODO Remove this method used to mock information
-    fun getSettingsMockData() {
-        apiInterface.getSettings("").enqueue(object : Callback<Settings> {
-            override fun onResponse(call: Call<Settings>, response: Response<Settings>) {
-                if (response.isSuccessful && response.body() != null) {
-                    mockSettingsResult()
-                }
-            }
-
-            override fun onFailure(call: Call<Settings>, t: Throwable) {
-                mockSettingsResult()
-            }
-        })
-    }
+class APIRequest(private val apiInterface: APIMethod, private val settings: (Settings) -> Unit, private val error: (String) -> Unit) {
 
     fun getSettingsData(token: String) {
         apiInterface.getSettings(token).enqueue(object : Callback<Settings> {
@@ -34,14 +18,9 @@ class APIRequest(private val apiInterface: APIMethod, private val settings: (Set
 
             override fun onFailure(call: Call<Settings>, t: Throwable) {
                 Log.e("APIRequestNew", t.message.toString())
+                error.invoke(t.message.toString())
             }
         })
-    }
-
-    //TODO Remove this method used to mock information
-    private fun mockSettingsResult() {
-        val output = "{'settings': {'lightbox': {'context': 'in-app-browser'}}}"
-        settings.invoke(Gson().fromJson(output, Settings::class.java))
     }
 
 }

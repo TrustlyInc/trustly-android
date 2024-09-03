@@ -3,6 +3,7 @@ package net.trustly.android.sdk.util.api
 import android.content.Context
 import com.google.gson.Gson
 import net.trustly.android.sdk.data.Settings
+import net.trustly.android.sdk.data.StrategySetting
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
@@ -30,7 +31,8 @@ object APIRequestManager {
     }
 
     fun getAPIRequestSettings(context: Context): Settings {
-        return Gson().fromJson(APIRequestStorage.readDataFrom(context, API_REQUEST_SETTINGS), Settings::class.java)
+        val settings = Gson().fromJson(APIRequestStorage.readDataFrom(context, API_REQUEST_SETTINGS), Settings::class.java)
+        return settings ?: Settings(StrategySetting("webview"))
     }
 
     private fun getTimestamp(): String {

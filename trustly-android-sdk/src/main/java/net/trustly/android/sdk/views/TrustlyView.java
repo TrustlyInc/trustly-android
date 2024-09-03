@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -24,6 +25,7 @@ import net.trustly.android.sdk.data.APIMethod;
 import net.trustly.android.sdk.data.APIRequest;
 import net.trustly.android.sdk.data.RetrofitInstance;
 import net.trustly.android.sdk.data.Settings;
+import net.trustly.android.sdk.data.StrategySetting;
 import net.trustly.android.sdk.interfaces.Trustly;
 import net.trustly.android.sdk.interfaces.TrustlyCallback;
 import net.trustly.android.sdk.interfaces.TrustlyListener;
@@ -47,7 +49,6 @@ public class TrustlyView extends LinearLayout implements Trustly {
     static String DOMAIN = "paywithmybank.com";
     static String version = BuildConfig.SDK_VERSION;
     private static boolean isLocalEnvironment = false;
-    APIMethod apiInterface = RetrofitInstance.INSTANCE.getInstance().create(APIMethod.class);
 
     enum Status {
         START,
@@ -353,34 +354,38 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
             byte[] parameters = UrlUtils.getParameterString(data).getBytes("UTF-8");
 
+            String jsonFromParameters = UrlUtils.getJsonFromParameters(data);
+            String encodeStringToBase64 = UrlUtils.encodeStringToBase64(jsonFromParameters).replace("\n", "");
+
             if (APIRequestManager.INSTANCE.validateAPIRequest(getContext())) {
                 Settings settings = APIRequestManager.INSTANCE.getAPIRequestSettings(getContext());
-                openWebViewOrCustomTabs(settings, establishData, parameters);
+                openWebViewOrCustomTabs(settings, data, parameters, encodeStringToBase64);
             } else {
+                APIMethod apiInterface = RetrofitInstance.INSTANCE.getInstance(establishData.get("localUrl")).create(APIMethod.class);
                 new APIRequest(apiInterface, settings -> {
                     APIRequestManager.INSTANCE.saveAPIRequestSettings(getContext(), settings);
-                    openWebViewOrCustomTabs(settings, establishData, parameters);
+                    openWebViewOrCustomTabs(settings, data, parameters, encodeStringToBase64);
                     return null;
-                }).getSettingsMockData();
-//            }).getSettingsData(
-//                    UrlUtils.encodeStringToBase64(UrlUtils.getJsonFromParameters(data))
-//                );
+            }, error -> {
+                    openWebViewOrCustomTabs(new Settings(new StrategySetting("webview")), data, parameters, encodeStringToBase64);
+                    return null;
+                }).getSettingsData(encodeStringToBase64);
             }
         } catch (Exception e) {
+            Log.e("TrustlyView", e.getMessage());
         }
         return this;
     }
 
-    private void openWebViewOrCustomTabs(Settings settings, Map<String, String> establishData, byte[] parameters) {
-        if (settings.getSettings().getLightbox().getContext().equals("in-app-browser")) {
-            String jsonParameters = UrlUtils.getJsonFromParameters(data);
-            String encodedParameters = UrlUtils.encodeStringToBase64(jsonParameters);
-            CustomTabsManager.openCustomTabsIntent(getContext(),
-                    getEndpointUrl("dynamic", establishData) + "accessId="
-                            + establishData.get("accessId") + "&token=" + encodedParameters
-            );
+    private void openWebViewOrCustomTabs(Settings settings, Map<String, String> establishData, byte[] parameters, String encodedParameters) {
+        if (settings.getSettings().getIntegrationStrategy().equals("webview")) {
+            if (establishData.get("env").equals("dynamic")) {
+                webView.loadUrl(getEndpointUrl("dynamic", establishData) + "?token=" + encodedParameters);
+            } else {
+                webView.postUrl(getEndpointUrl("index", establishData), parameters);
+            }
         } else {
-            webView.postUrl(getEndpointUrl("index", establishData), parameters);
+            CustomTabsManager.openCustomTabsIntent(getContext(), getEndpointUrl("dynamic", establishData) + "?token=" + encodedParameters);
         }
     }
 
@@ -522,7 +527,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
      */
     protected String getEndpointUrl(String function, Map<String, String> establishData) {
         if ("dynamic".equals(function)) {
-            return "http://" + establishData.get("localUrl") + "/start/app/establish?";
+            return establishData.get("localUrl") + "/frontend/mobile/establish";
         }
 
         String subDomain = establishData.get("env") != null

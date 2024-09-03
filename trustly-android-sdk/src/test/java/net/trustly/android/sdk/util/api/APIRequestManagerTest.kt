@@ -118,7 +118,7 @@ class APIRequestManagerTest {
         }
 
         val settings = APIRequestManager.getAPIRequestSettings(mockedContext)
-        assertEquals("in-app-browser", settings.settings.lightbox.context)
+        assertEquals("webview", settings.settings.integrationStrategy)
     }
 
     @Test
@@ -130,10 +130,10 @@ class APIRequestManagerTest {
         val settings = Gson().fromJson(getSettingsMockData(), Settings::class.java)
         APIRequestManager.saveAPIRequestSettings(mockedContext, settings)
 
-        verify(mockedEdit, times(1)).putString("API_REQUEST_SETTINGS", "{\"settings\":{\"lightbox\":{\"context\":\"in-app-browser\"}}}")
+        verify(mockedEdit, times(1)).putString("API_REQUEST_SETTINGS", "{\"settings\":{\"integrationStrategy\":\"webview\"}}")
         verify(mockedEdit, times(1)).apply()
     }
 
-    private fun getSettingsMockData() = "{\"settings\":{\"lightbox\":{\"context\":\"in-app-browser\"}}}"
+    private fun getSettingsMockData() = "{\"settings\":{\"integrationStrategy\":\"webview\"}}"
 
 }

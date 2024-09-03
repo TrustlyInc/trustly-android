@@ -1,13 +1,9 @@
 package net.trustly.android.sdk.data
 
 data class Settings(
-    val settings: LightBoxSetting
+    val settings: StrategySetting
 )
 
-data class LightBoxSetting(
-    val lightbox: LightBoxContext
-)
-
-data class LightBoxContext(
-    val context: String
+data class StrategySetting(
+    val integrationStrategy: String
 )

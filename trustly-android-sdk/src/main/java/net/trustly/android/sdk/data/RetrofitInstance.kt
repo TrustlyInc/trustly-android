@@ -1,16 +1,21 @@
 package net.trustly.android.sdk.data
 
+import net.trustly.android.sdk.BuildConfig
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+
 object RetrofitInstance {
 
-    //TODO Change this one with the correct endpoint
-    private const val BASE_URL = "https://dogapi.dog/"
-
-    fun getInstance(): Retrofit {
-        return Retrofit.Builder().baseUrl(BASE_URL)
+    fun getInstance(baseUrl: String): Retrofit {
+        val interceptor = HttpLoggingInterceptor()
+        if (BuildConfig.DEBUG) interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+        val okHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
+        return Retrofit.Builder().baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
             .build()
     }
 

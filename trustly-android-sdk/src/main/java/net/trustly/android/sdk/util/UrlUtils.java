@@ -118,8 +118,7 @@ public class UrlUtils {
     }
 
     public static String encodeStringToBase64(String value) {
-        byte[] encode = Base64.encode(value.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
-        return new String(encode, StandardCharsets.UTF_8);
+        return Base64.encodeToString(value.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
     }
 
 }

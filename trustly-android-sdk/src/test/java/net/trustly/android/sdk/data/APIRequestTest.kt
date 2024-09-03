@@ -1,8 +1,8 @@
 package net.trustly.android.sdk.data
 
 import com.google.gson.Gson
-import okhttp3.MediaType
-import okhttp3.ResponseBody
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -46,7 +46,7 @@ class APIRequestTest {
         val mockResponse = Response.success(settingsFake)
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api) { settingsResult = it }.getSettingsData("RXN0YWJsaXNoRGF0YVN0cmluZw==")
+        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData("RXN0YWJsaXNoRGF0YVN0cmluZw==")
 
         assertEquals(settingsFake, settingsResult)
     }
@@ -57,10 +57,10 @@ class APIRequestTest {
         val mockResponse = Response.success(settingsFake)
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api) { settingsResult = it }.getSettingsData("RXN0YWJsaXNoRGF0YVN0cmluZw==")
+        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData("RXN0YWJsaXNoRGF0YVN0cmluZw==")
 
         assertEquals(settingsFake, settingsResult)
-        assertEquals("in-app-browser", settingsResult!!.settings.lightbox.context)
+        assertEquals("webview", settingsResult!!.settings.integrationStrategy)
     }
 
     @Test
@@ -69,21 +69,21 @@ class APIRequestTest {
         val mockResponse = Response.success(settingsFake)
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api) { settingsResult = it }.getSettingsData("RXN0YWJsaXNoRGF0YVN0cmluZw==")
+        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData("RXN0YWJsaXNoRGF0YVN0cmluZw==")
 
         assertEquals(settingsFake, settingsResult)
-        assertNotEquals("web-view", settingsResult!!.settings.lightbox.context)
+        assertNotEquals("inappbrowser", settingsResult!!.settings.integrationStrategy)
     }
 
     @Test
     fun testGetSettingDataWhenReturnFailure() {
         val mockResponse = Response.error<Settings>(
             401,
-            ResponseBody.create(MediaType.parse("application/json"), "")
+            "".toResponseBody("application/json".toMediaTypeOrNull())
         )
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api) { settingsResult = it }.getSettingsData("RXN0YWJsaXNoRGF0YVN0cmluZw==")
+        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData("RXN0YWJsaXNoRGF0YVN0cmluZw==")
 
         assertEquals(null, settingsResult)
     }
@@ -92,11 +92,11 @@ class APIRequestTest {
     fun testGetSettingDataWhenReturnNetworkExceptionError() {
         val mockResponse = Response.error<Settings>(
             500,
-            ResponseBody.create(MediaType.parse("plain/text"), "API Not found")
+            "API Not found".toResponseBody("plain/text".toMediaTypeOrNull())
         )
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api) { settingsResult = it }.getSettingsData("RXN0YWJsaXNoRGF0YVN0cmluZw==")
+        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData("RXN0YWJsaXNoRGF0YVN0cmluZw==")
 
         assertEquals(null, settingsResult)
     }
@@ -112,6 +112,6 @@ class APIRequestTest {
         return Gson().fromJson(getSettingsJson(), Settings::class.java)
     }
 
-    private fun getSettingsJson() = "{'settings': {'lightbox': {'context': 'in-app-browser'}}}"
+    private fun getSettingsJson() = "{'settings': {'integrationStrategy': 'webview'}}"
 
 }
