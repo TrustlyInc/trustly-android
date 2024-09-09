@@ -40,6 +40,8 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import kotlin.Unit;
+
 /**
  * TrustlyView is a view class that implements the Trustly SDK interface
  */
@@ -331,8 +333,14 @@ public class TrustlyView extends LinearLayout implements Trustly {
             }
             data.put("metadata.sdkAndroidVersion", version);
             data.put("deviceType", deviceType);
-            data.put("returnUrl", returnURL);
-            data.put("cancelUrl", cancelURL);
+
+            if (data.get("env").equals("dynamic")) {
+                data.put("returnUrl", establishData.get("metadata.urlScheme"));
+                data.put("cancelUrl", establishData.get("metadata.urlScheme"));
+            } else {
+                data.put("returnUrl", returnURL);
+                data.put("cancelUrl", cancelURL);
+            }
             data.put("grp", Integer.toString(grp));
 
             if (data.containsKey("paymentProviderId")) {
@@ -362,14 +370,15 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 openWebViewOrCustomTabs(settings, data, parameters, encodeStringToBase64);
             } else {
                 APIMethod apiInterface = RetrofitInstance.INSTANCE.getInstance(establishData.get("localUrl")).create(APIMethod.class);
-                new APIRequest(apiInterface, settings -> {
+                APIRequest apiRequest = new APIRequest(apiInterface, settings -> {
                     APIRequestManager.INSTANCE.saveAPIRequestSettings(getContext(), settings);
                     openWebViewOrCustomTabs(settings, data, parameters, encodeStringToBase64);
-                    return null;
-            }, error -> {
+                    return Unit.INSTANCE;
+                }, error -> {
                     openWebViewOrCustomTabs(new Settings(new StrategySetting("webview")), data, parameters, encodeStringToBase64);
-                    return null;
-                }).getSettingsData(encodeStringToBase64);
+                    return Unit.INSTANCE;
+                });
+                apiRequest.getSettingsData(encodeStringToBase64);
             }
         } catch (Exception e) {
             Log.e("TrustlyView", e.getMessage());
