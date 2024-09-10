@@ -12,6 +12,10 @@
 
  public class UrlUtilsTest {
 
+     private static final String VALUE_1 = "value1";
+     private static final String VALUE_2 = "value2";
+     private static final String VALUE_3 = "value3";
+
      @Test(expected = Exception.class)
      public void shouldThrowExceptionWhenGetQueryParameterNamesReceiveNull() {
          UrlUtils.getQueryParameterNames(null);
@@ -25,9 +29,9 @@
      @Test
      public void shouldInvalidateReturnedValueWhenGetParameterString() {
          Map<String, String> values = new HashMap<>();
-         values.put("key1", "value1");
-         values.put("key2", "value2");
-         values.put("key3", "value3");
+         values.put("key1", VALUE_1);
+         values.put("key2", VALUE_2);
+         values.put("key3", VALUE_3);
          String parameter = UrlUtils.getParameterString(values);
          assertNotEquals("key1=value1,key2=value2,key3=value3", parameter);
      }
@@ -35,9 +39,9 @@
      @Test
      public void shouldValidateReturnedValueWhenGetParameterString() {
          Map<String, String> values = new HashMap<>();
-         values.put("key1", "value1");
-         values.put("key2", "value2");
-         values.put("key3", "value3");
+         values.put("key1", VALUE_1);
+         values.put("key2", VALUE_2);
+         values.put("key3", VALUE_3);
          String parameter = UrlUtils.getParameterString(values);
          assertEquals("key1=value1&key2=value2&key3=value3", parameter);
      }
@@ -45,9 +49,9 @@
      @Test
      public void shouldValidateReturnedValueWhenGetParameterStringWithNullKey() {
          Map<String, String> values = new HashMap<>();
-         values.put(null, "value1");
-         values.put("key2", "value2");
-         values.put("key3", "value3");
+         values.put(null, VALUE_1);
+         values.put("key2", VALUE_2);
+         values.put("key3", VALUE_3);
          String parameter = UrlUtils.getParameterString(values);
          assertEquals("=value1&key2=value2&key3=value3", parameter);
      }
@@ -55,9 +59,9 @@
      @Test
      public void shouldValidateReturnedValueWhenGetParameterStringWithNullValue() {
          Map<String, String> values = new HashMap<>();
-         values.put("key1", "value1");
+         values.put("key1", VALUE_1);
          values.put("key2", null);
-         values.put("key3", "value3");
+         values.put("key3", VALUE_3);
          String parameter = UrlUtils.getParameterString(values);
          assertEquals("key1=value1&key2=&key3=value3", parameter);
      }

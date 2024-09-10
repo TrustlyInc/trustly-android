@@ -34,6 +34,7 @@ import net.trustly.android.sdk.util.UrlUtils;
 import net.trustly.android.sdk.util.api.APIRequestManager;
 import net.trustly.android.sdk.util.cid.CidManager;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -50,6 +51,9 @@ public class TrustlyView extends LinearLayout implements Trustly {
     static String PROTOCOL = "https://";
     static String DOMAIN = "paywithmybank.com";
     static String version = BuildConfig.SDK_VERSION;
+
+    static String ENV_DYNAMIC = "dynamic";
+
     private static boolean isLocalEnvironment = false;
 
     enum Status {
@@ -334,7 +338,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
             data.put("metadata.sdkAndroidVersion", version);
             data.put("deviceType", deviceType);
 
-            if (data.get("env").equals("dynamic")) {
+            if (data.get("env").equals(ENV_DYNAMIC)) {
                 data.put("returnUrl", establishData.get("metadata.urlScheme"));
                 data.put("cancelUrl", establishData.get("metadata.urlScheme"));
             } else {
@@ -360,7 +364,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 isLocalEnvironment = true;
             }
 
-            byte[] parameters = UrlUtils.getParameterString(data).getBytes("UTF-8");
+            byte[] parameters = UrlUtils.getParameterString(data).getBytes(StandardCharsets.UTF_8);
 
             String jsonFromParameters = UrlUtils.getJsonFromParameters(data);
             String encodeStringToBase64 = UrlUtils.encodeStringToBase64(jsonFromParameters).replace("\n", "");
@@ -388,13 +392,13 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
     private void openWebViewOrCustomTabs(Settings settings, Map<String, String> establishData, byte[] parameters, String encodedParameters) {
         if (settings.getSettings().getIntegrationStrategy().equals("webview")) {
-            if (establishData.get("env").equals("dynamic")) {
-                webView.loadUrl(getEndpointUrl("dynamic", establishData) + "?token=" + encodedParameters);
+            if (establishData.get("env").equals(ENV_DYNAMIC)) {
+                webView.loadUrl(getEndpointUrl(ENV_DYNAMIC, establishData) + "?token=" + encodedParameters);
             } else {
                 webView.postUrl(getEndpointUrl("index", establishData), parameters);
             }
         } else {
-            CustomTabsManager.openCustomTabsIntent(getContext(), getEndpointUrl("dynamic", establishData) + "?token=" + encodedParameters);
+            CustomTabsManager.openCustomTabsIntent(getContext(), getEndpointUrl(ENV_DYNAMIC, establishData) + "?token=" + encodedParameters);
         }
     }
 
@@ -535,7 +539,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
      * {@inheritDoc}
      */
     protected String getEndpointUrl(String function, Map<String, String> establishData) {
-        if ("dynamic".equals(function)) {
+        if (ENV_DYNAMIC.equals(function)) {
             return establishData.get("localUrl") + "/frontend/mobile/establish";
         }
 

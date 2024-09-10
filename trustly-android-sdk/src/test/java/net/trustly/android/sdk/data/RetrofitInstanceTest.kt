@@ -5,15 +5,21 @@ import org.junit.Test
 
 class RetrofitInstanceTest {
 
+    companion object {
+
+        const val TEST_URL = "https://trustly.one/"
+
+    }
+
     @Test
     fun testRetrofitInstance() {
-        val instance = RetrofitInstance.getInstance("https://trustly.one/")
-        assert(instance.baseUrl().toString() == "https://trustly.one/")
+        val instance = RetrofitInstance.getInstance(TEST_URL)
+        assert(instance.baseUrl().toString() == TEST_URL)
     }
 
     @Test
     fun testRetrofitInstanceNotNull() {
-        val instance = RetrofitInstance.getInstance("https://trustly.one/")
+        val instance = RetrofitInstance.getInstance(TEST_URL)
         assertNotNull(instance)
     }
 
