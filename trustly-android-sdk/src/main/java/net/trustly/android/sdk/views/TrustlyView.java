@@ -52,7 +52,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     static String DOMAIN = "paywithmybank.com";
     static String version = BuildConfig.SDK_VERSION;
 
-    static String ENV_DYNAMIC = "dynamic";
+    private static final String DYNAMIC = "dynamic";
 
     private static boolean isLocalEnvironment = false;
 
@@ -338,7 +338,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
             data.put("metadata.sdkAndroidVersion", version);
             data.put("deviceType", deviceType);
 
-            if (data.get("env").equals(ENV_DYNAMIC)) {
+            if (data.get("env").equals(DYNAMIC)) {
                 data.put("returnUrl", establishData.get("metadata.urlScheme"));
                 data.put("cancelUrl", establishData.get("metadata.urlScheme"));
             } else {
@@ -392,13 +392,13 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
     private void openWebViewOrCustomTabs(Settings settings, Map<String, String> establishData, byte[] parameters, String encodedParameters) {
         if (settings.getSettings().getIntegrationStrategy().equals("webview")) {
-            if (establishData.get("env").equals(ENV_DYNAMIC)) {
-                webView.loadUrl(getEndpointUrl(ENV_DYNAMIC, establishData) + "?token=" + encodedParameters);
+            if (establishData.get("env").equals(DYNAMIC)) {
+                webView.loadUrl(getEndpointUrl(DYNAMIC, establishData) + "?token=" + encodedParameters);
             } else {
                 webView.postUrl(getEndpointUrl("index", establishData), parameters);
             }
         } else {
-            CustomTabsManager.openCustomTabsIntent(getContext(), getEndpointUrl(ENV_DYNAMIC, establishData) + "?token=" + encodedParameters);
+            CustomTabsManager.openCustomTabsIntent(getContext(), getEndpointUrl(DYNAMIC, establishData) + "?token=" + encodedParameters);
         }
     }
 
@@ -539,7 +539,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
      * {@inheritDoc}
      */
     protected String getEndpointUrl(String function, Map<String, String> establishData) {
-        if (ENV_DYNAMIC.equals(function)) {
+        if (DYNAMIC.equals(function)) {
             return establishData.get("localUrl") + "/frontend/mobile/establish";
         }
 
