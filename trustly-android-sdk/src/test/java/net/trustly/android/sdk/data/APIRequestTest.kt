@@ -35,7 +35,7 @@ class APIRequestTest {
 
     @After
     fun tearDown() {
-        api.getSettings("RXN0YWJsaXNoRGF0YVN0cmluZw==").cancel()
+        api.getSettings(TOKEN).cancel()
         mockCall.cancel()
         settingsResult = null
     }
@@ -46,7 +46,7 @@ class APIRequestTest {
         val mockResponse = Response.success(settingsFake)
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData("RXN0YWJsaXNoRGF0YVN0cmluZw==")
+        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
 
         assertEquals(settingsFake, settingsResult)
     }
@@ -57,7 +57,7 @@ class APIRequestTest {
         val mockResponse = Response.success(settingsFake)
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData("RXN0YWJsaXNoRGF0YVN0cmluZw==")
+        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
 
         assertEquals(settingsFake, settingsResult)
         assertEquals("webview", settingsResult!!.settings.integrationStrategy)
@@ -69,7 +69,7 @@ class APIRequestTest {
         val mockResponse = Response.success(settingsFake)
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData("RXN0YWJsaXNoRGF0YVN0cmluZw==")
+        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
 
         assertEquals(settingsFake, settingsResult)
         assertNotEquals("inappbrowser", settingsResult!!.settings.integrationStrategy)
@@ -83,7 +83,7 @@ class APIRequestTest {
         )
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData("RXN0YWJsaXNoRGF0YVN0cmluZw==")
+        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
 
         assertEquals(null, settingsResult)
     }
@@ -96,7 +96,7 @@ class APIRequestTest {
         )
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData("RXN0YWJsaXNoRGF0YVN0cmluZw==")
+        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
 
         assertEquals(null, settingsResult)
     }
@@ -113,5 +113,11 @@ class APIRequestTest {
     }
 
     private fun getSettingsJson() = "{'settings': {'integrationStrategy': 'webview'}}"
+
+    companion object {
+
+        const val TOKEN = "RXN0YWJsaXNoRGF0YVN0cmluZw=="
+
+    }
 
 }
