@@ -537,6 +537,35 @@ public class TrustlyView extends LinearLayout implements Trustly {
         }
     }
 
+    private String getDomain(Map<String, String> establishData) {
+        String environment = establishData.get("env") != null ? establishData.get("env").toLowerCase() : env;
+        String envHost = establishData.get("envHost");
+        
+        if (environment == null) {
+            return PROTOCOL + DOMAIN;
+        }
+
+        switch (environment) {
+            case DYNAMIC: {
+                String host = envHost != null ? envHost : "";
+                return "https://" + host + ".int.trustly.one";
+            }
+            case LOCAL: {
+                String host = (envHost != null && !envHost.equals("localhost")) ? envHost : "10.0.2.2";
+                return "http://" + host + ":8000";
+            }
+            case "prod":
+            case "production":
+                environment = "";
+                break;
+            default:
+                environment = environment + ".";
+                break;
+        }
+
+        return PROTOCOL + environment + DOMAIN;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -545,17 +574,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
             return establishData.get("localUrl") + "/frontend/mobile/establish";
         }
 
-        String subDomain = establishData.get("env") != null
-                ? establishData.get("env").toLowerCase()
-                : env;
-
-        String envHost = establishData.get("envHost");
-
-        if (subDomain == null || "prod".equals(subDomain) || "production".equals(subDomain)) {
-            subDomain = "";
-        } else {
-            subDomain = subDomain + ".";
-        }
+        String domain = getDomain(establishData);
 
         if (INDEX.equals(function) &&
                 !"Verification".equals(establishData.get("paymentType")) &&
@@ -564,15 +583,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
         }
 
-        if (subDomain.equals("local.")) {
-            String domain = (envHost != null && !envHost.equals("localhost")) ? envHost : "10.0.2.2";
-            return "http://" + domain + ":8000/start/selectBank/" + function + "?v=" + version + "-android-sdk";
-        } else if (subDomain.equals("dynamic.")) {
-            String host = envHost != null ? envHost : "";
-            return "https://" + host + ".int.trustly.one/start/selectBank/" + function + "?v=" + version + "-android-sdk";
-        }
-
-        return PROTOCOL + subDomain + DOMAIN + "/start/selectBank/" + function + "?v=" + version + "-android-sdk";
+        return domain + "/start/selectBank/" + function + "?v=" + version + "-android-sdk";
     }
 
     private void notifyOpen() {
