@@ -53,6 +53,8 @@ public class TrustlyView extends LinearLayout implements Trustly {
     static String version = BuildConfig.SDK_VERSION;
 
     private static final String DYNAMIC = "dynamic";
+    private static final String INDEX = "index";
+    private static final String LOCAL = "local";
 
     private static boolean isLocalEnvironment = false;
 
@@ -359,7 +361,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
             notifyOpen();
 
-            if ("local".equals(data.get("env"))) {
+            if (LOCAL.equals(data.get("env"))) {
                 webView.setWebContentsDebuggingEnabled(true);
                 isLocalEnvironment = true;
             }
@@ -395,7 +397,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
             if (establishData.get("env").equals(DYNAMIC)) {
                 webView.loadUrl(getEndpointUrl(DYNAMIC, establishData) + "?token=" + encodedParameters);
             } else {
-                webView.postUrl(getEndpointUrl("index", establishData), parameters);
+                webView.postUrl(getEndpointUrl(INDEX, establishData), parameters);
             }
         } else {
             CustomTabsManager.openCustomTabsIntent(getContext(), getEndpointUrl(DYNAMIC, establishData) + "?token=" + encodedParameters);
@@ -555,7 +557,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
             subDomain = subDomain + ".";
         }
 
-        if ("index".equals(function) &&
+        if (INDEX.equals(function) &&
                 !"Verification".equals(establishData.get("paymentType")) &&
                 establishData.get("paymentProviderId") != null) {
             function = "selectBank";
