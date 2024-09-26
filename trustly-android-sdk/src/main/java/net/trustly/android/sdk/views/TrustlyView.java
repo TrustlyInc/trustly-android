@@ -55,6 +55,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     private static final String DYNAMIC = "dynamic";
     private static final String INDEX = "index";
     private static final String LOCAL = "local";
+    private static final String MOBILE = "mobile";
 
     private static boolean isLocalEnvironment = false;
 
@@ -375,7 +376,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 Settings settings = APIRequestManager.INSTANCE.getAPIRequestSettings(getContext());
                 openWebViewOrCustomTabs(settings, data, parameters, encodeStringToBase64);
             } else {
-                APIMethod apiInterface = RetrofitInstance.INSTANCE.getInstance(establishData.get("localUrl")).create(APIMethod.class);
+                APIMethod apiInterface = RetrofitInstance.INSTANCE.getInstance(getDomain(establishData)).create(APIMethod.class);
                 APIRequest apiRequest = new APIRequest(apiInterface, settings -> {
                     APIRequestManager.INSTANCE.saveAPIRequestSettings(getContext(), settings);
                     openWebViewOrCustomTabs(settings, data, parameters, encodeStringToBase64);
@@ -395,12 +396,12 @@ public class TrustlyView extends LinearLayout implements Trustly {
     private void openWebViewOrCustomTabs(Settings settings, Map<String, String> establishData, byte[] parameters, String encodedParameters) {
         if (settings.getSettings().getIntegrationStrategy().equals("webview")) {
             if (establishData.get("env").equals(DYNAMIC)) {
-                webView.loadUrl(getEndpointUrl(DYNAMIC, establishData) + "?token=" + encodedParameters);
+                webView.loadUrl(getEndpointUrl(MOBILE, establishData) + "?token=" + encodedParameters);
             } else {
                 webView.postUrl(getEndpointUrl(INDEX, establishData), parameters);
             }
         } else {
-            CustomTabsManager.openCustomTabsIntent(getContext(), getEndpointUrl(DYNAMIC, establishData) + "?token=" + encodedParameters);
+            CustomTabsManager.openCustomTabsIntent(getContext(), getEndpointUrl(MOBILE, establishData) + "?token=" + encodedParameters);
         }
     }
 
@@ -540,7 +541,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     private String getDomain(Map<String, String> establishData) {
         String environment = establishData.get("env") != null ? establishData.get("env").toLowerCase() : env;
         String envHost = establishData.get("envHost");
-        
+
         if (environment == null) {
             return PROTOCOL + DOMAIN;
         }
@@ -570,11 +571,11 @@ public class TrustlyView extends LinearLayout implements Trustly {
      * {@inheritDoc}
      */
     protected String getEndpointUrl(String function, Map<String, String> establishData) {
-        if (DYNAMIC.equals(function)) {
-            return establishData.get("localUrl") + "/frontend/mobile/establish";
-        }
-
         String domain = getDomain(establishData);
+
+        if (MOBILE.equals(function)) {
+            return domain + "/frontend/mobile/establish";
+        }
 
         if (INDEX.equals(function) &&
                 !"Verification".equals(establishData.get("paymentType")) &&
