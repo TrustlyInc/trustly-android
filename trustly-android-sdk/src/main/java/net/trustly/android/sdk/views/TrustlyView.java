@@ -376,7 +376,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 Settings settings = APIRequestManager.INSTANCE.getAPIRequestSettings(getContext());
                 openWebViewOrCustomTabs(settings, data, parameters, encodeStringToBase64);
             } else {
-                APIMethod apiInterface = RetrofitInstance.INSTANCE.getInstance(getDomain(establishData)).create(APIMethod.class);
+                APIMethod apiInterface = RetrofitInstance.INSTANCE.getInstance(getDomain(MOBILE, establishData)).create(APIMethod.class);
                 APIRequest apiRequest = new APIRequest(apiInterface, settings -> {
                     APIRequestManager.INSTANCE.saveAPIRequestSettings(getContext(), settings);
                     openWebViewOrCustomTabs(settings, data, parameters, encodeStringToBase64);
@@ -538,7 +538,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
         }
     }
 
-    private String getDomain(Map<String, String> establishData) {
+    private String getDomain(String function, Map<String, String> establishData) {
         String environment = establishData.get("env") != null ? establishData.get("env").toLowerCase() : env;
         String envHost = establishData.get("envHost");
 
@@ -553,7 +553,16 @@ public class TrustlyView extends LinearLayout implements Trustly {
             }
             case LOCAL: {
                 String host = (envHost != null && !envHost.equals("localhost")) ? envHost : "10.0.2.2";
-                return "http://" + host + ":8000";
+                String port = "";
+                String protocol = "http://";
+
+                if (function.equals("mobile")) {
+                    port = ":10000";
+                } else {
+                    port = ":8000";
+                }
+
+                return protocol + host + port;
             }
             case "prod":
             case "production":
@@ -571,10 +580,10 @@ public class TrustlyView extends LinearLayout implements Trustly {
      * {@inheritDoc}
      */
     protected String getEndpointUrl(String function, Map<String, String> establishData) {
-        String domain = getDomain(establishData);
+        String domain = getDomain(function, establishData);
 
         if (MOBILE.equals(function)) {
-            return domain + "/frontend/mobile/establish";
+             return domain + "/frontend/mobile/establish";
         }
 
         if (INDEX.equals(function) &&
