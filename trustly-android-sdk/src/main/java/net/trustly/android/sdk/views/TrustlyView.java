@@ -372,20 +372,24 @@ public class TrustlyView extends LinearLayout implements Trustly {
             String jsonFromParameters = UrlUtils.getJsonFromParameters(data);
             String encodeStringToBase64 = UrlUtils.encodeStringToBase64(jsonFromParameters).replace("\n", "");
 
-            if (APIRequestManager.INSTANCE.validateAPIRequest(getContext())) {
-                Settings settings = APIRequestManager.INSTANCE.getAPIRequestSettings(getContext());
-                openWebViewOrCustomTabs(settings, data, parameters, encodeStringToBase64);
-            } else {
-                APIMethod apiInterface = RetrofitInstance.INSTANCE.getInstance(getDomain(MOBILE, establishData)).create(APIMethod.class);
-                APIRequest apiRequest = new APIRequest(apiInterface, settings -> {
-                    APIRequestManager.INSTANCE.saveAPIRequestSettings(getContext(), settings);
+            if (data.get("env").equals(DYNAMIC)) {
+                if (APIRequestManager.INSTANCE.validateAPIRequest(getContext())) {
+                    Settings settings = APIRequestManager.INSTANCE.getAPIRequestSettings(getContext());
                     openWebViewOrCustomTabs(settings, data, parameters, encodeStringToBase64);
-                    return Unit.INSTANCE;
-                }, error -> {
-                    openWebViewOrCustomTabs(new Settings(new StrategySetting("webview")), data, parameters, encodeStringToBase64);
-                    return Unit.INSTANCE;
-                });
-                apiRequest.getSettingsData(encodeStringToBase64);
+                } else {
+                    APIMethod apiInterface = RetrofitInstance.INSTANCE.getInstance(getDomain(MOBILE, establishData)).create(APIMethod.class);
+                    APIRequest apiRequest = new APIRequest(apiInterface, settings -> {
+                        APIRequestManager.INSTANCE.saveAPIRequestSettings(getContext(), settings);
+                        openWebViewOrCustomTabs(settings, data, parameters, encodeStringToBase64);
+                        return Unit.INSTANCE;
+                    }, error -> {
+                        openWebViewOrCustomTabs(new Settings(new StrategySetting("webview")), data, parameters, encodeStringToBase64);
+                        return Unit.INSTANCE;
+                    });
+                    apiRequest.getSettingsData(encodeStringToBase64);
+                }
+            } else {
+                webView.postUrl(getEndpointUrl(INDEX, data), parameters);
             }
         } catch (Exception e) {
             Log.e("TrustlyView", e.getMessage());
@@ -590,7 +594,6 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 !"Verification".equals(establishData.get("paymentType")) &&
                 establishData.get("paymentProviderId") != null) {
             function = "selectBank";
-
         }
 
         return domain + "/start/selectBank/" + function + "?v=" + version + "-android-sdk";
