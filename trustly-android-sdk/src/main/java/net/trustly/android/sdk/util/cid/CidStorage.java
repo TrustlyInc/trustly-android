@@ -1,4 +1,4 @@
-package net.trustly.android.sdk.util;
+package net.trustly.android.sdk.util.cid;
 
 import android.content.Context;
 import android.content.SharedPreferences;
