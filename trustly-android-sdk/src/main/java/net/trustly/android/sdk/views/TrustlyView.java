@@ -340,14 +340,8 @@ public class TrustlyView extends LinearLayout implements Trustly {
             }
             data.put("metadata.sdkAndroidVersion", version);
             data.put("deviceType", deviceType);
-
-            if (data.get("env").equals(DYNAMIC)) {
-                data.put("returnUrl", establishData.get("metadata.urlScheme"));
-                data.put("cancelUrl", establishData.get("metadata.urlScheme"));
-            } else {
-                data.put("returnUrl", returnURL);
-                data.put("cancelUrl", cancelURL);
-            }
+            data.put("returnUrl", returnURL);
+            data.put("cancelUrl", cancelURL);
             data.put("grp", Integer.toString(grp));
 
             if (data.containsKey("paymentProviderId")) {
@@ -368,9 +362,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
             }
 
             byte[] parameters = UrlUtils.getParameterString(data).getBytes(StandardCharsets.UTF_8);
-
-            String jsonFromParameters = UrlUtils.getJsonFromParameters(data);
-            String encodeStringToBase64 = UrlUtils.encodeStringToBase64(jsonFromParameters).replace("\n", "");
+            String encodeStringToBase64 = getTokenByEncodedParameters(data);
 
             if (data.get("env").equals(DYNAMIC)) {
                 if (APIRequestManager.INSTANCE.validateAPIRequest(getContext())) {
@@ -405,8 +397,15 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 webView.postUrl(getEndpointUrl(INDEX, establishData), parameters);
             }
         } else {
-            CustomTabsManager.openCustomTabsIntent(getContext(), getEndpointUrl(MOBILE, establishData) + "?token=" + encodedParameters);
+            data.put("returnUrl", establishData.get("metadata.urlScheme"));
+            data.put("cancelUrl", establishData.get("metadata.urlScheme"));
+            CustomTabsManager.openCustomTabsIntent(getContext(), getEndpointUrl(MOBILE, establishData) + "?token=" + getTokenByEncodedParameters(data));
         }
+    }
+
+    private String getTokenByEncodedParameters(Map<String, String> data) {
+        String jsonFromParameters = UrlUtils.getJsonFromParameters(data);
+        return UrlUtils.encodeStringToBase64(jsonFromParameters).replace("\n", "");
     }
 
     /**
