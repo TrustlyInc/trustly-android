@@ -56,6 +56,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     private static final String INDEX = "index";
     private static final String LOCAL = "local";
     private static final String MOBILE = "mobile";
+    private static final String PAYMENT_PROVIDER_ID = "paymentProviderId";
 
     private static boolean isLocalEnvironment = false;
 
@@ -289,9 +290,9 @@ public class TrustlyView extends LinearLayout implements Trustly {
                             switch (params[0]) {
                                 case "PayWithMyBank.createTransaction":
                                     if (params.length > 1) {
-                                        data.put("paymentProviderId", params[1]);
+                                        data.put(PAYMENT_PROVIDER_ID, params[1]);
                                     } else {
-                                        data.put("paymentProviderId", "");
+                                        data.put(PAYMENT_PROVIDER_ID, "");
                                     }
 
                                     if (onWidgetBankSelected != null) {
@@ -344,7 +345,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
             data.put("cancelUrl", cancelURL);
             data.put("grp", Integer.toString(grp));
 
-            if (data.containsKey("paymentProviderId")) {
+            if (data.containsKey(PAYMENT_PROVIDER_ID)) {
                 data.put("widgetLoaded", "true");
             }
 
@@ -559,7 +560,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 String port = "";
                 String protocol = "http://";
 
-                if (function.equals("mobile")) {
+                if (MOBILE.equals(function)) {
                     port = ":10000";
                 } else {
                     port = ":8000";
@@ -591,7 +592,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
         if (INDEX.equals(function) &&
                 !"Verification".equals(establishData.get("paymentType")) &&
-                establishData.get("paymentProviderId") != null) {
+                establishData.get(PAYMENT_PROVIDER_ID) != null) {
             function = "selectBank";
         }
 
