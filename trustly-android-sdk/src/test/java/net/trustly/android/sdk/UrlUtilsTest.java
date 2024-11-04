@@ -66,4 +66,9 @@ public class UrlUtilsTest {
         assertEquals("key1=value1&key2=&key3=value3", parameter);
     }
 
+    @Test(expected = Exception.class)
+    public void shouldThrowExceptionWhenGetQueryParameterFromUrlReceiveNull() {
+        UrlUtils.getQueryParametersFromUrl(null);
+    }
+
 }
