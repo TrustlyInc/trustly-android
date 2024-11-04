@@ -555,7 +555,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 return "https://" + host + ".int.trustly.one";
             }
             case LOCAL: {
-                String host = (envHost != null && !envHost.equals("localhost")) ? envHost : "10.0.2.2";
+                String host = (envHost != null && !envHost.equals("localhost")) ? envHost : BuildConfig.LOCAL_IP;
                 String port = "";
                 String protocol = "http://";
 
