@@ -14,6 +14,11 @@ import java.util.Map;
 
 public class TrustlyJsInterface {
 
+    private static final String PAYWITHMYBANK_EVENT = "PayWithMyBank.event";
+    private static final String EVENT = "event";
+    private static final String NULL_VALUE = "null";
+    private static final String PARAMS_DIVIDER = "\\|";
+
     private final TrustlyView trustlyView;
 
     public TrustlyJsInterface(TrustlyView trustlyView) {
@@ -22,25 +27,20 @@ public class TrustlyJsInterface {
 
     @JavascriptInterface
     public void postMessage(String message) {
-        if (trustlyView == null) return;
+        if (trustlyView == null || message == null || message.trim().isEmpty()) return;
 
-        if (message == null || message.trim().isEmpty()) return;
-
-        String[] params = message.split("\\|");
+        String[] params = message.split(PARAMS_DIVIDER);
         if (params.length == 0) return;
 
         String command = params[0];
         if (command == null || command.trim().isEmpty()) return;
 
-        if (command.equalsIgnoreCase("PayWithMyBank.event")) {
+        if (command.equalsIgnoreCase(PAYWITHMYBANK_EVENT)) {
             HashMap<String, String> eventDetails = new HashMap<>();
-
             for (Map.Entry<Integer, String> entry : getEventNames().entrySet()) {
                 addToListenerDetails(params, entry.getKey(), entry.getValue(), eventDetails);
             }
-
-            String eventName = "event";
-            trustlyView.notifyListener(eventName, eventDetails);
+            trustlyView.notifyListener(EVENT, eventDetails);
         }
     }
 
@@ -48,28 +48,26 @@ public class TrustlyJsInterface {
     public void resize(final float width, final float height) {
         new Handler(Looper.getMainLooper()).post(() -> {
             DisplayMetrics displayMetrics = trustlyView.getContext().getResources().getDisplayMetrics();
-            float widthPixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, width, displayMetrics);
+            float widthPixels = applyDimension(width, displayMetrics);
             float heightPixels = 0.0F;
             if (height != heightPixels) {
-                heightPixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, height, displayMetrics);
+                heightPixels = applyDimension(height, displayMetrics);
             } else {
-                heightPixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, width * 1.75F, displayMetrics);
+                heightPixels = applyDimension(width * 1.75F, displayMetrics);
             }
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) widthPixels, (int) heightPixels);
             trustlyView.setLayoutParams(params);
         });
     }
 
+    private float applyDimension(float value, DisplayMetrics displayMetrics) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, displayMetrics);
+    }
+
     protected void addToListenerDetails(String[] params, int index, String eventName, HashMap<String, String> eventDetails) {
-        if (eventDetails == null || eventName == null || params == null || index >= params.length) {
-            return;
-        }
-
+        if (eventDetails == null || eventName == null || params == null || index >= params.length) return;
         String value = params[index];
-        if (value == null || value.trim().isEmpty() || value.trim().equalsIgnoreCase("null")) {
-            return;
-        }
-
+        if (value == null || value.trim().isEmpty() || value.trim().equalsIgnoreCase(NULL_VALUE)) return;
         eventDetails.put(eventName, params[index]);
     }
 
