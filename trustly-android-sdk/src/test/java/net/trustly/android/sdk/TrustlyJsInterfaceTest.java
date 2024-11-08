@@ -1,6 +1,7 @@
 package net.trustly.android.sdk;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -134,6 +135,55 @@ public class TrustlyJsInterfaceTest {
     public void shouldValidateTrustlyJsInterfacePostMessageWithoutTransferEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.event|event|http://www.url.com|123456|47d7-89d3-9628d4cfb65e|bank_selected|100021|");
         verify(trustlyView, times(1)).notifyListener("event", getAllOtherEventNames("transfer"));
+    }
+
+    @Test
+    public void shouldValidateTrustlyJsInterfaceAddToListenerDetailsWithAllNullValues() {
+        HashMap<String, String> eventDetails = new HashMap<>();
+        trustlyJsInterface.addToListenerDetails(null, -1, null, eventDetails);
+        assertTrue(eventDetails.isEmpty());
+    }
+
+    @Test
+    public void shouldValidateTrustlyJsInterfaceAddToListenerDetailsInvalidParamsValue() {
+        HashMap<String, String> eventDetails = new HashMap<>();
+        trustlyJsInterface.addToListenerDetails(null, 1, "event", eventDetails);
+        assertTrue(eventDetails.isEmpty());
+    }
+
+    @Test
+    public void shouldValidateTrustlyJsInterfaceAddToListenerDetailsInvalidIndexValue() {
+        HashMap<String, String> eventDetails = new HashMap<>();
+        trustlyJsInterface.addToListenerDetails(new String[] {}, 10, "event", eventDetails);
+        assertTrue(eventDetails.isEmpty());
+    }
+
+    @Test
+    public void shouldValidateTrustlyJsInterfaceAddToListenerDetailsInvalidEventNameValue() {
+        HashMap<String, String> eventDetails = new HashMap<>();
+        trustlyJsInterface.addToListenerDetails(new String[] {}, 10, null, eventDetails);
+        assertTrue(eventDetails.isEmpty());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldValidateTrustlyJsInterfaceAddToListenerDetailsInvalidEventDetailsValue() {
+        HashMap<String, String> eventDetails = null;
+        trustlyJsInterface.addToListenerDetails(new String[] {}, 10, null, eventDetails);
+        assertTrue(eventDetails.isEmpty());
+    }
+
+    @Test
+    public void shouldValidateTrustlyJsInterfaceAddToListenerDetailsInvalidParamsWithNullValue() {
+        HashMap<String, String> eventDetails = new HashMap<>();
+        trustlyJsInterface.addToListenerDetails(new String[] { null }, 0, "event", eventDetails);
+        assertTrue(eventDetails.isEmpty());
+    }
+
+    @Test
+    public void shouldValidateTrustlyJsInterfaceAddToListenerDetailsInvalidParamsWithNullStringValue() {
+        HashMap<String, String> eventDetails = new HashMap<>();
+        trustlyJsInterface.addToListenerDetails(new String[] { "null" }, 0, "event", eventDetails);
+        assertTrue(eventDetails.isEmpty());
     }
 
     private HashMap<String, String> getAllEventNames() {
