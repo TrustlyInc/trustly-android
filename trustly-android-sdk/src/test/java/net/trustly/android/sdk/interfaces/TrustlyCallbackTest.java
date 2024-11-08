@@ -14,10 +14,10 @@ import java.util.HashMap;
 public class TrustlyCallbackTest {
 
     @Mock
-    public TrustlyCallback<Trustly, HashMap<String, String>> trustlyCallback;
+    public TrustlyCallback<Trustly, HashMap<String, String>> mockTrustlyCallback;
 
     @Mock
-    public Trustly trustly;
+    public Trustly mockTrustly;
 
     @Before
     public void setUp() {
@@ -26,7 +26,7 @@ public class TrustlyCallbackTest {
 
     @After
     public void tearDown() {
-        clearInvocations(trustlyCallback, trustly);
+        clearInvocations(mockTrustlyCallback, mockTrustly);
     }
 
     @Test
@@ -34,14 +34,14 @@ public class TrustlyCallbackTest {
         HashMap<String, String> parameters = new HashMap<>();
         parameters.put("param1", "param1");
         parameters.put("param2", "param2");
-        new TrustlyCallbackImpl(trustlyCallback).handleParameters(trustly, parameters);
-        verify(trustlyCallback).handle(trustly, parameters);
+        new TrustlyCallbackImpl(mockTrustlyCallback).handleParameters(mockTrustly, parameters);
+        verify(mockTrustlyCallback).handle(mockTrustly, parameters);
     }
 
     @Test
     public void shouldValidateTrustlyCallbackWhenEventAndNullParametersArePassed() {
-        new TrustlyCallbackImpl(trustlyCallback).handleParameters(trustly, null);
-        verify(trustlyCallback).handle(trustly, null);
+        new TrustlyCallbackImpl(mockTrustlyCallback).handleParameters(mockTrustly, null);
+        verify(mockTrustlyCallback).handle(mockTrustly, null);
     }
 
     private static class TrustlyCallbackImpl {

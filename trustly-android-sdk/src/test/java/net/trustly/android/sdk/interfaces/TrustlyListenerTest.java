@@ -14,7 +14,7 @@ import java.util.HashMap;
 public class TrustlyListenerTest {
 
     @Mock
-    private TrustlyListener trustlyListener;
+    private TrustlyListener mockTrustlyListener;
 
     @Before
     public void setup() {
@@ -23,7 +23,7 @@ public class TrustlyListenerTest {
 
     @After
     public void tearDown() {
-        clearInvocations(trustlyListener);
+        clearInvocations(mockTrustlyListener);
     }
 
     @Test
@@ -31,14 +31,14 @@ public class TrustlyListenerTest {
         HashMap<String, String> eventNames = new HashMap<>();
         eventNames.put("event1", "event1");
         eventNames.put("event2", "event2");
-        new TrustlyListenerImpl(trustlyListener).sendEventChange("eventWithDetails", eventNames);
-        verify(trustlyListener).onChange("eventWithDetails", eventNames);
+        new TrustlyListenerImpl(mockTrustlyListener).sendEventChange("eventWithDetails", eventNames);
+        verify(mockTrustlyListener).onChange("eventWithDetails", eventNames);
     }
 
     @Test
     public void shouldValidateTrustlyListenerWhenEventAndNullDetailsArePassed() {
-        new TrustlyListenerImpl(trustlyListener).sendEventChange("eventWithoutDetails", null);
-        verify(trustlyListener).onChange("eventWithoutDetails", null);
+        new TrustlyListenerImpl(mockTrustlyListener).sendEventChange("eventWithoutDetails", null);
+        verify(mockTrustlyListener).onChange("eventWithoutDetails", null);
     }
 
     private static class TrustlyListenerImpl {

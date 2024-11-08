@@ -12,8 +12,6 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
-import net.trustly.android.sdk.views.TrustlyView;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,16 +24,16 @@ import java.util.Map;
 public class TrustlyTest {
 
     @Mock
-    private Trustly trustly;
+    private Trustly mockTrustly;
 
     @Mock
-    private TrustlyCallback<Trustly, Map<String, String>> callback;
+    private TrustlyCallback<Trustly, Map<String, String>> mockTrustlyCallback;
 
     @Mock
-    private TrustlyListener listener;
+    private TrustlyListener mockTrustlyListener;
 
     @Mock
-    private Context context;
+    private Context mockContext;
 
     private TrustlyImpl trustlyImpl;
 
@@ -43,12 +41,12 @@ public class TrustlyTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        trustlyImpl = new TrustlyImpl(trustly);
+        trustlyImpl = new TrustlyImpl(mockTrustly);
     }
 
     @After
     public void tearDown() {
-        clearInvocations(trustly, callback, listener, context);
+        clearInvocations(mockTrustly, mockTrustlyCallback, mockTrustlyListener, mockContext);
     }
 
     @Test
@@ -59,149 +57,149 @@ public class TrustlyTest {
 
     @Test
     public void shouldValidateTrustlySelectBankWidgetWhenIsCalled() {
-        when(trustly.selectBankWidget(anyMap())).thenReturn(trustly);
+        when(mockTrustly.selectBankWidget(anyMap())).thenReturn(mockTrustly);
         HashMap<String, String> establishData = getEstablishData();
         Trustly result = trustlyImpl.callSelectBankWidget(establishData);
-        verify(trustly, times(1)).selectBankWidget(establishData);
-        assertSame(trustly, result);
+        verify(mockTrustly, times(1)).selectBankWidget(establishData);
+        assertSame(mockTrustly, result);
     }
 
     @Test
     public void shouldValidateTrustlySelectBankNullValuesWidgetWhenIsCalled() {
         Trustly result = trustlyImpl.callSelectBankWidget(null);
-        verify(trustly, times(1)).selectBankWidget(null);
+        verify(mockTrustly, times(1)).selectBankWidget(null);
         assertSame(null, result);
     }
 
     @Test
     public void shouldValidateTrustlyOnBankSelectedWhenIsCalled() {
-        when(trustly.onBankSelected(any())).thenReturn(trustly);
-        Trustly result = trustlyImpl.callOnBankSelected(callback);
-        verify(trustly, times(1)).onBankSelected(callback);
-        assertSame(trustly, result);
+        when(mockTrustly.onBankSelected(any())).thenReturn(mockTrustly);
+        Trustly result = trustlyImpl.callOnBankSelected(mockTrustlyCallback);
+        verify(mockTrustly, times(1)).onBankSelected(mockTrustlyCallback);
+        assertSame(mockTrustly, result);
     }
 
     @Test
     public void shouldValidateTrustlyOnBankSelectedNullValuesWidgetWhenIsCalled() {
         Trustly result = trustlyImpl.callOnBankSelected(null);
-        verify(trustly, times(1)).onBankSelected(null);
+        verify(mockTrustly, times(1)).onBankSelected(null);
         assertSame(null, result);
     }
 
     @Test
     public void shouldValidateTrustlyEstablishWhenIsCalled() {
-        when(trustly.establish(anyMap())).thenReturn(trustly);
+        when(mockTrustly.establish(anyMap())).thenReturn(mockTrustly);
         HashMap<String, String> establishData = getEstablishData();
         Trustly result = trustlyImpl.callEstablish(establishData);
-        verify(trustly, times(1)).establish(establishData);
-        assertSame(trustly, result);
+        verify(mockTrustly, times(1)).establish(establishData);
+        assertSame(mockTrustly, result);
     }
 
     @Test
     public void shouldValidateTrustlyEstablishNullValuesWidgetWhenIsCalled() {
         Trustly result = trustlyImpl.callEstablish(null);
-        verify(trustly, times(1)).establish(null);
+        verify(mockTrustly, times(1)).establish(null);
         assertSame(null, result);
     }
 
     @Test
     public void shouldValidateTrustlyHybridWhenIsCalled() {
-        when(trustly.hybrid(any(), any(), any())).thenReturn(trustly);
+        when(mockTrustly.hybrid(any(), any(), any())).thenReturn(mockTrustly);
         Trustly result = trustlyImpl.callHybrid("http://www.url.com", "http://www.url.com/return",
                 "http://www.url.com/cancel");
-        verify(trustly, times(1)).hybrid("http://www.url.com",
+        verify(mockTrustly, times(1)).hybrid("http://www.url.com",
                 "http://www.url.com/return", "http://www.url.com/cancel");
-        assertSame(trustly, result);
+        assertSame(mockTrustly, result);
     }
 
     @Test
     public void shouldValidateTrustlyHybridNullValuesWidgetWhenIsCalled() {
         Trustly result = trustlyImpl.callHybrid(null, null, null);
-        verify(trustly, times(1)).hybrid(null, null, null);
+        verify(mockTrustly, times(1)).hybrid(null, null, null);
         assertSame(null, result);
     }
 
     @Test
     public void shouldValidateTrustlyOnReturnWhenIsCalled() {
-        when(trustly.onReturn(any())).thenReturn(trustly);
-        Trustly result = trustlyImpl.callOnReturn(callback);
-        verify(trustly, times(1)).onReturn(callback);
-        assertSame(trustly, result);
+        when(mockTrustly.onReturn(any())).thenReturn(mockTrustly);
+        Trustly result = trustlyImpl.callOnReturn(mockTrustlyCallback);
+        verify(mockTrustly, times(1)).onReturn(mockTrustlyCallback);
+        assertSame(mockTrustly, result);
     }
 
     @Test
     public void shouldValidateTrustlyOnReturnNullValuesWidgetWhenIsCalled() {
         Trustly result = trustlyImpl.callOnReturn(null);
-        verify(trustly, times(1)).onReturn(null);
+        verify(mockTrustly, times(1)).onReturn(null);
         assertSame(null, result);
     }
 
     @Test
     public void shouldValidateTrustlyOnCancelWhenIsCalled() {
-        when(trustly.onCancel(any())).thenReturn(trustly);
-        Trustly result = trustlyImpl.callOnCancel(callback);
-        verify(trustly, times(1)).onCancel(callback);
-        assertSame(trustly, result);
+        when(mockTrustly.onCancel(any())).thenReturn(mockTrustly);
+        Trustly result = trustlyImpl.callOnCancel(mockTrustlyCallback);
+        verify(mockTrustly, times(1)).onCancel(mockTrustlyCallback);
+        assertSame(mockTrustly, result);
     }
 
     @Test
     public void shouldValidateTrustlyOnCancelNullValuesWidgetWhenIsCalled() {
         Trustly result = trustlyImpl.callOnCancel(null);
-        verify(trustly, times(1)).onCancel(null);
+        verify(mockTrustly, times(1)).onCancel(null);
         assertSame(null, result);
     }
 
     @Test
     public void shouldValidateTrustlyOnExternalUrlWhenIsCalled() {
-        when(trustly.onExternalUrl(any())).thenReturn(trustly);
-        Trustly result = trustlyImpl.callOnExternalUrl(callback);
-        verify(trustly, times(1)).onExternalUrl(callback);
-        assertSame(trustly, result);
+        when(mockTrustly.onExternalUrl(any())).thenReturn(mockTrustly);
+        Trustly result = trustlyImpl.callOnExternalUrl(mockTrustlyCallback);
+        verify(mockTrustly, times(1)).onExternalUrl(mockTrustlyCallback);
+        assertSame(mockTrustly, result);
     }
 
     @Test
     public void shouldValidateTrustlyOnExternalUrlNullValuesWidgetWhenIsCalled() {
         Trustly result = trustlyImpl.callOnExternalUrl(null);
-        verify(trustly, times(1)).onExternalUrl(null);
+        verify(mockTrustly, times(1)).onExternalUrl(null);
         assertSame(null, result);
     }
 
     @Test
     public void shouldValidateTrustlySetListenerWhenIsCalled() {
-        when(trustly.setListener(any())).thenReturn(trustly);
-        Trustly result = trustlyImpl.callSetListener(listener);
-        verify(trustly, times(1)).setListener(listener);
-        assertSame(trustly, result);
+        when(mockTrustly.setListener(any())).thenReturn(mockTrustly);
+        Trustly result = trustlyImpl.callSetListener(mockTrustlyListener);
+        verify(mockTrustly, times(1)).setListener(mockTrustlyListener);
+        assertSame(mockTrustly, result);
     }
 
     @Test
     public void shouldValidateTrustlySetListenerNullValuesWidgetWhenIsCalled() {
         Trustly result = trustlyImpl.callSetListener(null);
-        verify(trustly, times(1)).setListener(null);
+        verify(mockTrustly, times(1)).setListener(null);
         assertSame(null, result);
     }
 
     @Test
     public void shouldValidateTrustlyDestroyWhenIsCalled() {
-        when(trustly.destroy()).thenReturn(trustly);
+        when(mockTrustly.destroy()).thenReturn(mockTrustly);
         Trustly result = trustlyImpl.callDestroy();
-        verify(trustly, times(1)).destroy();
-        assertSame(trustly, result);
+        verify(mockTrustly, times(1)).destroy();
+        assertSame(mockTrustly, result);
     }
 
     @Test
     public void shouldValidateTrustlyDestroyNullValueWhenIsCalled() {
-        when(trustly.destroy()).thenReturn(null);
+        when(mockTrustly.destroy()).thenReturn(null);
         Trustly result = trustlyImpl.callDestroy();
-        verify(trustly, times(1)).destroy();
+        verify(mockTrustly, times(1)).destroy();
         assertSame(null, result);
     }
 
     @Test
     public void shouldValidateTrustlyProceedToChooseAccountWhenIsCalled() {
-        doNothing().when(trustly).proceedToChooseAccount();
+        doNothing().when(mockTrustly).proceedToChooseAccount();
         trustlyImpl.callProceedToChooseAccount();
-        verify(trustly, times(1)).proceedToChooseAccount();
+        verify(mockTrustly, times(1)).proceedToChooseAccount();
     }
 
     private HashMap<String, String> getEstablishData() {
