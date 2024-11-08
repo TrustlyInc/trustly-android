@@ -56,9 +56,11 @@ public interface Trustly {
     /**
      * Opens a hybrid application page
      *
-     * @param url
-     * @param returnUrl
-     * @param cancelUrl
+     * @param url Url that open a hybrid application page
+     * @param returnUrl The gateway redirects the customer browser to this URL if the customer authorizes payment
+     *                  (must be a valid URL or function).
+     * @param cancelUrl The gateway redirects the customer browser to this URL if the customer cancels payment
+     *                  (must be a valid URL or function).
      * @return this
      */
     Trustly hybrid(String url, String returnUrl, String cancelUrl);
