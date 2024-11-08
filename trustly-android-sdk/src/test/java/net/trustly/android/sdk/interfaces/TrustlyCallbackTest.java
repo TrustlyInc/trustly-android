@@ -32,8 +32,8 @@ public class TrustlyCallbackTest {
     @Test
     public void shouldValidateTrustlyCallbackWhenEventAndParametersArePassed() {
         HashMap<String, String> parameters = new HashMap<>();
-        parameters.put("param1", "param1");
-        parameters.put("param2", "param2");
+        parameters.put("key1", "value1");
+        parameters.put("key2", "value2");
         new TrustlyCallbackImpl(mockTrustlyCallback).handleParameters(mockTrustly, parameters);
         verify(mockTrustlyCallback).handle(mockTrustly, parameters);
     }

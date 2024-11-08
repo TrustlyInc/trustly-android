@@ -29,8 +29,8 @@ public class TrustlyListenerTest {
     @Test
     public void shouldValidateTrustlyListenerWhenEventAndDetailsArePassed() {
         HashMap<String, String> eventNames = new HashMap<>();
-        eventNames.put("event1", "event1");
-        eventNames.put("event2", "event2");
+        eventNames.put("key1", "value1");
+        eventNames.put("key2", "value2");
         new TrustlyListenerImpl(mockTrustlyListener).sendEventChange("eventWithDetails", eventNames);
         verify(mockTrustlyListener).onChange("eventWithDetails", eventNames);
     }

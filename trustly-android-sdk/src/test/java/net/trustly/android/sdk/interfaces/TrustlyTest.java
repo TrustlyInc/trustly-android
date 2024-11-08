@@ -23,6 +23,10 @@ import java.util.Map;
 
 public class TrustlyTest {
 
+    private static final String URL = "http://www.url.com";
+    private static final String RETURN_URL = "http://www.url.com/return";
+    private static final String CANCEL_URL = "http://www.url.com/cancel";
+
     @Mock
     private Trustly mockTrustly;
 
@@ -105,10 +109,30 @@ public class TrustlyTest {
     @Test
     public void shouldValidateTrustlyHybridWhenIsCalled() {
         when(mockTrustly.hybrid(any(), any(), any())).thenReturn(mockTrustly);
-        Trustly result = trustlyImpl.callHybrid("http://www.url.com", "http://www.url.com/return",
-                "http://www.url.com/cancel");
+        Trustly result = trustlyImpl.callHybrid(URL, RETURN_URL,
+                CANCEL_URL);
         verify(mockTrustly, times(1)).hybrid("http://www.url.com",
                 "http://www.url.com/return", "http://www.url.com/cancel");
+        assertSame(mockTrustly, result);
+    }
+
+    @Test
+    public void shouldValidateTrustlyHybridWithoutReturnUrlWhenIsCalled() {
+        when(mockTrustly.hybrid(any(), any(), any())).thenReturn(mockTrustly);
+        Trustly result = trustlyImpl.callHybrid(URL, null,
+                CANCEL_URL);
+        verify(mockTrustly, times(1)).hybrid("http://www.url.com",
+                null, "http://www.url.com/cancel");
+        assertSame(mockTrustly, result);
+    }
+
+    @Test
+    public void shouldValidateTrustlyHybridWithoutCancelUrlWhenIsCalled() {
+        when(mockTrustly.hybrid(any(), any(), any())).thenReturn(mockTrustly);
+        Trustly result = trustlyImpl.callHybrid(URL, RETURN_URL,
+                null);
+        verify(mockTrustly, times(1)).hybrid("http://www.url.com",
+                "http://www.url.com/return", null);
         assertSame(mockTrustly, result);
     }
 
