@@ -2,6 +2,7 @@ package net.trustly.android.sdk.interfaces;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.clearInvocations;
@@ -51,6 +52,11 @@ public class TrustlyTest {
     @After
     public void tearDown() {
         clearInvocations(mockTrustly, mockTrustlyCallback, mockTrustlyListener, mockContext);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenTrustlyInstanceIsCalled() {
+        assertThrows(NullPointerException.class, () -> Trustly.Instance.create(mockContext));
     }
 
     @Test
