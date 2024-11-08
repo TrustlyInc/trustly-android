@@ -33,7 +33,7 @@ public class TrustlyJsInterface {
         if (params.length == 0) return;
 
         String command = params[0];
-        if (command == null || command.trim().isEmpty()) return;
+        if (command.trim().isEmpty()) return;
 
         if (command.equalsIgnoreCase(PAYWITHMYBANK_EVENT)) {
             HashMap<String, String> eventDetails = new HashMap<>();
