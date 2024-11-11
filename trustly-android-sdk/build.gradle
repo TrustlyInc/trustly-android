@@ -4,7 +4,7 @@ plugins {
     id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
 }
 
-def sdkVersion = "3.2.2"
+def sdkVersion = "3.2.3"
 
 android {
     publishing {
@@ -66,8 +66,6 @@ tasks.register('javadoc', Javadoc) {
 
     exclude '**/BuildConfig.java'
     exclude '**/R.java'
-    exclude '**/BrowserPopup.java'
-    exclude '**/UrlUtils.java'
 }
 
 apply from: 'publish-root.gradle'
