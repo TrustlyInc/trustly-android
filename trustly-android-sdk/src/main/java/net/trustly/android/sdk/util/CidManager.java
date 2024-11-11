@@ -17,7 +17,7 @@ public class CidManager {
     public static final String SESSION_CID_PARAM = "SESSION_CID";
     private static final String DIVIDER = "-";
 
-    private CidManager() {
+    protected CidManager() {
         throw new IllegalStateException("Utility class cannot be instantiated");
     }
 
@@ -30,8 +30,11 @@ public class CidManager {
         String sessionCid = CidStorage.readDataFrom(context, CidStorage.SESSION_CID);
         if (sessionCid == null) {
             sessionCid = cid;
-        } else if (!isValid(sessionCid.split(DIVIDER)[2])) {
-            sessionCid = generateNewSession(context);
+        } else {
+            String[] split = sessionCid.split(DIVIDER);
+            if (split.length > 2 && !isValid(split[2])) {
+                sessionCid = generateNewSession(context);
+            }
         }
 
         CidStorage.saveData(context, CidStorage.SESSION_CID, sessionCid);
