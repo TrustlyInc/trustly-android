@@ -34,7 +34,8 @@ public class UrlUtilsTest {
     private static final String KEY_2 = "key2";
     private static final String VALUE_3 = "value3";
     private static final String KEY_3 = "key3";
-    private static final String URL_SEARCH = "http://www.url.com/search?q=value";
+    private static final String URL_SEARCH = "http://www.url.com/search";
+    private static final String URL_SEARCH_WITH_QUERY = "http://www.url.com/search?q=value";
 
     @Mock
     private Uri mockUri;
@@ -151,46 +152,46 @@ public class UrlUtilsTest {
     public void shouldInvalidateReturnedValueWhenGetQueryParameterFromUrl() {
         when(mockUri.getEncodedQuery()).thenReturn("q=value");
 
-        Map<String, String> parameters = UrlUtils.getQueryParametersFromUrl(URL_SEARCH);
-        assertNotEquals("http://www.url.com/search", parameters.get("url"));
+        Map<String, String> parameters = UrlUtils.getQueryParametersFromUrl(URL_SEARCH_WITH_QUERY);
+        assertNotEquals(URL_SEARCH, parameters.get("url"));
     }
 
     @Test
     public void shouldInvalidateReturnedValueWhenGetQueryParameterWithAmpersandFromUrl() {
         when(mockUri.getEncodedQuery()).thenReturn("q=value&");
 
-        Map<String, String> parameters = UrlUtils.getQueryParametersFromUrl(URL_SEARCH);
-        assertNotEquals("http://www.url.com/search", parameters.get("url"));
+        Map<String, String> parameters = UrlUtils.getQueryParametersFromUrl(URL_SEARCH_WITH_QUERY);
+        assertNotEquals(URL_SEARCH, parameters.get("url"));
     }
 
     @Test
     public void shouldInvalidateReturnedValueWhenGetQueryParameterWithNoValueFromUrl() {
         when(mockUri.getEncodedQuery()).thenReturn("q=");
 
-        Map<String, String> parameters = UrlUtils.getQueryParametersFromUrl(URL_SEARCH);
-        assertNotEquals("http://www.url.com/search", parameters.get("url"));
+        Map<String, String> parameters = UrlUtils.getQueryParametersFromUrl(URL_SEARCH_WITH_QUERY);
+        assertNotEquals(URL_SEARCH, parameters.get("url"));
     }
 
     @Test
     public void shouldInvalidateReturnedValueWhenGetQueryParameterWithJustQueryNameFromUrl() {
         when(mockUri.getEncodedQuery()).thenReturn("q");
 
-        Map<String, String> parameters = UrlUtils.getQueryParametersFromUrl(URL_SEARCH);
-        assertNotEquals("http://www.url.com/search", parameters.get("url"));
+        Map<String, String> parameters = UrlUtils.getQueryParametersFromUrl(URL_SEARCH_WITH_QUERY);
+        assertNotEquals(URL_SEARCH, parameters.get("url"));
     }
 
     @Test
     public void shouldInvalidateReturnedValueWhenGetQueryParameterWithNoValueAndTwoSeparatorFromUrl() {
         when(mockUri.getEncodedQuery()).thenReturn("q&a=");
 
-        Map<String, String> parameters = UrlUtils.getQueryParametersFromUrl(URL_SEARCH);
-        assertNotEquals("http://www.url.com/search", parameters.get("url"));
+        Map<String, String> parameters = UrlUtils.getQueryParametersFromUrl(URL_SEARCH_WITH_QUERY);
+        assertNotEquals(URL_SEARCH, parameters.get("url"));
     }
 
     @Test
     public void shouldValidateReturnedValueWhenGetQueryParameterFromUrl() {
-        Map<String, String> parameters = UrlUtils.getQueryParametersFromUrl(URL_SEARCH);
-        assertEquals("http://www.url.com/search?q=value", parameters.get("url"));
+        Map<String, String> parameters = UrlUtils.getQueryParametersFromUrl(URL_SEARCH_WITH_QUERY);
+        assertEquals(URL_SEARCH_WITH_QUERY, parameters.get("url"));
     }
 
     @Test

@@ -59,7 +59,7 @@ public class CidStorageTest {
 
         CidStorage.saveData(mockContext, SESSION_CID, SESSION_CID_VALUE);
 
-        verify(mockSharedPreferencesEditor, times(1)).putString("SESSION_CID", "1724258668");
+        verify(mockSharedPreferencesEditor, times(1)).putString(SESSION_CID, SESSION_CID_VALUE);
         verify(mockSharedPreferencesEditor, times(1)).apply();
         verify(mockSharedPreferences, times(1)).edit();
     }
@@ -70,9 +70,9 @@ public class CidStorageTest {
 
         String result = CidStorage.readDataFrom(mockContext, SESSION_CID);
 
-        verify(mockSharedPreferences, times(1)).getString("SESSION_CID", null);
+        verify(mockSharedPreferences, times(1)).getString(SESSION_CID, null);
         verify(mockSharedPreferences, times(0)).edit();
-        assertEquals("1724258668", result);
+        assertEquals(SESSION_CID_VALUE, result);
     }
 
     @Test
@@ -81,7 +81,7 @@ public class CidStorageTest {
 
         String result = CidStorage.readDataFrom(mockContext, SESSION_CID);
 
-        verify(mockSharedPreferences, times(1)).getString("SESSION_CID", null);
+        verify(mockSharedPreferences, times(1)).getString(SESSION_CID, null);
         verify(mockSharedPreferences, times(0)).edit();
         assertNull(result);
     }

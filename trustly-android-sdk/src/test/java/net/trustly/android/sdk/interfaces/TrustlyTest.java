@@ -1,6 +1,5 @@
 package net.trustly.android.sdk.interfaces;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -60,12 +59,6 @@ public class TrustlyTest {
     }
 
     @Test
-    public void shouldValidateTrustlyInstance() {
-        Trustly.Instance instance = new Trustly.Instance();
-        assertNotNull(instance);
-    }
-
-    @Test
     public void shouldValidateTrustlySelectBankWidgetWhenIsCalled() {
         when(mockTrustly.selectBankWidget(anyMap())).thenReturn(mockTrustly);
         HashMap<String, String> establishData = getEstablishData();
@@ -117,8 +110,7 @@ public class TrustlyTest {
         when(mockTrustly.hybrid(any(), any(), any())).thenReturn(mockTrustly);
         Trustly result = trustlyImpl.callHybrid(URL, RETURN_URL,
                 CANCEL_URL);
-        verify(mockTrustly, times(1)).hybrid("http://www.url.com",
-                "http://www.url.com/return", "http://www.url.com/cancel");
+        verify(mockTrustly, times(1)).hybrid(URL, RETURN_URL, CANCEL_URL);
         assertSame(mockTrustly, result);
     }
 
@@ -127,8 +119,7 @@ public class TrustlyTest {
         when(mockTrustly.hybrid(any(), any(), any())).thenReturn(mockTrustly);
         Trustly result = trustlyImpl.callHybrid(URL, null,
                 CANCEL_URL);
-        verify(mockTrustly, times(1)).hybrid("http://www.url.com",
-                null, "http://www.url.com/cancel");
+        verify(mockTrustly, times(1)).hybrid(URL, null, CANCEL_URL);
         assertSame(mockTrustly, result);
     }
 
@@ -137,8 +128,7 @@ public class TrustlyTest {
         when(mockTrustly.hybrid(any(), any(), any())).thenReturn(mockTrustly);
         Trustly result = trustlyImpl.callHybrid(URL, RETURN_URL,
                 null);
-        verify(mockTrustly, times(1)).hybrid("http://www.url.com",
-                "http://www.url.com/return", null);
+        verify(mockTrustly, times(1)).hybrid(URL, RETURN_URL, null);
         assertSame(mockTrustly, result);
     }
 

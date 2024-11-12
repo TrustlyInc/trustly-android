@@ -19,6 +19,8 @@ import java.util.HashMap;
 
 public class TrustlyJsInterfaceTest {
 
+    private static final String EVENT_NAME = "event";
+
     @Mock
     private TrustlyView mockTrustlyView;
 
@@ -45,97 +47,97 @@ public class TrustlyJsInterfaceTest {
     public void shouldValidateTrustlyJsInterfacePostMessageWithoutTrustlyViewInstance() {
         trustlyJsInterface = new TrustlyJsInterface(null);
         trustlyJsInterface.postMessage("PayWithMyBank.event|event");
-        verify(mockTrustlyView, times(0)).notifyListener("event", new HashMap<>());
+        verify(mockTrustlyView, times(0)).notifyListener(EVENT_NAME, new HashMap<>());
     }
 
     @Test
     public void shouldValidateTrustlyJsInterfacePostMessageWithoutMessage() {
         trustlyJsInterface.postMessage(null);
-        verify(mockTrustlyView, times(0)).notifyListener("event", new HashMap<>());
+        verify(mockTrustlyView, times(0)).notifyListener(EVENT_NAME, new HashMap<>());
     }
 
     @Test
     public void shouldValidateTrustlyJsInterfacePostMessageNullCommand() {
         trustlyJsInterface.postMessage("|event");
-        verify(mockTrustlyView, times(0)).notifyListener("event", new HashMap<>());
+        verify(mockTrustlyView, times(0)).notifyListener(EVENT_NAME, new HashMap<>());
     }
 
     @Test
     public void shouldValidateTrustlyJsInterfacePostMessageNullCommandAndNullEvent() {
         trustlyJsInterface.postMessage("|");
-        verify(mockTrustlyView, times(0)).notifyListener("event", new HashMap<>());
+        verify(mockTrustlyView, times(0)).notifyListener(EVENT_NAME, new HashMap<>());
     }
 
     @Test
     public void shouldValidateTrustlyJsInterfacePostMessageWithEmptyMessage() {
         trustlyJsInterface.postMessage("");
-        verify(mockTrustlyView, times(0)).notifyListener("event", new HashMap<>());
+        verify(mockTrustlyView, times(0)).notifyListener(EVENT_NAME, new HashMap<>());
     }
 
     @Test
     public void shouldValidateTrustlyJsInterfacePostMessageWithNoValidEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.eventNotValid|event");
-        verify(mockTrustlyView, times(0)).notifyListener("event", new HashMap<>());
+        verify(mockTrustlyView, times(0)).notifyListener(EVENT_NAME, new HashMap<>());
     }
 
     @Test
     public void shouldValidateTrustlyJsInterfacePostMessageWithValidEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.event|event");
-        verify(mockTrustlyView, times(1)).notifyListener("event", new HashMap<>());
+        verify(mockTrustlyView, times(1)).notifyListener(EVENT_NAME, new HashMap<>());
     }
 
     @Test
     public void shouldValidateTrustlyJsInterfacePostMessageWithNullEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.event|null");
-        verify(mockTrustlyView, times(1)).notifyListener("event", new HashMap<>());
+        verify(mockTrustlyView, times(1)).notifyListener(EVENT_NAME, new HashMap<>());
     }
 
     @Test
     public void shouldValidateTrustlyJsInterfacePostMessageWithNoPassedEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.event|");
-        verify(mockTrustlyView).notifyListener("event", new HashMap<>());
+        verify(mockTrustlyView).notifyListener(EVENT_NAME, new HashMap<>());
     }
 
     @Test
     public void shouldValidateTrustlyJsInterfacePostMessageWithAllValidEvents() {
         trustlyJsInterface.postMessage("PayWithMyBank.event|event|http://www.url.com|123456|47d7-89d3-9628d4cfb65e|bank_selected|100021|123");
-        verify(mockTrustlyView, times(1)).notifyListener("event", getAllEventNames());
+        verify(mockTrustlyView, times(1)).notifyListener(EVENT_NAME, getAllEventNames());
     }
 
     @Test
     public void shouldValidateTrustlyJsInterfacePostMessageWithoutPageEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.event|event||123456|47d7-89d3-9628d4cfb65e|bank_selected|100021|123");
-        verify(mockTrustlyView, times(1)).notifyListener("event", getAllOtherEventNames("page"));
+        verify(mockTrustlyView, times(1)).notifyListener(EVENT_NAME, getAllOtherEventNames("page"));
     }
 
     @Test
     public void shouldValidateTrustlyJsInterfacePostMessageWithoutTransactionIdEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.event|event|http://www.url.com||47d7-89d3-9628d4cfb65e|bank_selected|100021|123");
-        verify(mockTrustlyView, times(1)).notifyListener("event", getAllOtherEventNames("transactionId"));
+        verify(mockTrustlyView, times(1)).notifyListener(EVENT_NAME, getAllOtherEventNames("transactionId"));
     }
 
     @Test
     public void shouldValidateTrustlyJsInterfacePostMessageWithoutMerchantReferenceEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.event|event|http://www.url.com|123456||bank_selected|100021|123");
-        verify(mockTrustlyView, times(1)).notifyListener("event", getAllOtherEventNames("merchantReference"));
+        verify(mockTrustlyView, times(1)).notifyListener(EVENT_NAME, getAllOtherEventNames("merchantReference"));
     }
 
     @Test
     public void shouldValidateTrustlyJsInterfacePostMessageWithoutTypeEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.event|event|http://www.url.com|123456|47d7-89d3-9628d4cfb65e||100021|123");
-        verify(mockTrustlyView, times(1)).notifyListener("event", getAllOtherEventNames("type"));
+        verify(mockTrustlyView, times(1)).notifyListener(EVENT_NAME, getAllOtherEventNames("type"));
     }
 
     @Test
     public void shouldValidateTrustlyJsInterfacePostMessageWithoutDataEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.event|event|http://www.url.com|123456|47d7-89d3-9628d4cfb65e|bank_selected||123");
-        verify(mockTrustlyView, times(1)).notifyListener("event", getAllOtherEventNames("data"));
+        verify(mockTrustlyView, times(1)).notifyListener(EVENT_NAME, getAllOtherEventNames("data"));
     }
 
     @Test
     public void shouldValidateTrustlyJsInterfacePostMessageWithoutTransferEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.event|event|http://www.url.com|123456|47d7-89d3-9628d4cfb65e|bank_selected|100021|");
-        verify(mockTrustlyView, times(1)).notifyListener("event", getAllOtherEventNames("transfer"));
+        verify(mockTrustlyView, times(1)).notifyListener(EVENT_NAME, getAllOtherEventNames("transfer"));
     }
 
     @Test
@@ -148,14 +150,14 @@ public class TrustlyJsInterfaceTest {
     @Test
     public void shouldValidateTrustlyJsInterfaceAddToListenerDetailsInvalidParamsValue() {
         HashMap<String, String> eventDetails = new HashMap<>();
-        trustlyJsInterface.addToListenerDetails(null, 1, "event", eventDetails);
+        trustlyJsInterface.addToListenerDetails(null, 1, EVENT_NAME, eventDetails);
         assertTrue(eventDetails.isEmpty());
     }
 
     @Test
     public void shouldValidateTrustlyJsInterfaceAddToListenerDetailsInvalidIndexValue() {
         HashMap<String, String> eventDetails = new HashMap<>();
-        trustlyJsInterface.addToListenerDetails(new String[] {}, 10, "event", eventDetails);
+        trustlyJsInterface.addToListenerDetails(new String[] {}, 10, EVENT_NAME, eventDetails);
         assertTrue(eventDetails.isEmpty());
     }
 
@@ -176,14 +178,14 @@ public class TrustlyJsInterfaceTest {
     @Test
     public void shouldValidateTrustlyJsInterfaceAddToListenerDetailsInvalidParamsWithNullValue() {
         HashMap<String, String> eventDetails = new HashMap<>();
-        trustlyJsInterface.addToListenerDetails(new String[] { null }, 0, "event", eventDetails);
+        trustlyJsInterface.addToListenerDetails(new String[] { null }, 0, EVENT_NAME, eventDetails);
         assertTrue(eventDetails.isEmpty());
     }
 
     @Test
     public void shouldValidateTrustlyJsInterfaceAddToListenerDetailsInvalidParamsWithNullStringValue() {
         HashMap<String, String> eventDetails = new HashMap<>();
-        trustlyJsInterface.addToListenerDetails(new String[] { "null" }, 0, "event", eventDetails);
+        trustlyJsInterface.addToListenerDetails(new String[] { "null" }, 0, EVENT_NAME, eventDetails);
         assertTrue(eventDetails.isEmpty());
     }
 
