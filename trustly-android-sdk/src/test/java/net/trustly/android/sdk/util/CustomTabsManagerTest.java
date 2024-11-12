@@ -47,6 +47,7 @@ public class CustomTabsManagerTest {
     @Test
     public void shouldValidateCustomTabsManagerOpenCustomTabsIntentMethod() {
         CustomTabsManager.openCustomTabsIntent(mockContext, URL);
+        assertEquals(4, CustomTabsManager.class.getDeclaredMethods().length);
     }
 
 }
