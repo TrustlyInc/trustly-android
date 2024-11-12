@@ -1,5 +1,7 @@
 package net.trustly.android.sdk.interfaces;
 
+import android.content.Context;
+
 import net.trustly.android.sdk.views.TrustlyView;
 
 import java.util.Map;
@@ -10,6 +12,22 @@ import java.util.Map;
  * @see TrustlyView
  */
 public interface Trustly {
+
+    /**
+     * @deprecated Use an instance of {@link TrustlyView} instead
+     */
+    @Deprecated(since = "3.2.3")
+    class Instance {
+        /**
+         * Creates a TrustlyView instance that implements Trustly interface
+         *
+         * @param context Interface to global information about an application environment.
+         * @return The TrustlyView created instance
+         */
+        public static TrustlyView create(Context context) {
+            return new TrustlyView(context);
+        }
+    }
 
     /**
      * Shows the select bank widget on the TrustlyView
