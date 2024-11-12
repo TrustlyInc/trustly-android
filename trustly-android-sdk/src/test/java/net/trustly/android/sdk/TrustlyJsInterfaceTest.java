@@ -1,6 +1,7 @@
 package net.trustly.android.sdk;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.times;
@@ -165,11 +166,11 @@ public class TrustlyJsInterfaceTest {
         assertTrue(eventDetails.isEmpty());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldValidateTrustlyJsInterfaceAddToListenerDetailsInvalidEventDetailsValue() {
         HashMap<String, String> eventDetails = null;
         trustlyJsInterface.addToListenerDetails(new String[] {}, 10, null, eventDetails);
-        assertTrue(eventDetails.isEmpty());
+        assertNull(eventDetails);
     }
 
     @Test
