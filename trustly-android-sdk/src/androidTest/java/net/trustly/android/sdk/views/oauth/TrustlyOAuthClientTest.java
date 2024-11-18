@@ -11,7 +11,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
 import net.trustly.android.sdk.views.TrustlyView;
-import net.trustly.android.sdk.views.TrustlyViewTest;
+import net.trustly.android.sdk.views.TrustlyActivityTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +21,7 @@ import java.util.Map;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class TrustlyOAuthClientTest extends TrustlyViewTest {
+public class TrustlyOAuthClientTest extends TrustlyActivityTest {
 
     @Test
     public void shouldValidateTrustlyOAuthClientInstance() {

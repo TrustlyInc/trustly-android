@@ -9,7 +9,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 
-public abstract class TrustlyViewTest {
+public abstract class TrustlyActivityTest {
 
     @Rule
     public ActivityScenarioRule<MockActivity> activityRule = new ActivityScenarioRule<>(MockActivity.class);
