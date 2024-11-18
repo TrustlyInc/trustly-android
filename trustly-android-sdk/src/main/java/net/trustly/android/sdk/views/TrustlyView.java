@@ -26,6 +26,7 @@ import net.trustly.android.sdk.interfaces.TrustlyListener;
 import net.trustly.android.sdk.util.CidManager;
 import net.trustly.android.sdk.util.CustomTabsManager;
 import net.trustly.android.sdk.util.UrlUtils;
+import net.trustly.android.sdk.views.oauth.TrustlyOAuthView;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -182,7 +183,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                     final TrustlyOAuthView trustlyOAuthView = new TrustlyOAuthView(view.getContext());
                     self.addView(trustlyOAuthView);
                     WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
-                    transport.setWebView(trustlyOAuthView.webView);
+                    transport.setWebView(trustlyOAuthView.getWebView());
                     resultMsg.sendToTarget();
                     return true;
                 } else {
@@ -343,7 +344,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
             if ("local".equals(data.get("env"))) {
                 webView.setWebContentsDebuggingEnabled(true);
-                isLocalEnvironment = true;
+                setIsLocalEnvironment(true);
             }
 
             webView.postUrl(url, UrlUtils.getParameterString(data).getBytes("UTF-8"));
@@ -568,7 +569,11 @@ public class TrustlyView extends LinearLayout implements Trustly {
         notifyListener("event", eventDetails);
     }
 
-    protected static boolean isLocalEnvironment() {
+    public static boolean isLocalEnvironment() {
         return isLocalEnvironment;
+    }
+
+    public static void setIsLocalEnvironment(boolean isLocal) {
+        isLocalEnvironment = isLocal;
     }
 }
