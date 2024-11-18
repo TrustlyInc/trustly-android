@@ -7,17 +7,12 @@ import android.net.Uri;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 
-import androidx.test.core.app.ActivityScenario;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
-import net.trustly.android.sdk.mock.MockActivity;
 import net.trustly.android.sdk.views.TrustlyView;
+import net.trustly.android.sdk.views.TrustlyViewTest;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -26,22 +21,7 @@ import java.util.Map;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class TrustlyOAuthClientTest {
-
-    @Rule
-    public ActivityScenarioRule<MockActivity> activityRule = new ActivityScenarioRule<>(MockActivity.class);
-
-    private ActivityScenario<MockActivity> scenario;
-
-    @Before
-    public void setUp() {
-        scenario = activityRule.getScenario();
-    }
-
-    @After
-    public void tearDown() {
-        scenario.close();
-    }
+public class TrustlyOAuthClientTest extends TrustlyViewTest {
 
     @Test
     public void shouldValidateTrustlyOAuthClientInstance() {
