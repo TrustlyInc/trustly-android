@@ -28,8 +28,6 @@ import java.util.Map;
 @LargeTest
 public class TrustlyOAuthClientTest {
 
-    private TrustlyOAuthClient trustlyOAuthClient;
-
     @Rule
     public ActivityScenarioRule<MockActivity> activityRule = new ActivityScenarioRule<>(MockActivity.class);
 
@@ -38,8 +36,6 @@ public class TrustlyOAuthClientTest {
     @Before
     public void setUp() {
         scenario = activityRule.getScenario();
-
-        trustlyOAuthClient = new TrustlyOAuthClient();
     }
 
     @After
@@ -49,19 +45,22 @@ public class TrustlyOAuthClientTest {
 
     @Test
     public void shouldValidateTrustlyOAuthClientInstance() {
-        scenario.onActivity(activity -> assertNotNull(trustlyOAuthClient));
+        scenario.onActivity(activity -> {
+            TrustlyOAuthClient trustlyOAuthClient = new TrustlyOAuthClient();
+            assertNotNull(trustlyOAuthClient);
+        });
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldValidateTrustlyOAuthClientShouldOverrideUrlLoadingWithNullUrl() {
-        scenario.onActivity(activity -> trustlyOAuthClient.shouldOverrideUrlLoading(new WebView(activity), (String) null));
+        scenario.onActivity(activity -> new TrustlyOAuthClient().shouldOverrideUrlLoading(new WebView(activity), (String) null));
     }
 
     @Test
     public void shouldValidateTrustlyOAuthClientShouldOverrideUrlLoadingWithUrl() {
         scenario.onActivity(activity -> {
             TrustlyView.setIsLocalEnvironment(false);
-            boolean result = trustlyOAuthClient.shouldOverrideUrlLoading(new WebView(activity), "www.url.com");
+            boolean result = new TrustlyOAuthClient().shouldOverrideUrlLoading(new WebView(activity), "www.url.com");
             assertTrue(result);
         });
     }
@@ -70,7 +69,7 @@ public class TrustlyOAuthClientTest {
     public void shouldValidateTrustlyOAuthClientShouldOverrideUrlLoadingWithPayWithMyBankUrl() {
         scenario.onActivity(activity -> {
             TrustlyView.setIsLocalEnvironment(false);
-            boolean result = trustlyOAuthClient.shouldOverrideUrlLoading(new WebView(activity), getWebResourceRequest("www.paywithmybank.com"));
+            boolean result = new TrustlyOAuthClient().shouldOverrideUrlLoading(new WebView(activity), getWebResourceRequest("www.paywithmybank.com"));
             assertTrue(result);
         });
     }
@@ -79,7 +78,7 @@ public class TrustlyOAuthClientTest {
     public void shouldValidateTrustlyOAuthClientShouldOverrideUrlLoadingWithBothPayWithMyBankUrlAndOAuthLoginPath() {
         scenario.onActivity(activity -> {
             TrustlyView.setIsLocalEnvironment(false);
-            boolean result = trustlyOAuthClient.shouldOverrideUrlLoading(new WebView(activity), getWebResourceRequest("www.paywithmybank.com/oauth/login/1223456"));
+            boolean result = new TrustlyOAuthClient().shouldOverrideUrlLoading(new WebView(activity), getWebResourceRequest("www.paywithmybank.com/oauth/login/1223456"));
             assertTrue(result);
         });
     }
@@ -88,7 +87,7 @@ public class TrustlyOAuthClientTest {
     public void shouldValidateTrustlyOAuthClientShouldOverrideUrlLoadingWithTrustlyOneUrl() {
         scenario.onActivity(activity -> {
             TrustlyView.setIsLocalEnvironment(false);
-            boolean result = trustlyOAuthClient.shouldOverrideUrlLoading(new WebView(activity), getWebResourceRequest("www.trustly.one"));
+            boolean result = new TrustlyOAuthClient().shouldOverrideUrlLoading(new WebView(activity), getWebResourceRequest("www.trustly.one"));
             assertTrue(result);
         });
     }
@@ -97,7 +96,7 @@ public class TrustlyOAuthClientTest {
     public void shouldValidateTrustlyOAuthClientShouldOverrideUrlLoadingWithBothTrustlyOneUrlAndOAuthLoginPath() {
         scenario.onActivity(activity -> {
             TrustlyView.setIsLocalEnvironment(false);
-            boolean result = trustlyOAuthClient.shouldOverrideUrlLoading(new WebView(activity), getWebResourceRequest("www.trustly.one/oauth/login/1223456"));
+            boolean result = new TrustlyOAuthClient().shouldOverrideUrlLoading(new WebView(activity), getWebResourceRequest("www.trustly.one/oauth/login/1223456"));
             assertTrue(result);
         });
     }
@@ -106,7 +105,7 @@ public class TrustlyOAuthClientTest {
     public void shouldValidateTrustlyOAuthClientShouldOverrideUrlLoadingWithOAuthLoginPath() {
         scenario.onActivity(activity -> {
             TrustlyView.setIsLocalEnvironment(false);
-            boolean result = trustlyOAuthClient.shouldOverrideUrlLoading(new WebView(activity), getWebResourceRequest("www.url.com/oauth/login/1223456"));
+            boolean result = new TrustlyOAuthClient().shouldOverrideUrlLoading(new WebView(activity), getWebResourceRequest("www.url.com/oauth/login/1223456"));
             assertTrue(result);
         });
     }
@@ -115,7 +114,7 @@ public class TrustlyOAuthClientTest {
     public void shouldValidateTrustlyOAuthClientShouldOverrideUrlLoadingWithIsLocalEnvironment() {
         scenario.onActivity(activity -> {
             TrustlyView.setIsLocalEnvironment(true);
-            boolean result = trustlyOAuthClient.shouldOverrideUrlLoading(new WebView(activity), getWebResourceRequest("www.url.com"));
+            boolean result = new TrustlyOAuthClient().shouldOverrideUrlLoading(new WebView(activity), getWebResourceRequest("www.url.com"));
             assertTrue(result);
         });
     }
