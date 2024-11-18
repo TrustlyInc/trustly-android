@@ -10,6 +10,9 @@ import androidx.annotation.RequiresApi;
 import net.trustly.android.sdk.util.CustomTabsManager;
 import net.trustly.android.sdk.views.TrustlyView;
 
+/**
+ * Client for Trustly OAuth login
+ */
 public class TrustlyOAuthClient extends WebViewClient {
 
     /**
