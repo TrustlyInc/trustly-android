@@ -13,7 +13,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
 import net.trustly.android.sdk.interfaces.Trustly;
-import net.trustly.android.sdk.test.BuildConfig;
 
 import org.junit.After;
 import org.junit.Before;
@@ -26,7 +25,7 @@ import java.util.HashMap;
 @LargeTest
 public class TrustlyViewTest extends TrustlyActivityTest {
 
-    private static final String SDK_VERSION = BuildConfig.SDK_VERSION;
+    private static final String SDK_VERSION = TrustlyView.version;
     private static final String SHARED_PREFERENCES_FILE_NAME = "PayWithMyBank";
     private static final String GRP_KEY = "grp";
     private static final String ENV = "env";
@@ -329,81 +328,59 @@ public class TrustlyViewTest extends TrustlyActivityTest {
     @Test
     public void shouldValidateTrustlyViewEstablishMethodNullValue() {
         scenario.onActivity(activity -> {
-            trustlyView = new TrustlyView(activity.getApplicationContext());
-            Trustly result = trustlyView.establish(null);
-            assertTrue(result instanceof TrustlyView);
-            assertEquals(result, trustlyView);
+            callTrustlyViewEstablishMethod(activity, null);
         });
     }
 
     @Test
     public void shouldValidateTrustlyViewEstablishMethod() {
         scenario.onActivity(activity -> {
-            trustlyView = new TrustlyView(activity.getApplicationContext());
-            Trustly result = trustlyView.establish(getEstablishData());
-            assertTrue(result instanceof TrustlyView);
-            assertEquals(result, trustlyView);
+            callTrustlyViewEstablishMethod(activity, getEstablishData());
         });
     }
 
     @Test
     public void shouldValidateTrustlyViewEstablishMethodWithCompleteParameters() {
         scenario.onActivity(activity -> {
-            trustlyView = new TrustlyView(activity.getApplicationContext());
             HashMap<String, String> establishData = getEstablishData();
             establishData.put(DEVICE_TYPE, ANDROID);
             establishData.put(ENV, ENV_LOCAL);
             establishData.put(METADATA_LANG, PT_BR);
             establishData.put(METADATA_INTEGRATION_CONTEXT, "InAppBrowser");
             establishData.put("paymentProviderId", "10009899");
-            Trustly result = trustlyView.establish(establishData);
-            assertTrue(result instanceof TrustlyView);
-            assertEquals(result, trustlyView);
+
+            callTrustlyViewEstablishMethod(activity, establishData);
         });
     }
 
     @Test
     public void shouldValidateTrustlyViewEstablishMethodWithIntegrationContextEmpty() {
         scenario.onActivity(activity -> {
-            trustlyView = new TrustlyView(activity.getApplicationContext());
             HashMap<String, String> establishData = getEstablishData();
             establishData.put(METADATA_INTEGRATION_CONTEXT, "");
-            Trustly result = trustlyView.establish(establishData);
-            assertTrue(result instanceof TrustlyView);
-            assertEquals(result, trustlyView);
+
+            callTrustlyViewEstablishMethod(activity, establishData);
         });
     }
 
     @Test
     public void shouldValidateTrustlyViewEstablishMethodWithIntegrationContextNull() {
         scenario.onActivity(activity -> {
-            trustlyView = new TrustlyView(activity.getApplicationContext());
             HashMap<String, String> establishData = getEstablishData();
             establishData.put(METADATA_INTEGRATION_CONTEXT, null);
-            Trustly result = trustlyView.establish(establishData);
-            assertTrue(result instanceof TrustlyView);
-            assertEquals(result, trustlyView);
+
+            callTrustlyViewEstablishMethod(activity, establishData);
         });
     }
 
     @Test
     public void shouldValidateTrustlyViewSelectBankWidgetMethod() {
-        scenario.onActivity(activity -> {
-            trustlyView = new TrustlyView(activity.getApplicationContext());
-            Trustly result = trustlyView.selectBankWidget(getEstablishData());
-            assertTrue(result instanceof TrustlyView);
-            assertEquals(result, trustlyView);
-        });
+        scenario.onActivity(activity -> callTrustlyViewSelectBankWidgetMethod(activity, getEstablishData()));
     }
 
     @Test
     public void shouldValidateTrustlyViewSelectBankWidgetMethodWithNullValue() {
-        scenario.onActivity(activity -> {
-            trustlyView = new TrustlyView(activity.getApplicationContext());
-            Trustly result = trustlyView.selectBankWidget(null);
-            assertTrue(result instanceof TrustlyView);
-            assertEquals(result, trustlyView);
-        });
+        scenario.onActivity(activity -> callTrustlyViewSelectBankWidgetMethod(activity, null));
     }
 
     @Test
@@ -415,10 +392,7 @@ public class TrustlyViewTest extends TrustlyActivityTest {
             establishDataNewValues.put(METADATA_LANG, PT_BR);
             HashMap<String, String> establishData = getCustomEstablishData(establishDataNewValues);
 
-            trustlyView = new TrustlyView(activity.getApplicationContext());
-            Trustly result = trustlyView.selectBankWidget(establishData);
-            assertTrue(result instanceof TrustlyView);
-            assertEquals(result, trustlyView);
+            callTrustlyViewSelectBankWidgetMethod(activity, establishData);
         });
     }
 
@@ -429,10 +403,7 @@ public class TrustlyViewTest extends TrustlyActivityTest {
             establishDataNewValues.put(CUSTOMER_ADDRESS_COUNTRY, null);
             HashMap<String, String> establishData = getCustomEstablishData(establishDataNewValues);
 
-            trustlyView = new TrustlyView(activity.getApplicationContext());
-            Trustly result = trustlyView.selectBankWidget(establishData);
-            assertTrue(result instanceof TrustlyView);
-            assertEquals(result, trustlyView);
+            callTrustlyViewSelectBankWidgetMethod(activity, establishData);
         });
     }
 
@@ -443,10 +414,7 @@ public class TrustlyViewTest extends TrustlyActivityTest {
             establishDataNewValues.put(CUSTOMER_ADDRESS_COUNTRY, "br");
             HashMap<String, String> establishData = getCustomEstablishData(establishDataNewValues);
 
-            trustlyView = new TrustlyView(activity.getApplicationContext());
-            Trustly result = trustlyView.selectBankWidget(establishData);
-            assertTrue(result instanceof TrustlyView);
-            assertEquals(result, trustlyView);
+            callTrustlyViewSelectBankWidgetMethod(activity, establishData);
         });
     }
 
@@ -457,10 +425,7 @@ public class TrustlyViewTest extends TrustlyActivityTest {
             establishDataNewValues.put(ENV, "prod");
             HashMap<String, String> establishData = getCustomEstablishData(establishDataNewValues);
 
-            trustlyView = new TrustlyView(activity.getApplicationContext());
-            Trustly result = trustlyView.establish(establishData);
-            assertTrue(result instanceof TrustlyView);
-            assertEquals(result, trustlyView);
+            callTrustlyViewEstablishMethod(activity, establishData);
         });
     }
 
@@ -471,10 +436,7 @@ public class TrustlyViewTest extends TrustlyActivityTest {
             establishDataNewValues.put(ENV, "production");
             HashMap<String, String> establishData = getCustomEstablishData(establishDataNewValues);
 
-            trustlyView = new TrustlyView(activity.getApplicationContext());
-            Trustly result = trustlyView.establish(establishData);
-            assertTrue(result instanceof TrustlyView);
-            assertEquals(result, trustlyView);
+            callTrustlyViewEstablishMethod(activity, establishData);
         });
     }
 
@@ -485,10 +447,7 @@ public class TrustlyViewTest extends TrustlyActivityTest {
             establishDataNewValues.put(ENV, "dynamic");
             HashMap<String, String> establishData = getCustomEstablishData(establishDataNewValues);
 
-            trustlyView = new TrustlyView(activity.getApplicationContext());
-            Trustly result = trustlyView.establish(establishData);
-            assertTrue(result instanceof TrustlyView);
-            assertEquals(result, trustlyView);
+            callTrustlyViewEstablishMethod(activity, establishData);
         });
     }
 
@@ -499,10 +458,7 @@ public class TrustlyViewTest extends TrustlyActivityTest {
             establishDataNewValues.put("paymentType", "Verification");
             HashMap<String, String> establishData = getCustomEstablishData(establishDataNewValues);
 
-            trustlyView = new TrustlyView(activity.getApplicationContext());
-            Trustly result = trustlyView.establish(establishData);
-            assertTrue(result instanceof TrustlyView);
-            assertEquals(result, trustlyView);
+            callTrustlyViewEstablishMethod(activity, establishData);
         });
     }
 
@@ -514,10 +470,7 @@ public class TrustlyViewTest extends TrustlyActivityTest {
             establishDataNewValues.put(ENV_HOST, "dev-224190");
             HashMap<String, String> establishData = getCustomEstablishData(establishDataNewValues);
 
-            trustlyView = new TrustlyView(activity.getApplicationContext());
-            Trustly result = trustlyView.establish(establishData);
-            assertTrue(result instanceof TrustlyView);
-            assertEquals(result, trustlyView);
+            callTrustlyViewEstablishMethod(activity, establishData);
         });
     }
 
@@ -529,10 +482,7 @@ public class TrustlyViewTest extends TrustlyActivityTest {
             establishDataNewValues.put(ENV_HOST, "localhost");
             HashMap<String, String> establishData = getCustomEstablishData(establishDataNewValues);
 
-            trustlyView = new TrustlyView(activity.getApplicationContext());
-            Trustly result = trustlyView.establish(establishData);
-            assertTrue(result instanceof TrustlyView);
-            assertEquals(result, trustlyView);
+            callTrustlyViewEstablishMethod(activity, establishData);
         });
     }
 
@@ -544,10 +494,7 @@ public class TrustlyViewTest extends TrustlyActivityTest {
             establishDataNewValues.put(ENV_HOST, null);
             HashMap<String, String> establishData = getCustomEstablishData(establishDataNewValues);
 
-            trustlyView = new TrustlyView(activity.getApplicationContext());
-            Trustly result = trustlyView.establish(establishData);
-            assertTrue(result instanceof TrustlyView);
-            assertEquals(result, trustlyView);
+            callTrustlyViewEstablishMethod(activity, establishData);
         });
     }
 
@@ -559,11 +506,22 @@ public class TrustlyViewTest extends TrustlyActivityTest {
             establishDataNewValues.put(ENV_HOST, "X.X.X.X");
             HashMap<String, String> establishData = getCustomEstablishData(establishDataNewValues);
 
-            trustlyView = new TrustlyView(activity.getApplicationContext());
-            Trustly result = trustlyView.establish(establishData);
-            assertTrue(result instanceof TrustlyView);
-            assertEquals(result, trustlyView);
+            callTrustlyViewEstablishMethod(activity, establishData);
         });
+    }
+
+    private void callTrustlyViewSelectBankWidgetMethod(Context activity, HashMap<String, String> establishData) {
+        trustlyView = new TrustlyView(activity.getApplicationContext());
+        Trustly result = trustlyView.selectBankWidget(establishData);
+        assertTrue(result instanceof TrustlyView);
+        assertEquals(result, trustlyView);
+    }
+
+    private void callTrustlyViewEstablishMethod(Context activity, HashMap<String, String> establishData) {
+        trustlyView = new TrustlyView(activity.getApplicationContext());
+        Trustly result = trustlyView.establish(establishData);
+        assertTrue(result instanceof TrustlyView);
+        assertEquals(result, trustlyView);
     }
 
     private HashMap<String, String> getEstablishData() {
