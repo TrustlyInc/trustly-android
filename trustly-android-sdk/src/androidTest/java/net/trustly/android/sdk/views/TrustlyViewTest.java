@@ -327,16 +327,12 @@ public class TrustlyViewTest extends TrustlyActivityTest {
 
     @Test
     public void shouldValidateTrustlyViewEstablishMethodNullValue() {
-        scenario.onActivity(activity -> {
-            callTrustlyViewEstablishMethod(activity, null);
-        });
+        scenario.onActivity(activity -> callTrustlyViewEstablishMethod(activity, null));
     }
 
     @Test
     public void shouldValidateTrustlyViewEstablishMethod() {
-        scenario.onActivity(activity -> {
-            callTrustlyViewEstablishMethod(activity, getEstablishData());
-        });
+        scenario.onActivity(activity -> callTrustlyViewEstablishMethod(activity, getEstablishData()));
     }
 
     @Test
