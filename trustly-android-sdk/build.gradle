@@ -39,6 +39,10 @@ android {
     buildFeatures {
         buildConfig true
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
 }
 
 dependencies {
@@ -46,8 +50,8 @@ dependencies {
     implementation 'androidx.browser:browser:1.8.0'
 
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.powermock:powermock-api-mockito:1.4.12'
-    testImplementation 'org.powermock:powermock-module-junit4:2.0.5'
+    testImplementation 'org.mockito:mockito-core:5.12.0'
+    testImplementation 'org.mockito:mockito-inline:4.2.0'
 
     androidTestImplementation 'androidx.test:core:1.6.1'
     androidTestImplementation 'androidx.test:runner:1.6.2'

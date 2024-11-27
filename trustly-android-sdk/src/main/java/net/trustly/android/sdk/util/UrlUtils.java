@@ -18,7 +18,7 @@ public class UrlUtils {
     private static final String URL = "url";
     private static final String REQUEST_SIGNATURE = "requestSignature=.*";
 
-    private UrlUtils() {
+    protected UrlUtils() {
         throw new IllegalStateException("Utility class cannot be instantiated");
     }
 
