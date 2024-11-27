@@ -335,10 +335,6 @@ public class TrustlyView extends LinearLayout implements Trustly {
             String lang = establishData.get("metadata.lang");
             if (lang != null) data.put("lang", lang);
 
-            String integrationContext = establishData.get("metadata.integrationContext");
-            if (integrationContext == null || integrationContext.isEmpty()) {
-                data.put("metadata.integrationContext", "InAppBrowser");
-            }
             data.put("metadata.sdkAndroidVersion", version);
             data.put("deviceType", deviceType);
             data.put("returnUrl", returnURL);
@@ -362,27 +358,20 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 isLocalEnvironment = true;
             }
 
-            byte[] parameters = UrlUtils.getParameterString(data).getBytes(StandardCharsets.UTF_8);
-            String encodeStringToBase64 = getTokenByEncodedParameters(data);
-
-            if (data.get("env").equals(DYNAMIC)) {
-                if (APIRequestManager.INSTANCE.validateAPIRequest(getContext())) {
-                    Settings settings = APIRequestManager.INSTANCE.getAPIRequestSettings(getContext());
-                    openWebViewOrCustomTabs(settings, data, parameters, encodeStringToBase64);
-                } else {
-                    APIMethod apiInterface = RetrofitInstance.INSTANCE.getInstance(getDomain(MOBILE, establishData)).create(APIMethod.class);
-                    APIRequest apiRequest = new APIRequest(apiInterface, settings -> {
-                        APIRequestManager.INSTANCE.saveAPIRequestSettings(getContext(), settings);
-                        openWebViewOrCustomTabs(settings, data, parameters, encodeStringToBase64);
-                        return Unit.INSTANCE;
-                    }, error -> {
-                        openWebViewOrCustomTabs(new Settings(new StrategySetting("webview")), data, parameters, encodeStringToBase64);
-                        return Unit.INSTANCE;
-                    });
-                    apiRequest.getSettingsData(encodeStringToBase64);
-                }
+            if (APIRequestManager.INSTANCE.validateAPIRequest(getContext())) {
+                Settings settings = APIRequestManager.INSTANCE.getAPIRequestSettings(getContext());
+                openWebViewOrCustomTabs(settings, data);
             } else {
-                webView.postUrl(getEndpointUrl(INDEX, data), parameters);
+                APIMethod apiInterface = RetrofitInstance.INSTANCE.getInstance(getDomain(MOBILE, establishData)).create(APIMethod.class);
+                APIRequest apiRequest = new APIRequest(apiInterface, settings -> {
+                    APIRequestManager.INSTANCE.saveAPIRequestSettings(getContext(), settings);
+                    openWebViewOrCustomTabs(settings, data);
+                    return Unit.INSTANCE;
+                }, error -> {
+                    openWebViewOrCustomTabs(new Settings(new StrategySetting("webview")), data);
+                    return Unit.INSTANCE;
+                });
+                apiRequest.getSettingsData(getTokenByEncodedParameters(data));
             }
         } catch (Exception e) {
             Log.e("TrustlyView", e.getMessage());
@@ -390,13 +379,11 @@ public class TrustlyView extends LinearLayout implements Trustly {
         return this;
     }
 
-    private void openWebViewOrCustomTabs(Settings settings, Map<String, String> establishData, byte[] parameters, String encodedParameters) {
+    private void openWebViewOrCustomTabs(Settings settings, Map<String, String> establishData) {
         if (settings.getSettings().getIntegrationStrategy().equals("webview")) {
-            if (establishData.get("env").equals(DYNAMIC)) {
-                webView.loadUrl(getEndpointUrl(MOBILE, establishData) + "?token=" + encodedParameters);
-            } else {
-                webView.postUrl(getEndpointUrl(INDEX, establishData), parameters);
-            }
+            data.put("metadata.integrationContext", "InAppBrowser");
+            byte[] encodedParameters = UrlUtils.getParameterString(data).getBytes(StandardCharsets.UTF_8);
+            webView.postUrl(getEndpointUrl(INDEX, establishData), encodedParameters);
         } else {
             data.put("returnUrl", establishData.get("metadata.urlScheme"));
             data.put("cancelUrl", establishData.get("metadata.urlScheme"));
