@@ -352,6 +352,64 @@ public class TrustlyView extends LinearLayout implements Trustly {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public Trustly establishCustomTabs(Map<String, String> establishData) {
+        status = Status.PANEL_LOADING;
+        CidManager.generateCid(getContext());
+
+        data = new HashMap<>(establishData);
+        String url = getEndpointUrl("dynamic", establishData);
+
+        try {
+            String deviceType = establishData.get("deviceType");
+
+            if (deviceType != null) {
+                deviceType = deviceType + ":android:native";
+            } else {
+                deviceType = "mobile:android:native";
+            }
+
+            String lang = establishData.get("metadata.lang");
+            if (lang != null) data.put("lang", lang);
+
+            String integrationContext = establishData.get("metadata.integrationContext");
+            if (integrationContext == null || integrationContext.isEmpty()) {
+                data.put("metadata.integrationContext", "InAppBrowser");
+            }
+            data.put("metadata.sdkAndroidVersion", version);
+            data.put("deviceType", deviceType);
+            data.put("returnUrl", returnURL);
+            data.put("cancelUrl", cancelURL);
+            data.put("grp", Integer.toString(grp));
+
+            if (data.containsKey("paymentProviderId")) {
+                data.put("widgetLoaded", "true");
+            }
+
+            Map<String, String> sessionCidValues = CidManager.getOrCreateSessionCid(getContext());
+            if (sessionCidValues != null) {
+                data.put("sessionCid", sessionCidValues.get(CidManager.SESSION_CID_PARAM));
+                data.put("metadata.cid", sessionCidValues.get(CidManager.CID_PARAM));
+            }
+
+            notifyOpen();
+
+            if ("local".equals(data.get("env"))) {
+                webView.setWebContentsDebuggingEnabled(true);
+                isLocalEnvironment = true;
+            }
+
+            String jsonParameters = UrlUtils.getJsonFromParameters(data);
+            String encodedParameters = UrlUtils.encodeStringToBase64(jsonParameters);
+
+            CustomTabsManager.openCustomTabsIntent(getContext(), url + "accessId=" + establishData.get("accessId") + "&token=" + encodedParameters);
+        } catch (Exception e) {
+        }
+        return this;
+    }
+
     public String getInAppBrowserLaunchURL(Map<String, String> establishData) {
         Map<String, String> data = new HashMap<>(establishData);
         String deviceType = establishData.get("deviceType");
@@ -512,7 +570,10 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
-    private String getEndpointUrl(String function, Map<String, String> establishData) {
+    protected String getEndpointUrl(String function, Map<String, String> establishData) {
+        if ("dynamic".equals(function)) {
+            return "http://" + establishData.get("localUrl") + "/start/app/establish?";
+        }
 
         String subDomain = establishData.get("env") != null
                 ? establishData.get("env").toLowerCase()
