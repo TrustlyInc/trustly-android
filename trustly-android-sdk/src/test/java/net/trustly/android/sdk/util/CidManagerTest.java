@@ -36,7 +36,7 @@ public class CidManagerTest {
     private static final String SESSION_CID = "SESSION_CID";
     private static final String ANDROID_ID = "android_id";
     private static final String ANDROID_ID_VALUE = "1234-4CD5-0";
-    private static final String CID_VALUE_1 = "1234-4A94-0";
+    private static final String CID_VALUE = "1234-4A94-0";
     private static final String SESSION_CID_VALUE_1 = "1234-4A94-";
     private static final String SESSION_CID_VALUE_2 = "1234-4A93-";
 
@@ -89,7 +89,7 @@ public class CidManagerTest {
 
         CidManager.generateCid(mockContext);
 
-        verify(mockSharedPreferencesEditor, times(1)).putString("CID", CID_VALUE_1);
+        verify(mockSharedPreferencesEditor, times(1)).putString("CID", CID_VALUE);
         verify(mockSharedPreferencesEditor, times(1)).apply();
         verify(mockSharedPreferences, times(1)).edit();
     }
@@ -98,7 +98,7 @@ public class CidManagerTest {
     public void shouldValidateCidManagerGetOrCreateSessionCidMethod() {
         String timeStampNow = Long.toString(Calendar.getInstance().getTimeInMillis(), 36);
 
-        when(mockSharedPreferences.getString(anyString(), eq(null))).thenReturn(CID_VALUE_1);
+        when(mockSharedPreferences.getString(anyString(), eq(null))).thenReturn(CID_VALUE);
         when(CidStorage.readDataFrom(mockContext, SESSION_CID)).thenReturn(SESSION_CID_VALUE_2 + timeStampNow);
 
         mockSettingsSecure.when(() -> Settings.Secure.getString(mockContext.getContentResolver(), ANDROID_ID)).thenReturn(ANDROID_ID_VALUE);
@@ -118,7 +118,7 @@ public class CidManagerTest {
 
         String timeStampNow = Long.toString(mockCalendar.getTimeInMillis(), 36);
 
-        when(mockSharedPreferences.getString(anyString(), eq(null))).thenReturn(CID_VALUE_1);
+        when(mockSharedPreferences.getString(anyString(), eq(null))).thenReturn(CID_VALUE);
         when(CidStorage.readDataFrom(mockContext, SESSION_CID)).thenReturn(SESSION_CID_VALUE_1 + timeStampNow);
 
         mockSettingsSecure.when(() -> Settings.Secure.getString(mockContext.getContentResolver(), ANDROID_ID)).thenReturn(ANDROID_ID_VALUE);
@@ -127,7 +127,7 @@ public class CidManagerTest {
 
         verify(mockSharedPreferencesEditor, times(1)).putString(SESSION_CID, SESSION_CID_VALUE_1 + timeStampNow);
         verify(mockSharedPreferences, times(1)).edit();
-        assertEquals(CID_VALUE_1, result.get(SESSION_CID));
+        assertEquals(CID_VALUE, result.get(SESSION_CID));
     }
 
     @Test
@@ -136,7 +136,7 @@ public class CidManagerTest {
         instance.add(Calendar.DATE, 2);
         mockCalendar.setTime(instance.getTime());
 
-        when(mockSharedPreferences.getString(anyString(), eq(null))).thenReturn(CID_VALUE_1);
+        when(mockSharedPreferences.getString(anyString(), eq(null))).thenReturn(CID_VALUE);
         when(CidStorage.readDataFrom(mockContext, SESSION_CID)).thenReturn(SESSION_CID_VALUE_1);
 
         mockSettingsSecure.when(() -> Settings.Secure.getString(mockContext.getContentResolver(), ANDROID_ID)).thenReturn(ANDROID_ID_VALUE);
@@ -150,22 +150,22 @@ public class CidManagerTest {
 
     @Test
     public void shouldValidateCidManagerGetOrCreateSessionCidInvalidValueMethod() {
-        when(mockSharedPreferences.getString(anyString(), eq(null))).thenReturn(CID_VALUE_1);
-        when(CidStorage.readDataFrom(mockContext, SESSION_CID)).thenReturn(CID_VALUE_1);
+        when(mockSharedPreferences.getString(anyString(), eq(null))).thenReturn(CID_VALUE);
+        when(CidStorage.readDataFrom(mockContext, SESSION_CID)).thenReturn(CID_VALUE);
 
         mockSettingsSecure.when(() -> Settings.Secure.getString(mockContext.getContentResolver(), ANDROID_ID)).thenReturn(ANDROID_ID_VALUE);
 
         Map<String, String> result = CidManager.getOrCreateSessionCid(mockContext);
 
-        verify(mockSharedPreferencesEditor, times(0)).putString(SESSION_CID, CID_VALUE_1);
+        verify(mockSharedPreferencesEditor, times(0)).putString(SESSION_CID, CID_VALUE);
         verify(mockSharedPreferences, times(1)).edit();
-        assertNotEquals(CID_VALUE_1, result.get(SESSION_CID));
+        assertNotEquals(CID_VALUE, result.get(SESSION_CID));
     }
 
     @Test
     public void shouldValidateCidManagerGetOrCreateSessionCidReadNullSessionCidMethod() {
         when(mockSharedPreferences.getString(anyString(), eq(null))).thenReturn(null);
-        when(CidStorage.readDataFrom(mockContext, CID_PARAM)).thenReturn(CID_VALUE_1);
+        when(CidStorage.readDataFrom(mockContext, CID_PARAM)).thenReturn(CID_VALUE);
 
         Map<String, String> result = CidManager.getOrCreateSessionCid(mockContext);
 
@@ -174,8 +174,8 @@ public class CidManagerTest {
 
     private Map<String, String> getCIDParams() {
         Map<String, String> cidParams = new HashMap<>();
-        cidParams.put("CID", "1234-4A94-0");
-        cidParams.put("SESSION_CID", "1234-4A94-0");
+        cidParams.put("CID", CID_VALUE);
+        cidParams.put("SESSION_CID", CID_VALUE);
         return cidParams;
     }
 
