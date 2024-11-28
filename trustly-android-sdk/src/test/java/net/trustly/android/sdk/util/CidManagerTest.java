@@ -2,7 +2,6 @@ package net.trustly.android.sdk.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
@@ -72,12 +71,6 @@ public class CidManagerTest {
     public void tearDown() {
         mockSettingsSecure.close();
         clearInvocations(mockSharedPreferencesEditor, mockSharedPreferences, mockContext, mockCalendar);
-    }
-
-    @Test
-    public void shouldThrowExceptionWhenCidManagerInstanceIsCalled() {
-        Throwable exception = assertThrows(IllegalStateException.class, CidManager::new);
-        assertEquals("Utility class cannot be instantiated", exception.getMessage());
     }
 
     @Test
