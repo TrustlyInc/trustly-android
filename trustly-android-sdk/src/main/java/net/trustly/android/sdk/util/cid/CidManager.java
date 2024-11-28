@@ -15,8 +15,9 @@ public class CidManager {
 
     public static final String CID_PARAM = "CID";
     public static final String SESSION_CID_PARAM = "SESSION_CID";
+    private static final String DIVIDER = "-";
 
-    private CidManager() {
+    public CidManager() {
         throw new IllegalStateException("Utility class cannot be instantiated");
     }
 
@@ -29,8 +30,11 @@ public class CidManager {
         String sessionCid = CidStorage.readDataFrom(context, CidStorage.SESSION_CID);
         if (sessionCid == null) {
             sessionCid = cid;
-        } else if (!isValid(sessionCid.split("-")[2])) {
-            sessionCid = generateNewSession(context);
+        } else {
+            String[] split = sessionCid.split(DIVIDER);
+            if (split.length > 2 && !isValid(split[2])) {
+                sessionCid = generateNewSession(context);
+            }
         }
 
         CidStorage.saveData(context, CidStorage.SESSION_CID, sessionCid);
@@ -42,7 +46,7 @@ public class CidManager {
     }
 
     private static String generateNewSession(Context context) {
-        return getFingerPrint(context) + "-" + getRandomKey() + "-" + getTimestampBase36();
+        return getFingerPrint(context) + DIVIDER + getRandomKey() + DIVIDER + getTimestampBase36();
     }
 
     private static UUID getUUID() {
@@ -52,18 +56,15 @@ public class CidManager {
     @SuppressLint("HardwareIds")
     private static String getFingerPrint(Context context) {
         return Settings.Secure.getString(context.getContentResolver(),
-                                  Settings.Secure.ANDROID_ID).substring(0, 4).toUpperCase();
+                Settings.Secure.ANDROID_ID).substring(0, 4).toUpperCase();
     }
 
     private static String getRandomKey() {
-        return getUUID().toString()
-                .split("-")[2].toUpperCase();
+        return getUUID().toString().split(DIVIDER)[2].toUpperCase();
     }
 
     private static String getTimestampBase36() {
-        return Long.toString(Calendar.getInstance()
-                                     .getTimeInMillis(), 36)
-                .toUpperCase();
+        return Long.toString(Calendar.getInstance().getTimeInMillis(), 36).toUpperCase();
     }
 
     private static boolean isValid(String timestamp) {
