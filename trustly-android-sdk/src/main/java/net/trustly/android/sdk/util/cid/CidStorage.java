@@ -1,15 +1,15 @@
-package net.trustly.android.sdk.util;
+package net.trustly.android.sdk.util.cid;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
-class CidStorage {
+public class CidStorage {
 
     private static final String CID_STORAGE = "CID_STORAGE";
     public static final String SESSION_CID = "SESSION_CID";
     public static final String CID = "CID";
 
-    protected CidStorage() {
+    private CidStorage() {
         throw new IllegalStateException("Utility class cannot be instantiated");
     }
 
