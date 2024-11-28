@@ -10,7 +10,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 public class CustomTabsManager {
 
-    private CustomTabsManager() {
+    protected CustomTabsManager() {
         throw new IllegalStateException("Utility class cannot be instantiated");
     }
 
