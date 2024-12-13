@@ -29,7 +29,7 @@ it, include the dependency below in your `build.gradle` file.
 
 ```
 dependencies {
-    implementation 'net.trustly:trustly-android-sdk:3.2.2'
+    implementation 'net.trustly:trustly-android-sdk:3.2.4'
 }
 ```
 
