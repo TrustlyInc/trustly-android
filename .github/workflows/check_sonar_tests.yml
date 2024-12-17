@@ -24,12 +24,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Enable KVM
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
@@ -42,56 +36,6 @@ jobs:
         run: |
           cd trustly-android-sdk || exit
           ./gradlew createDebugUnitTestCoverageReport
-
-      - name: Install ADB (Android Debug Bridge)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y android-tools-adb android-tools-fastboot
-
-      - name: Start ADB Server
-        run: |
-          adb start-server
-          adb devices
-          sleep 10
-
-      - name: Verify ADB Devices
-        run: |
-          adb devices
-    
-      - name: Start Emulator and Run Android Test Coverage
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 30
-          target: google_apis
-          arch: x86_64
-          profile: Nexus 6
-          force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: true
-          ram-size: 2048M
-          heap-size: 512M
-          disk-size: 2048M
-          working-directory: trustly-android-sdk
-          script: |
-            ./gradlew createDebugAndroidTestCoverageReport --warning-mode all
-
-      - name: Find Coverage Report Files
-        run: |
-          find trustly-android-sdk/build/reports/coverage -type f \( \
-            -path "*/androidTest/debug/connected/report.xml" -o \
-            -path "*/test/debug/report.xml" \
-          \) -print
-
-      - name: Merge Jacoco Coverage Reports
-        uses: danielpalme/ReportGenerator-GitHub-Action@5.4.1
-        with:
-          reports: 'trustly-android-sdk/build/reports/coverage/test/debug/report.xml;trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/report.xml'
-          targetdir: 'trustly-android'
-          reporttypes: 'Xml;Html'
-
-      - name: Find Summary.xml File
-        run: |
-          find . -type f -name "Summary.xml" -print
 
       - name: Install SonarQube Scanner
         run: |
@@ -120,7 +64,7 @@ jobs:
             -Dsonar.pullrequest.branch=${{ github.head_ref }} \
             -Dsonar.pullrequest.base=${{ github.base_ref }} \
             -Dsonar.scm.revision=$(git rev-parse HEAD) \
-            -Dsonar.coverage.jacoco.xmlReportPaths=/home/runner/work/trustly-android/Summary.xml \
+            -Dsonar.coverage.jacoco.xmlReportPaths=/home/runner/work/trustly-android-sdk/build/reports/coverage/test/debug/report.xml \
             -Dsonar.sources=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/src \
             -Dsonar.java.binaries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.java.libraries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
