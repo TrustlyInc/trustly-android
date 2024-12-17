@@ -53,7 +53,7 @@ jobs:
             ./gradlew createDebugAndroidTestCoverageReport
 
       - name: Merge Jacoco Coverage Reports
-        uses: danielpalme/reportgenerator-action@5.2.4
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.4.1
         with:
           reports: |
             ${REPO}/trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/report.xml;
