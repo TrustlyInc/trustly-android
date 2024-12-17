@@ -43,11 +43,21 @@ jobs:
           cd trustly-android-sdk || exit
           ./gradlew createDebugUnitTestCoverageReport
 
-      - name: Start adb
+      - name: Install ADB (Android Debug Bridge)
         run: |
-           adb kill-server
-           adb start-server
+          sudo apt-get update
+          sudo apt-get install -y android-tools-adb android-tools-fastboot
 
+      - name: Start ADB Server
+        run: |
+          adb start-server
+          adb devices
+          sleep 10
+
+      - name: Verify ADB Devices
+        run: |
+          adb devices
+    
       - name: Start Emulator and Run Android Test Coverage
         uses: reactivecircus/android-emulator-runner@v2
         with:
