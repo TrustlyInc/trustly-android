@@ -56,8 +56,8 @@ jobs:
         uses: danielpalme/ReportGenerator-GitHub-Action@5.4.1
         with:
           reports: |
-            ${REPO}/trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/report.xml;
-            ${REPO}/trustly-android-sdk/build/reports/coverage/test/debug/report.xml
+           trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/report.xml;
+           trustly-android-sdk/build/reports/coverage/test/debug/report.xml
           targetdir: trustly-android-sdk/build/reports/coverage/merged
           reporttypes: Xml
 
