@@ -60,5 +60,5 @@ jobs:
           reporttypes: 'Xml'
 
       - name: Publish coverage summary
-        run: | 
-          cat coveragereport/Summary.xml >> $GITHUB_ENV
+        run: cat coveragereport/Summary.md >> $GITHUB_STEP_SUMMARY
+        shell: bash
