@@ -62,6 +62,11 @@ jobs:
           targetdir: 'coveragereport'
           reporttypes: 'Xml'
 
+      - name: Install SonarQube Scanner
+        uses: sonarsource/sonarcloud-github-action@v2.0.2
+        with:
+          args: --version
+
       - name: Run SonarQube Scanner
         run: |
           sonar-scanner \
