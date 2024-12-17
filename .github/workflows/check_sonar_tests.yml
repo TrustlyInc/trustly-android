@@ -68,8 +68,8 @@ jobs:
       - name: Merge Jacoco Coverage Reports
         uses: danielpalme/ReportGenerator-GitHub-Action@5.4.1
         with:
-          reports: '/home/runner/work/trustly-android/trustly-android-sdk/build/reports/coverage/test/debug/report.xml;/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/index.html'
-          targetdir: 'coveragereport'
+          reports: 'trustly-android-sdk/build/reports/coverage/test/debug/report.xml;trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/report.xml'
+          targetdir: 'trustly-android'
           reporttypes: 'Xml;Html'
 
       - name: Find Summary.xml File
@@ -103,9 +103,9 @@ jobs:
             -Dsonar.pullrequest.branch=${{ github.head_ref }} \
             -Dsonar.pullrequest.base=${{ github.base_ref }} \
             -Dsonar.scm.revision=$(git rev-parse HEAD) \
-            -Dsonar.coverage.jacoco.xmlReportPaths=/home/runner/work/coveragereport/Summary.xml \
+            -Dsonar.coverage.jacoco.xmlReportPaths=/home/runner/work/trustly-android/Summary.xml \
             -Dsonar.sources=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/src \
             -Dsonar.java.binaries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.java.libraries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.coverage.exclusions=**/test/** \
-            -Dsonar.scm.disabled=false
+            -Dsonar.scm.disabled=true
