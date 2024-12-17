@@ -55,17 +55,15 @@ jobs:
       - name: Merge Jacoco Coverage Reports
         uses: danielpalme/ReportGenerator-GitHub-Action@5.4.1
         with:
-          reports: |
-           trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/report.xml;
-           trustly-android-sdk/build/reports/coverage/test/debug/report.xml
-          targetdir: trustly-android-sdk/build/reports/coverage/merged
-          reporttypes: Xml
+          reports: 'report.xml'
+          targetdir: 'coveragereport' # REQUIRED # The directory where the generated report should be saved.
+          reporttypes: 'Xml'
 
-      - name: 'Publish coverage summary'
+      - name: Publish coverage summary
         run: cat src/target/reports/coverage/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
         shell: bash
 
-      - name: 'Publish code coverage results'
+      - name: Publish code coverage results
         uses: actions/upload-artifact@v4
         with:
           name: CoverageReport
