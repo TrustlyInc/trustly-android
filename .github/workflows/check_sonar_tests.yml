@@ -5,6 +5,9 @@ on:
     types: [opened, synchronize, edited, reopened]
 env:
   REPO: ${{ github.event.repository.name }}
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SECRET }}
+  SONAR_HOST_URL: "https://sonarqube.trustly.one"
+  SONAR_PROJECT_KEY: "trustly-ios"
 
 jobs:
   android_tests_sonar:
@@ -59,6 +62,18 @@ jobs:
           targetdir: 'coveragereport'
           reporttypes: 'Xml'
 
-      - name: Publish coverage summary
-        run: cat coveragereport/Summary.xml >> $GITHUB_STEP_SUMMARY
-        shell: bash
+      - name: Run SonarQube Scanner
+        run: |
+          sonar-scanner \
+            -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+            -Dsonar.host.url=${SONAR_HOST_URL} \
+            -Dsonar.login=${SONAR_TOKEN_SECRET} \
+            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
+            -Dsonar.pullrequest.branch=${{ github.head_ref }} \
+            -Dsonar.pullrequest.base=${{ github.base_ref }} \
+            -Dsonar.scm.revision=$(git rev-parse HEAD) \
+            -Dsonar.coverage.jacoco.xmlReportPaths=coveragereport/Summary.xml \
+            -Dsonar.sources=trustly-android-sdk/src \
+            -Dsonar.java.binaries=trustly-android-sdk/build/intermediates/classes/debug \
+            -Dsonar.java.libraries=trustly-android-sdk/libs \
+            -Dsonar.coverage.exclusions=**/test/**
