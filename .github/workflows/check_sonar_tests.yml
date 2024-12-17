@@ -56,15 +56,9 @@ jobs:
         uses: danielpalme/ReportGenerator-GitHub-Action@5.4.1
         with:
           reports: 'trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/report.xml;trustly-android-sdk/build/reports/coverage/test/debug/report.xml'
-          targetdir: 'coveragereport' # REQUIRED # The directory where the generated report should be saved.
+          targetdir: 'coveragereport'
           reporttypes: 'Xml'
 
       - name: Publish coverage summary
-        run: cat src/target/reports/coverage/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+        run: cat coveragereport/Summary.xml >> $GITHUB_ENV
         shell: bash
-
-      - name: Publish code coverage results
-        uses: actions/upload-artifact@v4
-        with:
-          name: CoverageReport
-          path: src/target/reports/coverage
