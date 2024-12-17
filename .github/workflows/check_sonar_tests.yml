@@ -63,9 +63,21 @@ jobs:
           reporttypes: 'Xml'
 
       - name: Install SonarQube Scanner
-        uses: sonarsource/sonarcloud-github-action@v2.0.2
-        with:
-          args: --version
+        run: |
+          SONAR_SCANNER_VERSION=5.0.1.3006
+          SONAR_SCANNER_DIR=/opt/sonar-scanner
+
+          curl -o sonar-scanner-cli.zip -L "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux.zip"
+
+          sudo apt-get install -y unzip
+          unzip sonar-scanner-cli.zip
+          sudo mv sonar-scanner-${SONAR_SCANNER_VERSION}-linux ${SONAR_SCANNER_DIR}
+
+          echo "${SONAR_SCANNER_DIR}/bin" >> $GITHUB_PATH
+          echo "SonarScanner installed successfully"
+
+      - name: Verify SonarQube Scanner Installation
+        run: sonar-scanner --version
 
       - name: Run SonarQube Scanner
         run: |
