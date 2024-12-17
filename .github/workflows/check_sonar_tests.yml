@@ -56,7 +56,7 @@ jobs:
           disk-size: 2048M
           working-directory: trustly-android-sdk
           script: |
-            ./gradlew createDebugAndroidTestCoverageReport
+            ./gradlew createDebugAndroidTestCoverageReport --warning-mode all
 
       - name: Find Coverage Report Files
         run: |
@@ -68,7 +68,7 @@ jobs:
       - name: Merge Jacoco Coverage Reports
         uses: danielpalme/ReportGenerator-GitHub-Action@5.4.1
         with:
-          reports: 'trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/report.xml;trustly-android-sdk/build/reports/coverage/test/debug/report.xml'
+          reports: '/home/runner/work/trustly-android/trustly-android-sdk/build/reports/coverage/test/debug/report.xml;/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/index.html'
           targetdir: 'coveragereport'
           reporttypes: 'Xml;Html'
 
