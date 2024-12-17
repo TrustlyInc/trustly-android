@@ -74,7 +74,7 @@ jobs:
           sudo mv sonar-scanner-${SONAR_SCANNER_VERSION}-linux ${SONAR_SCANNER_DIR}
 
           echo "${SONAR_SCANNER_DIR}/bin" >> $GITHUB_PATH
-          echo "SonarScanner installed successfully"
+          echo "SonarScanner installed successfully!"
 
       - name: Verify SonarQube Scanner Installation
         run: sonar-scanner --version
