@@ -3,6 +3,7 @@ name: Android CI
 on:
   pull_request:
     types: [opened, synchronize, edited, reopened]
+
 env:
   REPO: ${{ github.event.repository.name }}
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SECRET }}
@@ -12,8 +13,9 @@ env:
 jobs:
   android_tests_sonar:
     runs-on: ubuntu-latest
+
     steps:
-      - name: checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -41,7 +43,7 @@ jobs:
           cd trustly-android-sdk || exit
           ./gradlew createDebugUnitTestCoverageReport
 
-      - name: Start emulator and run createDebugAndroidTestCoverageReport
+      - name: Start Emulator and Run Android Test Coverage
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 30
