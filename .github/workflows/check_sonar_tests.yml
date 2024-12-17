@@ -3,6 +3,8 @@ name: Android CI
 on:
   pull_request:
     types: [opened, synchronize, edited, reopened]
+env:
+  REPO: ${{ github.event.repository.name }}
 
 jobs:
   android_tests_sonar:
@@ -36,7 +38,7 @@ jobs:
           cd trustly-android-sdk || exit
           ./gradlew createDebugUnitTestCoverageReport
 
-      - name: Start emulator and run tests
+      - name: Start emulator and run createDebugAndroidTestCoverageReport
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 30
@@ -49,3 +51,22 @@ jobs:
           working-directory: trustly-android-sdk
           script: |
             ./gradlew createDebugAndroidTestCoverageReport
+
+      - name: Merge Jacoco Coverage Reports
+        uses: danielpalme/reportgenerator-action@5.2.4
+        with:
+          reports: |
+            ${REPO}/trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/report.xml;
+            ${REPO}/trustly-android-sdk/build/reports/coverage/test/debug/report.xml
+          targetdir: trustly-android-sdk/build/reports/coverage/merged
+          reporttypes: JacocoXml
+
+      - name: 'Publish coverage summary'
+        run: cat src/target/reports/coverage/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+        shell: bash
+
+      - name: 'Publish code coverage results'
+        uses: actions/upload-artifact@v4
+        with:
+          name: CoverageReport
+          path: src/target/reports/coverage
