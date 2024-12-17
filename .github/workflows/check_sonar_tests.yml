@@ -55,12 +55,23 @@ jobs:
           script: |
             ./gradlew createDebugAndroidTestCoverageReport
 
+      - name: Find Coverage Report Files
+        run: |
+          find trustly-android-sdk/build/reports/coverage -type f \( \
+            -path "*/androidTest/debug/connected/report.xml" -o \
+            -path "*/test/debug/report.xml" \
+          \) -print
+
       - name: Merge Jacoco Coverage Reports
         uses: danielpalme/ReportGenerator-GitHub-Action@5.4.1
         with:
           reports: 'trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/report.xml;trustly-android-sdk/build/reports/coverage/test/debug/report.xml'
           targetdir: 'coveragereport'
           reporttypes: 'Xml'
+
+      - name: Find Summary.xml File
+        run: |
+          find . -type f -name "Summary.xml" -print
 
       - name: Install SonarQube Scanner
         run: |
