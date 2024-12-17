@@ -43,6 +43,11 @@ jobs:
           cd trustly-android-sdk || exit
           ./gradlew createDebugUnitTestCoverageReport
 
+      - name: Start adb
+        run: |
+           adb kill-server
+           adb start-server
+
       - name: Start Emulator and Run Android Test Coverage
         uses: reactivecircus/android-emulator-runner@v2
         with:
