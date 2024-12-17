@@ -59,7 +59,7 @@ jobs:
             ${REPO}/trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/report.xml;
             ${REPO}/trustly-android-sdk/build/reports/coverage/test/debug/report.xml
           targetdir: trustly-android-sdk/build/reports/coverage/merged
-          reporttypes: JacocoXml
+          reporttypes: Xml
 
       - name: 'Publish coverage summary'
         run: cat src/target/reports/coverage/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
