@@ -34,7 +34,10 @@ jobs:
 
       - name: Get Git Revision (Commit SHA)
         id: git_revision
-        run: echo "GIT_REVISION=$(git rev-parse HEAD)" >> $GITHUB_ENV
+        run: |
+          GIT_REVISION=$(git rev-parse HEAD)
+          echo "Git Revision: $GIT_REVISION"
+          echo "GIT_REVISION=$GIT_REVISION" >> $GITHUB_ENV
 
       - name: Run createDebugUnitTestCoverageReport
         run: |
@@ -67,7 +70,7 @@ jobs:
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
             -Dsonar.pullrequest.branch=${{ github.head_ref }} \
             -Dsonar.pullrequest.base=${{ github.base_ref }} \
-            -Dsonar.scm.revision=${{ env.GIT_REVISION }} \
+            -Dsonar.scm.revision=${GIT_REVISION} \
             -Dsonar.coverage.jacoco.xmlReportPaths=/home/runner/work/trustly-android/trustly-android-sdk/build/reports/coverage/test/debug/report.xml \
             -Dsonar.sources=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/src \
             -Dsonar.java.binaries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
