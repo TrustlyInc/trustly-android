@@ -9,6 +9,7 @@ env:
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SECRET }}
   SONAR_HOST_URL: "https://sonarqube.trustly.one"
   SONAR_PROJECT_KEY: "trustly-android"
+  BRANCH_ORIGIN: ${{ github.head_ref }}
 
 jobs:
   android_tests_sonar:
@@ -35,7 +36,9 @@ jobs:
       - name: Get Git Revision (Commit SHA)
         id: git_revision
         run: |
-          GIT_REVISION=$(git rev-parse origin/"${{ github.head_ref }}")
+          cd trustly-android-sdk || exit
+          git fetch origin "${BRANCH_ORIGIN}"
+          GIT_REVISION=$(git rev-parse origin/${BRANCH_ORIGIN})
           echo "Git Revision: $GIT_REVISION"
 
       - name: Run createDebugUnitTestCoverageReport
@@ -67,7 +70,7 @@ jobs:
             -Dsonar.host.url=${SONAR_HOST_URL} \
             -Dsonar.login=${SONAR_TOKEN} \
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
-            -Dsonar.pullrequest.branch=${{ github.head_ref }} \
+            -Dsonar.pullrequest.branch=${BRANCH_ORIGIN} \
             -Dsonar.pullrequest.base=${{ github.base_ref }} \
             -Dsonar.scm.revision=${GIT_REVISION} \
             -Dsonar.coverage.jacoco.xmlReportPaths=/home/runner/work/trustly-android/trustly-android-sdk/build/reports/coverage/test/debug/report.xml \
