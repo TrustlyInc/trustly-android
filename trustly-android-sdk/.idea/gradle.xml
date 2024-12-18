@@ -6,7 +6,11 @@
       <GradleProjectSettings>
         <option name="testRunner" value="CHOOSE_PER_TEST" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+<<<<<<< HEAD
+        <option name="gradleJvm" value="#JAVA_HOME" />
+=======
         <option name="gradleJvm" value="temurin-17" />
+>>>>>>> DEV
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
