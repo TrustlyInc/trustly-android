@@ -50,7 +50,7 @@ jobs:
           cd trustly-android-sdk || exit
           ./gradlew clean build --warning-mode all
 
-      - name: Run createDebugUnitTestCoverageReport
+      - name: Run Unit Test Coverage
         run: |
           cd trustly-android-sdk || exit
           ./gradlew createDebugUnitTestCoverageReport
@@ -118,7 +118,7 @@ jobs:
             -Dsonar.pullrequest.branch=${BRANCH_ORIGIN} \
             -Dsonar.pullrequest.base=${BASE_BRANCH} \
             -Dsonar.scm.revision=${GIT_REVISION} \
-            -Dsonar.coverage.jacoco.xmlReportPaths=./trustly-android/Summary.xml \
+            -Dsonar.coverage.jacoco.xmlReportPaths=trustly-android/Summary.xml \
             -Dsonar.sources=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/src \
             -Dsonar.java.binaries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.java.libraries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
