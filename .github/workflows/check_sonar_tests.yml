@@ -84,7 +84,7 @@ jobs:
         with:
           reports: 'trustly-android-sdk/build/reports/coverage/test/debug/report.xml;trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/report.xml'
           targetdir: 'trustly-android'
-          reporttypes: 'Xml;Html'
+          reporttypes: 'Xml'
 
       - name: Find Summary.xml File
         run: |
@@ -118,7 +118,7 @@ jobs:
             -Dsonar.pullrequest.branch=${BRANCH_ORIGIN} \
             -Dsonar.pullrequest.base=${BASE_BRANCH} \
             -Dsonar.scm.revision=${GIT_REVISION} \
-            -Dsonar.coverage.jacoco.xmlReportPaths=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/build/reports/coverage/test/debug/report.xml \
+            -Dsonar.coverage.jacoco.xmlReportPaths=trustly-android/Summary.xml \
             -Dsonar.sources=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/src \
             -Dsonar.java.binaries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.java.libraries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
