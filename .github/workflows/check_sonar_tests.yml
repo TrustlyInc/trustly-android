@@ -12,6 +12,8 @@ env:
   PR_NUMBER: ${{ github.event.pull_request.number }}
   BRANCH_ORIGIN: ${{ github.head_ref }}
   BASE_BRANCH: ${{ github.base_ref }}
+  CHANGED_CLASSES: $(git diff --name-only ${BASE_BRANCH} ${BRANCH_ORIGIN} | grep '\.java$' | sed 's|/|.|g;s|.java$||')
+
 
 jobs:
   android_tests_sonar:
@@ -80,5 +82,6 @@ jobs:
             -Dsonar.sources=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/src \
             -Dsonar.java.binaries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.java.libraries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
+            -Dsonar.inclusions="$(git diff --name-only ${BASE_BRANCH} ${BRANCH_ORIGIN} | grep '\.java$' | paste -sd ',' -)" \
             -Dsonar.coverage.exclusions=**/test/** \
             -Dsonar.scm.disabled=true
