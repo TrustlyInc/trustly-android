@@ -28,6 +28,12 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
@@ -72,6 +78,7 @@ jobs:
             -path "*/androidTest/debug/connected/report.xml" -o \
             -path "*/test/debug/report.xml" \
           \) -print
+
       - name: Merge Jacoco Coverage Reports
         uses: danielpalme/ReportGenerator-GitHub-Action@5.4.1
         with:
@@ -81,7 +88,7 @@ jobs:
 
       - name: Find Summary.xml File
         run: |
-          find . -type f -name "Summary.xml" -print    
+          find . -type f -name "Summary.xml" -print      
 
       - name: Install SonarQube Scanner
         run: |
@@ -115,6 +122,5 @@ jobs:
             -Dsonar.sources=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/src \
             -Dsonar.java.binaries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.java.libraries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
-            -Dsonar.inclusions="$(git diff --name-only ${BASE_BRANCH} ${BRANCH_ORIGIN} | grep '\.java$' | paste -sd ',' -)" \
             -Dsonar.coverage.exclusions=**/test/** \
             -Dsonar.scm.disabled=true
