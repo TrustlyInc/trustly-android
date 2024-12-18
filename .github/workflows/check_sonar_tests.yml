@@ -88,7 +88,8 @@ jobs:
 
       - name: Find Summary.xml File
         run: |
-          find . -type f -name "Summary.xml" -print      
+          find . -type f -name "Summary.xml" -print
+          cat ./trustly-android/Summary.xml
 
       - name: Install SonarQube Scanner
         run: |
