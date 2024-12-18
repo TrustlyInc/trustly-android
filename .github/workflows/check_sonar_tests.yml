@@ -35,7 +35,7 @@ jobs:
       - name: Get Git Revision (Commit SHA)
         id: git_revision
         run: |
-          GIT_REVISION=$(git rev-parse HEAD)
+          GIT_REVISION=$(git rev-parse origin/${{ github.head_ref }})
           echo "Git Revision: $GIT_REVISION"
 
       - name: Run createDebugUnitTestCoverageReport
