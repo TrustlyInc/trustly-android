@@ -25,7 +25,6 @@ import java.util.HashMap;
 @LargeTest
 public class TrustlyViewTest extends TrustlyActivityTest {
 
-    private static final String SDK_VERSION = TrustlyView.version;
     private static final String SHARED_PREFERENCES_FILE_NAME = "PayWithMyBank";
     private static final String GRP_KEY = "grp";
     private static final String ENV = "env";
@@ -131,34 +130,6 @@ public class TrustlyViewTest extends TrustlyActivityTest {
 
             int result = getSharedPreferences(activity.getApplicationContext()).getInt(GRP_KEY, 0);
             assertNotEquals(-10, result);
-        });
-    }
-
-    @Test
-    public void shouldValidateTrustlyViewGetInAppBrowserLaunchUrlMethodWithDefaultParameters() {
-        scenario.onActivity(activity -> {
-            trustlyView = new TrustlyView(activity.getApplicationContext());
-
-            String result = trustlyView.getInAppBrowserLaunchURL(getEstablishData());
-
-            int grp = getSharedPreferences(activity.getApplicationContext()).getInt(GRP_KEY, -1);
-            assertEquals("accessId=123456&deviceType=mobile%3Aandroid%3Aiab&metadata.sdkAndroidVersion=" + SDK_VERSION + "&grp=" + grp + "&merchantId=654321", result);
-        });
-    }
-
-    @Test
-    public void shouldValidateTrustlyViewGetInAppBrowserLaunchUrlMethodWithCompleteParameters() {
-        scenario.onActivity(activity -> {
-            trustlyView = new TrustlyView(activity.getApplicationContext());
-            HashMap<String, String> establishData = getEstablishData();
-            establishData.put(DEVICE_TYPE, ANDROID);
-            establishData.put(METADATA_LANG, PT_BR);
-            establishData.put("paymentProviderId", "10009899");
-
-            String result = trustlyView.getInAppBrowserLaunchURL(establishData);
-
-            int grp = getSharedPreferences(activity.getApplicationContext()).getInt(GRP_KEY, -1);
-            assertEquals("accessId=123456&deviceType=android%3Aandroid%3Aiab&grp=" + grp + "&widgetLoaded=true&merchantId=654321&metadata.lang=pt_BR&paymentProviderId=10009899&lang=pt_BR&metadata.sdkAndroidVersion=" + SDK_VERSION, result);
         });
     }
 

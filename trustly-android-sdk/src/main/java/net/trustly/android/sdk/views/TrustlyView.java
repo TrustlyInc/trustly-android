@@ -49,10 +49,9 @@ import kotlin.Unit;
  */
 public class TrustlyView extends LinearLayout implements Trustly {
 
-    static String PROTOCOL = "https://";
-    static String DOMAIN = "paywithmybank.com";
-    static String version = BuildConfig.SDK_VERSION;
-
+    private static final String PROTOCOL = "https://";
+    private static final String DOMAIN = "paywithmybank.com";
+    private static final String SDK_VERSION = BuildConfig.SDK_VERSION;
     private static final String DYNAMIC = "dynamic";
     private static final String INDEX = "index";
     private static final String LOCAL = "local";
@@ -337,7 +336,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
             String lang = establishData.get("metadata.lang");
             if (lang != null) data.put("lang", lang);
 
-            data.put("metadata.sdkAndroidVersion", version);
+            data.put("metadata.sdkAndroidVersion", SDK_VERSION);
             data.put("deviceType", deviceType);
             data.put("returnUrl", returnURL);
             data.put("cancelUrl", cancelURL);
@@ -527,28 +526,25 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
     private String getDomain(String function, Map<String, String> establishData) {
         String environment = establishData.get("env") != null ? establishData.get("env").toLowerCase() : env;
-        String envHost = establishData.get("envHost");
-
         if (environment == null) {
             return PROTOCOL + DOMAIN;
         }
 
+        String envHost = establishData.get("envHost");
         switch (environment) {
             case DYNAMIC: {
                 String host = envHost != null ? envHost : "";
-                return "https://" + host + ".int.trustly.one";
+                return PROTOCOL + host + ".int.trustly.one";
             }
             case LOCAL: {
                 String host = (envHost != null && !envHost.equals("localhost")) ? envHost : BuildConfig.LOCAL_IP;
                 String port = "";
                 String protocol = "http://";
-
                 if (MOBILE.equals(function)) {
                     port = ":10000";
                 } else {
                     port = ":8000";
                 }
-
                 return protocol + host + port;
             }
             case "prod":
@@ -559,28 +555,23 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 environment = environment + ".";
                 break;
         }
-
         return PROTOCOL + environment + DOMAIN;
     }
 
     /**
      * {@inheritDoc}
      */
-
     protected String getEndpointUrl(String function, Map<String, String> establishData) {
         String domain = getDomain(function, establishData);
-
         if (MOBILE.equals(function)) {
              return domain + "/frontend/mobile/establish";
         }
-
         if (INDEX.equals(function) &&
                 !"Verification".equals(establishData.get("paymentType")) &&
                 establishData.get(PAYMENT_PROVIDER_ID) != null) {
             function = "selectBank";
         }
-
-        return domain + "/start/selectBank/" + function + "?v=" + version + "-android-sdk";
+        return domain + "/start/selectBank/" + function + "?v=" + SDK_VERSION + "-android-sdk";
     }
 
     private void notifyOpen() {
