@@ -22,6 +22,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Get Git Revision (Commit SHA)
+        id: git_revision
+        run: |
+          cd trustly-android-sdk || exit
+          git fetch origin "${BRANCH_ORIGIN}"
+          GIT_REVISION=$(git rev-parse origin/${BRANCH_ORIGIN})
+          echo "Git Revision: $GIT_REVISION"  
+
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -41,14 +49,6 @@ jobs:
         run: |
           cd trustly-android-sdk || exit
           ./gradlew clean build --warning-mode all
-
-      - name: Get Git Revision (Commit SHA)
-        id: git_revision
-        run: |
-          cd trustly-android-sdk || exit
-          git fetch origin "${BRANCH_ORIGIN}"
-          GIT_REVISION=$(git rev-parse origin/${BRANCH_ORIGIN})
-          echo "Git Revision: $GIT_REVISION"
 
       - name: Run createDebugUnitTestCoverageReport
         run: |
@@ -109,7 +109,6 @@ jobs:
 
       - name: Run SonarQube Scanner
         run: |
-          cd trustly-android-sdk || exit
           sonar-scanner \
             -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
             -Dsonar.host.url=${SONAR_HOST_URL} \
@@ -118,7 +117,7 @@ jobs:
             -Dsonar.pullrequest.branch=${BRANCH_ORIGIN} \
             -Dsonar.pullrequest.base=${BASE_BRANCH} \
             -Dsonar.scm.revision=${GIT_REVISION} \
-            -Dsonar.coverage.jacoco.xmlReportPaths=trustly-android/Summary.xml \
+            -Dsonar.coverage.jacoco.xmlReportPaths=./trustly-android/Summary.xml \
             -Dsonar.sources=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/src \
             -Dsonar.java.binaries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.java.libraries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
