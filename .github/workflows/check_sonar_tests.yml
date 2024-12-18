@@ -67,6 +67,7 @@ jobs:
 
       - name: Run SonarQube Scanner
         run: |
+          cd trustly-android-sdk || exit
           sonar-scanner \
             -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
             -Dsonar.host.url=${SONAR_HOST_URL} \
@@ -80,4 +81,4 @@ jobs:
             -Dsonar.java.binaries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.java.libraries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.coverage.exclusions=**/test/** \
-            -Dsonar.scm.disabled=false
+            -Dsonar.scm.disabled=true
