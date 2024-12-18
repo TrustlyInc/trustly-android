@@ -9,7 +9,9 @@ env:
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SECRET }}
   SONAR_HOST_URL: "https://sonarqube.trustly.one"
   SONAR_PROJECT_KEY: "trustly-android"
+  PR_NUMBER: ${{ github.event.pull_request.number }}
   BRANCH_ORIGIN: ${{ github.head_ref }}
+  BASE_BRANCH: ${{ github.base_ref }}
 
 jobs:
   android_tests_sonar:
@@ -69,13 +71,13 @@ jobs:
             -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
             -Dsonar.host.url=${SONAR_HOST_URL} \
             -Dsonar.login=${SONAR_TOKEN} \
-            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
+            -Dsonar.pullrequest.key=${PR_NUMBER} \
             -Dsonar.pullrequest.branch=${BRANCH_ORIGIN} \
-            -Dsonar.pullrequest.base=${{ github.base_ref }} \
+            -Dsonar.pullrequest.base=${BASE_BRANCH} \
             -Dsonar.scm.revision=${GIT_REVISION} \
             -Dsonar.coverage.jacoco.xmlReportPaths=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/build/reports/coverage/test/debug/report.xml \
             -Dsonar.sources=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/src \
             -Dsonar.java.binaries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.java.libraries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.coverage.exclusions=**/test/** \
-            -Dsonar.scm.disabled=true
+            -Dsonar.scm.disabled=false
