@@ -119,12 +119,13 @@ jobs:
             -Dsonar.pullrequest.base=${{ env.BASE_BRANCH }} \
             -Dsonar.scm.revision=${{ env.GIT_REVISION }} \
             -Dsonar.coverage.jacoco.xmlReportPaths=trustly-android/Summary.xml \
-            -Dsonar.sources=src/main \
-            -Dsonar.android.tests=src/androidTest/java \
+            -Dsonar.sources=/home/runner/work/trustly-android/trustly-android \
             -Dsonar.java.coveragePlugin=jacoco \
             -Dsonar.language=kotlin \
-            -Dsonar.java.binaries=trustly-android/trustly-android/trustly-android-sdk \
-            -Dsonar.java.libraries=trustly-android/trustly-android/trustly-android-sdk \
+            -Dsonar.java.binaries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/build \
+            -Dsonar.java.libraries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.coverage.exclusions=**/test/**,**/build/** \
             -Dsonar.exclusions=**/test/**,**/build/** \
+            -Dsonar.sourceEncoding=UTF-8 \
+            -Dsonar.verbose=true \
             -Dsonar.scm.disabled=true
