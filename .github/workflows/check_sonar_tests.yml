@@ -82,7 +82,7 @@ jobs:
       - name: Merge Jacoco Coverage Reports
         uses: danielpalme/ReportGenerator-GitHub-Action@5.4.1
         with:
-          reports: 'trustly-android-sdk/build/reports/coverage/test/debug/report.xml;trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/report.xml'
+          reports: '/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/build/reports/coverage/test/debug/report.xml;/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/report.xml'
           targetdir: 'trustly-android'
           reporttypes: 'Xml'
 
@@ -119,7 +119,7 @@ jobs:
             -Dsonar.pullrequest.base=${{ env.BASE_BRANCH }} \
             -Dsonar.scm.revision=${{ env.GIT_REVISION }} \
             -Dsonar.coverage.jacoco.xmlReportPaths=trustly-android/Summary.xml \
-            -Dsonar.sources=/home/runner/work/trustly-android/trustly-android \
+            -Dsonar.sources=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.java.coveragePlugin=jacoco \
             -Dsonar.language=kotlin \
             -Dsonar.java.binaries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/build \
