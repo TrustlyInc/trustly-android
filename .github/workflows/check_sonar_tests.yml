@@ -45,10 +45,15 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Run Clean Build
+      - name: Run Clean
         run: |
           cd trustly-android-sdk || exit
-          ./gradlew clean build --warning-mode all
+          ./gradlew clean --warning-mode all
+
+      - name: Run Build
+        run: |
+          cd trustly-android-sdk || exit
+          ./gradlew build --warning-mode all    
 
       - name: Run Unit Test Coverage
         run: |
