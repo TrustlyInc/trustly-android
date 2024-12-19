@@ -79,25 +79,6 @@ jobs:
             -path "*/test/debug/report.xml" \
           \) -print
 
-      - name: Merge Jacoco Coverage Reports
-        uses: danielpalme/ReportGenerator-GitHub-Action@5.4.1
-        with:
-          reports: '/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/build/reports/coverage/test/debug/report.xml;/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/report.xml'
-          targetdir: 'coverage-report'
-          reporttypes: 'Xml'
-
-      - name: Find and Print Summary.xml File Path
-        run: |
-          echo "Searching for Summary.xml file..."
-          file_path=$(find . -type f -name "Summary.xml" -print | head -n 1)
-          if [ -z "$file_path" ]; then
-            echo "Error: Summary.xml file not found."
-            exit 1
-          fi
-          echo "Summary.xml found at: $file_path"
-          echo "Contents of the file:"
-          cat "$file_path"
-
       - name: Install SonarQube Scanner
         run: |
           SONAR_SCANNER_VERSION=5.0.1.3006
@@ -125,7 +106,7 @@ jobs:
             -Dsonar.pullrequest.branch=${{ env.BRANCH_ORIGIN }} \
             -Dsonar.pullrequest.base=${{ env.BASE_BRANCH }} \
             -Dsonar.scm.revision=${{ env.GIT_REVISION }} \
-            -Dsonar.coverage.jacoco.xmlReportPaths=/home/runner/work/coverage-report/Summary.xml \
+            -Dsonar.coverage.jacoco.xmlReportPaths=trustly-android-sdk/build/reports/coverage/test/debug/report.xml,trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/report.xml \
             -Dsonar.sources=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.java.coveragePlugin=jacoco \
             -Dsonar.language=kotlin \
