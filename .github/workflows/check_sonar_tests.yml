@@ -28,6 +28,7 @@ jobs:
           cd trustly-android-sdk || exit
           git fetch origin "${BRANCH_ORIGIN}"
           GIT_REVISION=$(git rev-parse origin/${BRANCH_ORIGIN})
+          echo "GIT_REVISION=$GIT_REVISION" >> $GITHUB_ENV
           echo "Git Revision: $GIT_REVISION"  
 
       - name: Set up JDK 17
@@ -117,9 +118,11 @@ jobs:
             -Dsonar.pullrequest.key=${PR_NUMBER} \
             -Dsonar.pullrequest.branch=${BRANCH_ORIGIN} \
             -Dsonar.pullrequest.base=${BASE_BRANCH} \
-            -Dsonar.scm.revision=${GIT_REVISION} \
+            -Dsonar.scm.revision=${{ env.GIT_REVISION }} \
             -Dsonar.coverage.jacoco.xmlReportPaths=trustly-android/Summary.xml \
             -Dsonar.sources=. \
+            -Dsonar.java.binaries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
+            -Dsonar.java.libraries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.test.inclusions=*.java \
             -Dsonar.coverage.exclusions=**/test/** \
             -Dsonar.scm.disabled=true
