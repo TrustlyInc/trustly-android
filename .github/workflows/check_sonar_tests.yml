@@ -122,7 +122,6 @@ jobs:
             -Dsonar.sources=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.java.binaries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.java.libraries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
-            -Dsonar.test.inclusions=*.java \
             -Dsonar.coverage.exclusions=**/test/**,**/build/** \
             -Dsonar.exclusions=**/test/**,**/build/** \
-            -Dsonar.scm.disabled=true
+            -Dsonar.scm.disabled=false
