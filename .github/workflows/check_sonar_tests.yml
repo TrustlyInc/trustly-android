@@ -106,7 +106,7 @@ jobs:
             -Dsonar.pullrequest.branch=${{ env.BRANCH_ORIGIN }} \
             -Dsonar.pullrequest.base=${{ env.BASE_BRANCH }} \
             -Dsonar.scm.revision=${{ env.GIT_REVISION }} \
-            -Dsonar.coverage.jacoco.xmlReportPaths=trustly-android-sdk/build/reports/coverage/test/debug/report.xml,trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/report.xml \
+            -Dsonar.coverage.jacoco.xmlReportPaths=trustly-/home/runner/work/trustly-android/trustly-android/android-sdk/build/reports/coverage/test/debug/report.xml,/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/report.xml \
             -Dsonar.sources=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.java.coveragePlugin=jacoco \
             -Dsonar.language=kotlin \
