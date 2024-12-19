@@ -86,10 +86,17 @@ jobs:
           targetdir: 'trustly-android'
           reporttypes: 'Xml'
 
-      - name: Find Summary.xml File
+      - name: Find and Print Summary.xml File Path
         run: |
-          find . -type f -name "Summary.xml" -print
-          cat ./trustly-android/Summary.xml
+          echo "Searching for Summary.xml file..."
+          file_path=$(find . -type f -name "Summary.xml" -print | head -n 1)
+          if [ -z "$file_path" ]; then
+            echo "Error: Summary.xml file not found."
+            exit 1
+          fi
+          echo "Summary.xml found at: $file_path"
+          echo "Contents of the file:"
+          cat "$file_path"
 
       - name: Install SonarQube Scanner
         run: |
