@@ -1,0 +1,129 @@
+name: Android CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, edited, reopened]
+
+env:
+  REPO: ${{ github.event.repository.name }}
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SECRET }}
+  SONAR_HOST_URL: "https://sonarqube.trustly.one"
+  SONAR_PROJECT_KEY: "trustly-android"
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+  BRANCH_ORIGIN: ${{ github.head_ref }}
+  BASE_BRANCH: ${{ github.base_ref }}
+  CHANGED_CLASSES: $(git diff --name-only ${BASE_BRANCH} ${BRANCH_ORIGIN} | grep '\.java$' | sed 's|/|.|g;s|.java$||')
+
+jobs:
+  android_tests_sonar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Get Git Revision (Commit SHA)
+        id: git_revision
+        run: |
+          cd trustly-android-sdk || exit
+          git fetch origin "${BRANCH_ORIGIN}"
+          GIT_REVISION=$(git rev-parse origin/${BRANCH_ORIGIN})
+          echo "GIT_REVISION=$GIT_REVISION" >> $GITHUB_ENV
+          echo "Git Revision: $GIT_REVISION"  
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Run Clean Build
+        run: |
+          cd trustly-android-sdk || exit
+          ./gradlew clean build --warning-mode all
+
+      - name: Run Unit Test Coverage
+        run: |
+          cd trustly-android-sdk || exit
+          ./gradlew createDebugUnitTestCoverageReport
+
+      - name: Start Emulator and Run Android Test Coverage
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          target: google_apis
+          arch: x86_64
+          profile: Nexus 6
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          ram-size: 2048M
+          heap-size: 512M
+          disk-size: 2048M
+          working-directory: trustly-android-sdk
+          script: |
+            ./gradlew createDebugAndroidTestCoverageReport --warning-mode all
+
+      - name: Find Coverage Report Files
+        run: |
+          find trustly-android-sdk/build/reports/coverage -type f \( \
+            -path "*/androidTest/debug/connected/report.xml" -o \
+            -path "*/test/debug/report.xml" \
+          \) -print
+
+      - name: Merge Jacoco Coverage Reports
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.4.1
+        with:
+          reports: 'trustly-android-sdk/build/reports/coverage/test/debug/report.xml;trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/report.xml'
+          targetdir: 'trustly-android'
+          reporttypes: 'Xml'
+
+      - name: Find Summary.xml File
+        run: |
+          find . -type f -name "Summary.xml" -print
+          cat ./trustly-android/Summary.xml
+
+      - name: Install SonarQube Scanner
+        run: |
+          SONAR_SCANNER_VERSION=5.0.1.3006
+          SONAR_SCANNER_DIR=/opt/sonar-scanner
+
+          curl -o sonar-scanner-cli.zip -L "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux.zip"
+
+          sudo apt-get install -y unzip
+          unzip sonar-scanner-cli.zip
+          sudo mv sonar-scanner-${SONAR_SCANNER_VERSION}-linux ${SONAR_SCANNER_DIR}
+
+          echo "${SONAR_SCANNER_DIR}/bin" >> $GITHUB_PATH
+          echo "SonarScanner installed successfully!"
+
+      - name: Verify SonarQube Scanner Installation
+        run: sonar-scanner --version
+
+      - name: Run SonarQube Scanner
+        run: |
+          sonar-scanner \
+            -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+            -Dsonar.host.url=${SONAR_HOST_URL} \
+            -Dsonar.login=${SONAR_TOKEN} \
+            -Dsonar.pullrequest.key=${PR_NUMBER} \
+            -Dsonar.pullrequest.branch=${BRANCH_ORIGIN} \
+            -Dsonar.pullrequest.base=${BASE_BRANCH} \
+            -Dsonar.scm.revision=${{ env.GIT_REVISION }} \
+            -Dsonar.coverage.jacoco.xmlReportPaths=trustly-android/Summary.xml \
+            -Dsonar.sources=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
+            -Dsonar.java.binaries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
+            -Dsonar.java.libraries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
+            -Dsonar.test.inclusions=*.java \
+            -Dsonar.coverage.exclusions=**/test/**,**/build/** \
+            -Dsonar.exclusions=**/test/**,**/build/** \
+            -Dsonar.scm.disabled=true

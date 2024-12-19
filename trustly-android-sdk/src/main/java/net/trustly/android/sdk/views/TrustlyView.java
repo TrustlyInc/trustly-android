@@ -31,6 +31,7 @@ import net.trustly.android.sdk.interfaces.TrustlyCallback;
 import net.trustly.android.sdk.interfaces.TrustlyListener;
 import net.trustly.android.sdk.util.CustomTabsManager;
 import net.trustly.android.sdk.util.UrlUtils;
+import net.trustly.android.sdk.views.oauth.TrustlyOAuthView;
 import net.trustly.android.sdk.util.api.APIRequestManager;
 import net.trustly.android.sdk.util.cid.CidManager;
 
@@ -48,10 +49,9 @@ import kotlin.Unit;
  */
 public class TrustlyView extends LinearLayout implements Trustly {
 
-    static String PROTOCOL = "https://";
-    static String DOMAIN = "paywithmybank.com";
-    static String version = BuildConfig.SDK_VERSION;
-
+    private static final String PROTOCOL = "https://";
+    private static final String DOMAIN = "paywithmybank.com";
+    private static final String SDK_VERSION = BuildConfig.SDK_VERSION;
     private static final String DYNAMIC = "dynamic";
     private static final String INDEX = "index";
     private static final String LOCAL = "local";
@@ -199,7 +199,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                     final TrustlyOAuthView trustlyOAuthView = new TrustlyOAuthView(view.getContext());
                     self.addView(trustlyOAuthView);
                     WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
-                    transport.setWebView(trustlyOAuthView.webView);
+                    transport.setWebView(trustlyOAuthView.getWebView());
                     resultMsg.sendToTarget();
                     return true;
                 } else {
@@ -318,12 +318,13 @@ public class TrustlyView extends LinearLayout implements Trustly {
      */
     @Override
     public Trustly establish(Map<String, String> establishData) {
-        status = Status.PANEL_LOADING;
-        CidManager.generateCid(getContext());
-
-        data = new HashMap<>(establishData);
-
         try {
+            status = Status.PANEL_LOADING;
+            CidManager.generateCid(getContext());
+
+            data = new HashMap<>(establishData);
+            String url = getEndpointUrl("index", establishData);
+
             String deviceType = establishData.get("deviceType");
 
             if (deviceType != null) {
@@ -335,7 +336,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
             String lang = establishData.get("metadata.lang");
             if (lang != null) data.put("lang", lang);
 
-            data.put("metadata.sdkAndroidVersion", version);
+            data.put("metadata.sdkAndroidVersion", SDK_VERSION);
             data.put("deviceType", deviceType);
             data.put("returnUrl", returnURL);
             data.put("cancelUrl", cancelURL);
@@ -346,16 +347,14 @@ public class TrustlyView extends LinearLayout implements Trustly {
             }
 
             Map<String, String> sessionCidValues = CidManager.getOrCreateSessionCid(getContext());
-            if (sessionCidValues != null) {
-                data.put("sessionCid", sessionCidValues.get(CidManager.SESSION_CID_PARAM));
-                data.put("metadata.cid", sessionCidValues.get(CidManager.CID_PARAM));
-            }
+            data.put("sessionCid", sessionCidValues.get(CidManager.SESSION_CID_PARAM));
+            data.put("metadata.cid", sessionCidValues.get(CidManager.CID_PARAM));
 
             notifyOpen();
 
             if (LOCAL.equals(data.get("env"))) {
                 webView.setWebContentsDebuggingEnabled(true);
-                isLocalEnvironment = true;
+                setIsLocalEnvironment(true);
             }
 
             if (APIRequestManager.INSTANCE.validateAPIRequest(getContext())) {
@@ -401,8 +400,8 @@ public class TrustlyView extends LinearLayout implements Trustly {
      */
     @Override
     public Trustly selectBankWidget(Map<String, String> establishData) {
-        data = new HashMap<>(establishData);
         try {
+            data = new HashMap<>(establishData);
             String deviceType = establishData.get("deviceType");
 
             if (deviceType != null) {
@@ -433,26 +432,22 @@ public class TrustlyView extends LinearLayout implements Trustly {
             }
 
             Map<String, String> sessionCidValues = CidManager.getOrCreateSessionCid(getContext());
-            if (sessionCidValues != null) {
-                d.put("sessionCid", sessionCidValues.get(CidManager.SESSION_CID_PARAM));
-                d.put("cid", sessionCidValues.get(CidManager.CID_PARAM));
-            }
+            d.put("sessionCid", sessionCidValues.get(CidManager.SESSION_CID_PARAM));
+            d.put("cid", sessionCidValues.get(CidManager.CID_PARAM));
 
             Map<String, String> hash = new HashMap<>();
 
             hash.put("merchantReference", establishData.get("merchantReference"));
             hash.put("customer.externalId", establishData.get("customer.externalId"));
 
-            if (status == Status.WIDGET_LOADED) {
-                return this;
+            if (status != Status.WIDGET_LOADED) {
+                status = Status.WIDGET_LOADING;
+                notifyWidgetLoading();
+
+                String url = getEndpointUrl("widget", establishData) + "&" + UrlUtils.getParameterString(d) + "#" + UrlUtils.getParameterString(hash);
+                webView.loadUrl(url);
+                webView.setBackgroundColor(Color.TRANSPARENT);
             }
-            status = Status.WIDGET_LOADING;
-
-            notifyWidgetLoading();
-
-            String url = getEndpointUrl("widget", establishData) + "&" + UrlUtils.getParameterString(d) + "#" + UrlUtils.getParameterString(hash);
-            webView.loadUrl(url);
-            webView.setBackgroundColor(Color.TRANSPARENT);
         } catch (Exception e) {
         }
         return this;
@@ -531,28 +526,25 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
     private String getDomain(String function, Map<String, String> establishData) {
         String environment = establishData.get("env") != null ? establishData.get("env").toLowerCase() : env;
-        String envHost = establishData.get("envHost");
-
         if (environment == null) {
             return PROTOCOL + DOMAIN;
         }
 
+        String envHost = establishData.get("envHost");
         switch (environment) {
             case DYNAMIC: {
                 String host = envHost != null ? envHost : "";
-                return "https://" + host + ".int.trustly.one";
+                return PROTOCOL + host + ".int.trustly.one";
             }
             case LOCAL: {
                 String host = (envHost != null && !envHost.equals("localhost")) ? envHost : BuildConfig.LOCAL_IP;
                 String port = "";
                 String protocol = "http://";
-
                 if (MOBILE.equals(function)) {
                     port = ":10000";
                 } else {
                     port = ":8000";
                 }
-
                 return protocol + host + port;
             }
             case "prod":
@@ -563,7 +555,6 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 environment = environment + ".";
                 break;
         }
-
         return PROTOCOL + environment + DOMAIN;
     }
 
@@ -572,18 +563,15 @@ public class TrustlyView extends LinearLayout implements Trustly {
      */
     protected String getEndpointUrl(String function, Map<String, String> establishData) {
         String domain = getDomain(function, establishData);
-
         if (MOBILE.equals(function)) {
              return domain + "/frontend/mobile/establish";
         }
-
         if (INDEX.equals(function) &&
                 !"Verification".equals(establishData.get("paymentType")) &&
                 establishData.get(PAYMENT_PROVIDER_ID) != null) {
             function = "selectBank";
         }
-
-        return domain + "/start/selectBank/" + function + "?v=" + version + "-android-sdk";
+        return domain + "/start/selectBank/" + function + "?v=" + SDK_VERSION + "-android-sdk";
     }
 
     private void notifyOpen() {
@@ -610,7 +598,15 @@ public class TrustlyView extends LinearLayout implements Trustly {
         notifyListener("event", eventDetails);
     }
 
-    protected static boolean isLocalEnvironment() {
+    public static boolean isLocalEnvironment() {
         return isLocalEnvironment;
+    }
+
+    public static void setIsLocalEnvironment(boolean isLocal) {
+        isLocalEnvironment = isLocal;
+    }
+
+    protected static void resetGrp() {
+        grp = -1;
     }
 }
