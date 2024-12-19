@@ -117,8 +117,8 @@ jobs:
             -Dsonar.language=kotlin \
             -Dsonar.java.binaries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.java.libraries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
-            -Dsonar.coverage.exclusions=**/build/**,**/test/** \
-            -Dsonar.exclusions=**/build/**,**/test/** \
+            -Dsonar.coverage.exclusions=**/build/**,**/test/**,**/androidTest/** \
+            -Dsonar.exclusions=**/build/**,**/test/**,**/androidTest/** \
             -Dsonar.sourceEncoding=UTF-8 \
             -Dsonar.verbose=true \
             -Dsonar.scm.disabled=false
