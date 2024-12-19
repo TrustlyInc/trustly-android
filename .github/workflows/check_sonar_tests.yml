@@ -115,7 +115,7 @@ jobs:
             -Dsonar.sources=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.java.coveragePlugin=jacoco \
             -Dsonar.language=kotlin \
-            -Dsonar.java.binaries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/build \
+            -Dsonar.java.binaries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.java.libraries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
             -Dsonar.coverage.exclusions=**/test/**,**/build/** \
             -Dsonar.exclusions=**/test/**,**/build/** \
