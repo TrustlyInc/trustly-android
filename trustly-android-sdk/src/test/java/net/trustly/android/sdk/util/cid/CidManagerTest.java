@@ -1,7 +1,8 @@
-package net.trustly.android.sdk.util;
+package net.trustly.android.sdk.util.cid;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
@@ -14,9 +15,6 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.provider.Settings;
-
-import net.trustly.android.sdk.util.cid.CidManager;
-import net.trustly.android.sdk.util.cid.CidStorage;
 
 import org.junit.After;
 import org.junit.Before;
@@ -71,6 +69,12 @@ public class CidManagerTest {
     public void tearDown() {
         mockSettingsSecure.close();
         clearInvocations(mockSharedPreferencesEditor, mockSharedPreferences, mockContext, mockCalendar);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenCidManagerInstanceIsCalled() {
+        Throwable exception = assertThrows(IllegalStateException.class, CidManager::new);
+        assertEquals("Utility class cannot be instantiated", exception.getMessage());
     }
 
     @Test

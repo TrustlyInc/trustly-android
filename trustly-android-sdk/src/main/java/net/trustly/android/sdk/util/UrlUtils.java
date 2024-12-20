@@ -3,10 +3,7 @@ package net.trustly.android.sdk.util;
 import android.net.Uri;
 import android.util.Base64;
 
-import com.google.gson.Gson;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.JsonObject;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -23,6 +20,7 @@ public class UrlUtils {
     private static final String EQUALS_CHAR = "=";
     private static final String URL = "url";
     private static final String REQUEST_SIGNATURE = "requestSignature=.*";
+    private static final String SEPARATOR = "\\.";
 
     protected UrlUtils() {
         throw new IllegalStateException("Utility class cannot be instantiated");
@@ -81,33 +79,23 @@ public class UrlUtils {
     }
 
     public static String getJsonFromParameters(Map<String, String> parameters) {
-        try {
-            JSONObject jsonObject = buildJsonObject(parameters);
-            return jsonObject.toString().replace("\"nameValuePairs\":{", "")
-                    .replace(" }\n},", "}")
-                    .replace("\\/", "/");
-        } catch (JSONException e) {
-            return new Gson().toJson(parameters);
-        }
+        return buildJsonObjectSecond(parameters).toString();
     }
 
-    public static JSONObject buildJsonObject(Map<String, String> data) throws JSONException {
-        JSONObject json = new JSONObject();
-        for (Map.Entry<String, String> e : data.entrySet()) {
-            String[] keys = e.getKey().split("\\.");
-            JSONObject current = json;
+    private static JsonObject buildJsonObjectSecond(Map<String, String> data) {
+        JsonObject json = new JsonObject();
+        for (Map.Entry<String, String> entry : data.entrySet()) {
+            String[] keys = entry.getKey().split(SEPARATOR);
+            JsonObject current = json;
             for (int i = 0; i < keys.length; ++i) {
                 String key = keys[i];
-                try {
-                    current = current.getJSONObject(key);
-                } catch (JSONException ex) {
-                    if (i == keys.length - 1) {
-                        current.put(key, e.getValue());
-                    } else {
-                        JSONObject tmp = new JSONObject();
-                        current.put(key, tmp);
-                        current = tmp;
+                if (i == keys.length - 1) {
+                    current.addProperty(key, entry.getValue());
+                } else {
+                    if (!current.has(key)) {
+                        current.add(key, new JsonObject());
                     }
+                    current = current.getAsJsonObject(key);
                 }
             }
         }

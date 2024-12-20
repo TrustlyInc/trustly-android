@@ -9,7 +9,7 @@ public class CidStorage {
     public static final String SESSION_CID = "SESSION_CID";
     public static final String CID = "CID";
 
-    private CidStorage() {
+    CidStorage() {
         throw new IllegalStateException("Utility class cannot be instantiated");
     }
 
