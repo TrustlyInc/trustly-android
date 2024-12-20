@@ -85,7 +85,7 @@ public class CidManagerTest {
 
         CidManager.generateCid(mockContext);
 
-        verify(mockSharedPreferencesEditor, times(1)).putString("CID", CID_VALUE);
+        verify(mockSharedPreferencesEditor, times(1)).putString(CID_PARAM, CID_VALUE);
         verify(mockSharedPreferencesEditor, times(1)).apply();
         verify(mockSharedPreferences, times(1)).edit();
     }
@@ -170,8 +170,8 @@ public class CidManagerTest {
 
     private Map<String, String> getCIDParams() {
         Map<String, String> cidParams = new HashMap<>();
-        cidParams.put("CID", CID_VALUE);
-        cidParams.put("SESSION_CID", CID_VALUE);
+        cidParams.put(CID_PARAM, CID_VALUE);
+        cidParams.put(SESSION_CID, CID_VALUE);
         return cidParams;
     }
 
