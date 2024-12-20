@@ -121,4 +121,4 @@ jobs:
             -Dsonar.exclusions=**/build/**,**/test/**,**/androidTest/** \
             -Dsonar.sourceEncoding=UTF-8 \
             -Dsonar.verbose=true \
-            -Dsonar.scm.disabled=false
+            -Dsonar.scm.disabled=true
