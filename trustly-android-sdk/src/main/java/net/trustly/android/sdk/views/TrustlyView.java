@@ -224,6 +224,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
             /**
              * @deprecated
              */
+            @Deprecated
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 boolean isNotAssetFile = true;
@@ -273,6 +274,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
             /**
              * @deprecated
              */
+            @Deprecated
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (url != null) {
@@ -335,7 +337,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
             if (lang != null) data.put("lang", lang);
 
             data.put("metadata.sdkAndroidVersion", SDK_VERSION);
-            data.put("deviceType", deviceType);
+            data.put(DEVICE_TYPE, deviceType);
             data.put("returnUrl", returnURL);
             data.put("cancelUrl", cancelURL);
             data.put("grp", Integer.toString(grp));
@@ -413,8 +415,8 @@ public class TrustlyView extends LinearLayout implements Trustly {
             HashMap<String, String> d = new HashMap<>();
             d.put("accessId", establishData.get("accessId"));
             d.put("merchantId", establishData.get("merchantId"));
-            d.put("paymentType", establishData.get(PAYMENT_TYPE));
-            d.put("deviceType", deviceType);
+            d.put(PAYMENT_TYPE, establishData.get(PAYMENT_TYPE));
+            d.put(DEVICE_TYPE, deviceType);
             if (lang != null) d.put("lang", lang);
             d.put("grp", Integer.toString(grp));
             d.put("dynamicWidget", "true");

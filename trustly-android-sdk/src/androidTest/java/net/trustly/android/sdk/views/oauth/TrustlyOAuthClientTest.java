@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import java.util.Collections;
 import java.util.Map;
 
+@SuppressWarnings("deprecation")
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class TrustlyOAuthClientTest extends TrustlyActivityTest {

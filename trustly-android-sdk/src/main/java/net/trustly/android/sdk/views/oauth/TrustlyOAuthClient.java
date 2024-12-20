@@ -21,6 +21,7 @@ public class TrustlyOAuthClient extends WebViewClient {
      * @return {@code true} to cancel the current load, otherwise return {@code false}.
      * @deprecated
      */
+    @Deprecated(since = "Build.VERSION_CODES.N")
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         if (TrustlyView.isLocalEnvironment() || ((url.contains("paywithmybank.com") || url.contains("trustly.one")) && url.contains("/oauth/login/"))) {
