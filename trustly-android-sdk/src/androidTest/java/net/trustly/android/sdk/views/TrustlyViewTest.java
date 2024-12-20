@@ -15,7 +15,6 @@ import androidx.test.filters.LargeTest;
 import net.trustly.android.sdk.interfaces.Trustly;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -39,13 +38,6 @@ public class TrustlyViewTest extends TrustlyActivityTest {
     private static final String CUSTOMER_ADDRESS_COUNTRY = "customer.address.country";
 
     private TrustlyView trustlyView;
-
-    @Before
-    @Override
-    public void setUp() {
-        super.setUp();
-        TrustlyView.resetGrp();
-    }
 
     @After
     @Override

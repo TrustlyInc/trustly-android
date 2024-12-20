@@ -18,10 +18,6 @@ public interface Trustly {
      */
     @Deprecated(since = "3.2.3")
     class Instance {
-        private static void TrustlyView() {
-            throw new UnsupportedOperationException("This class is not meant to be instantiated");
-        }
-
         /**
          * Creates a TrustlyView instance that implements Trustly interface
          *
