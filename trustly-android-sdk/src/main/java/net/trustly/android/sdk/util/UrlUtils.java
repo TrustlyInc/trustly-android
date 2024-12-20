@@ -70,6 +70,7 @@ public class UrlUtils {
         return sb.toString();
     }
 
+    @SuppressWarnings("deprecation")
     private static String urlEncode(String str) {
         if (str == null) return EMPTY;
         try {
