@@ -58,6 +58,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     private static final String LOCAL = "local";
     private static final String MOBILE = "mobile";
     private static final String PAYMENT_PROVIDER_ID = "paymentProviderId";
+    private static final String PAYMENT_TYPE = "paymentType";
 
     private static boolean isLocalEnvironment = false;
 
@@ -416,7 +417,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
             HashMap<String, String> d = new HashMap<>();
             d.put("accessId", establishData.get("accessId"));
             d.put("merchantId", establishData.get("merchantId"));
-            d.put("paymentType", establishData.get("paymentType"));
+            d.put("paymentType", establishData.get(PAYMENT_TYPE));
             d.put("deviceType", deviceType);
             if (lang != null) d.put("lang", lang);
             d.put("grp", Integer.toString(grp));
@@ -574,7 +575,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
         }
 
         if (INDEX.equals(function) &&
-                !"Verification".equals(establishData.get("paymentType")) &&
+                !"Verification".equals(establishData.get(PAYMENT_TYPE)) &&
                 establishData.get(PAYMENT_PROVIDER_ID) != null) {
             function = "selectBank";
         }

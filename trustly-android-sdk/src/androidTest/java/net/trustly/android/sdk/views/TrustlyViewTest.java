@@ -25,7 +25,6 @@ import java.util.HashMap;
 @LargeTest
 public class TrustlyViewTest extends TrustlyActivityTest {
 
-    private static final String SDK_VERSION = TrustlyView.version;
     private static final String SHARED_PREFERENCES_FILE_NAME = "PayWithMyBank";
     private static final String GRP_KEY = "grp";
     private static final String ENV = "env";
