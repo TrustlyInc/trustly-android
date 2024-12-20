@@ -31,14 +31,14 @@ import net.trustly.android.sdk.interfaces.TrustlyCallback;
 import net.trustly.android.sdk.interfaces.TrustlyListener;
 import net.trustly.android.sdk.util.CustomTabsManager;
 import net.trustly.android.sdk.util.UrlUtils;
-import net.trustly.android.sdk.views.oauth.TrustlyOAuthView;
 import net.trustly.android.sdk.util.api.APIRequestManager;
 import net.trustly.android.sdk.util.cid.CidManager;
+import net.trustly.android.sdk.views.oauth.TrustlyOAuthView;
 
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -163,7 +163,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 if (pref != null) {
                     grp = pref.getInt("grp", -1);
                     if (grp < 0) {
-                        grp = new Random().nextInt(100);
+                        grp = new SecureRandom().nextInt(100);
                         pref.edit().putInt("grp", grp).commit();
                     }
                 }
