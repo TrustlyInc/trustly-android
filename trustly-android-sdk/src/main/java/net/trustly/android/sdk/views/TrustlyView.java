@@ -1,5 +1,7 @@
 package net.trustly.android.sdk.views;
 
+import static net.trustly.android.sdk.views.TrustlyConstants.*;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -52,14 +54,6 @@ public class TrustlyView extends LinearLayout implements Trustly {
     private static final String PROTOCOL = "https://";
     private static final String DOMAIN = "paywithmybank.com";
     private static final String SDK_VERSION = BuildConfig.SDK_VERSION;
-
-    private static final String DYNAMIC = "dynamic";
-    private static final String INDEX = "index";
-    private static final String LOCAL = "local";
-    private static final String MOBILE = "mobile";
-    private static final String PAYMENT_PROVIDER_ID = "paymentProviderId";
-    private static final String PAYMENT_TYPE = "paymentType";
-    private static final String DEVICE_TYPE = "deviceType";
 
     private static boolean isLocalEnvironment = false;
 
@@ -162,10 +156,10 @@ public class TrustlyView extends LinearLayout implements Trustly {
             if (grp < 0) {
                 SharedPreferences pref = context.getSharedPreferences("PayWithMyBank", 0);
                 if (pref != null) {
-                    grp = pref.getInt("grp", -1);
+                    grp = pref.getInt(GRP, -1);
                     if (grp < 0) {
                         grp = new SecureRandom().nextInt(100);
-                        pref.edit().putInt("grp", grp).commit();
+                        pref.edit().putInt(GRP, grp).commit();
                     }
                 }
             }
@@ -338,21 +332,21 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
             data.put("metadata.sdkAndroidVersion", SDK_VERSION);
             data.put(DEVICE_TYPE, deviceType);
-            data.put("returnUrl", returnURL);
-            data.put("cancelUrl", cancelURL);
-            data.put("grp", Integer.toString(grp));
+            data.put(RETURN_URL, returnURL);
+            data.put(CANCEL_URL, cancelURL);
+            data.put(GRP, Integer.toString(grp));
 
             if (data.containsKey(PAYMENT_PROVIDER_ID)) {
                 data.put("widgetLoaded", "true");
             }
 
             Map<String, String> sessionCidValues = CidManager.getOrCreateSessionCid(getContext());
-            data.put("sessionCid", sessionCidValues.get(CidManager.SESSION_CID_PARAM));
-            data.put("metadata.cid", sessionCidValues.get(CidManager.CID_PARAM));
+            data.put(SESSION_CID, sessionCidValues.get(CidManager.SESSION_CID_PARAM));
+            data.put(METADATA_CID, sessionCidValues.get(CidManager.CID_PARAM));
 
             notifyOpen();
 
-            if (LOCAL.equals(data.get("env"))) {
+            if (ENV_LOCAL.equals(data.get("env"))) {
                 WebView.setWebContentsDebuggingEnabled(true);
                 setIsLocalEnvironment(true);
             }
@@ -361,7 +355,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 Settings settings = APIRequestManager.INSTANCE.getAPIRequestSettings(getContext());
                 openWebViewOrCustomTabs(settings, data);
             } else {
-                APIMethod apiInterface = RetrofitInstance.INSTANCE.getInstance(getDomain(MOBILE, establishData)).create(APIMethod.class);
+                APIMethod apiInterface = RetrofitInstance.INSTANCE.getInstance(getDomain(FUNCTION_MOBILE, establishData)).create(APIMethod.class);
                 APIRequest apiRequest = new APIRequest(apiInterface, settings -> {
                     APIRequestManager.INSTANCE.saveAPIRequestSettings(getContext(), settings);
                     openWebViewOrCustomTabs(settings, data);
@@ -382,11 +376,11 @@ public class TrustlyView extends LinearLayout implements Trustly {
         if (settings.getSettings().getIntegrationStrategy().equals("webview")) {
             data.put("metadata.integrationContext", "InAppBrowser");
             byte[] encodedParameters = UrlUtils.getParameterString(data).getBytes(StandardCharsets.UTF_8);
-            webView.postUrl(getEndpointUrl(INDEX, establishData), encodedParameters);
+            webView.postUrl(getEndpointUrl(FUNCTION_INDEX, establishData), encodedParameters);
         } else {
-            data.put("returnUrl", establishData.get("metadata.urlScheme"));
-            data.put("cancelUrl", establishData.get("metadata.urlScheme"));
-            CustomTabsManager.openCustomTabsIntent(getContext(), getEndpointUrl(MOBILE, establishData) + "?token=" + getTokenByEncodedParameters(data));
+            data.put(RETURN_URL, establishData.get("metadata.urlScheme"));
+            data.put(CANCEL_URL, establishData.get("metadata.urlScheme"));
+            CustomTabsManager.openCustomTabsIntent(getContext(), getEndpointUrl(FUNCTION_MOBILE, establishData) + "?token=" + getTokenByEncodedParameters(data));
         }
     }
 
@@ -432,8 +426,8 @@ public class TrustlyView extends LinearLayout implements Trustly {
             }
 
             Map<String, String> sessionCidValues = CidManager.getOrCreateSessionCid(getContext());
-            d.put("sessionCid", sessionCidValues.get(CidManager.SESSION_CID_PARAM));
-            d.put("cid", sessionCidValues.get(CidManager.CID_PARAM));
+            d.put(SESSION_CID, sessionCidValues.get(CidManager.SESSION_CID_PARAM));
+            d.put(CID, sessionCidValues.get(CidManager.CID_PARAM));
 
             Map<String, String> hash = new HashMap<>();
 
@@ -534,16 +528,16 @@ public class TrustlyView extends LinearLayout implements Trustly {
         }
 
         switch (environment) {
-            case DYNAMIC: {
+            case ENV_DYNAMIC: {
                 String host = envHost != null ? envHost : "";
                 return PROTOCOL + host + ".int.trustly.one";
             }
-            case LOCAL: {
+            case ENV_LOCAL: {
                 String host = (envHost != null && !envHost.equals("localhost")) ? envHost : BuildConfig.LOCAL_IP;
                 String port = "";
                 String protocol = "http://";
 
-                if (MOBILE.equals(function)) {
+                if (FUNCTION_MOBILE.equals(function)) {
                     port = ":10000";
                 } else {
                     port = ":8000";
@@ -569,11 +563,11 @@ public class TrustlyView extends LinearLayout implements Trustly {
     protected String getEndpointUrl(String function, Map<String, String> establishData) {
         String domain = getDomain(function, establishData);
 
-        if (MOBILE.equals(function)) {
+        if (FUNCTION_MOBILE.equals(function)) {
              return domain + "/frontend/mobile/establish";
         }
 
-        if (INDEX.equals(function) &&
+        if (FUNCTION_INDEX.equals(function) &&
                 !"Verification".equals(establishData.get(PAYMENT_TYPE)) &&
                 establishData.get(PAYMENT_PROVIDER_ID) != null) {
             function = "selectBank";
