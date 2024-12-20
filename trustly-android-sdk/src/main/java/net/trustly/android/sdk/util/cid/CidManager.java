@@ -1,4 +1,4 @@
-package net.trustly.android.sdk.util;
+package net.trustly.android.sdk.util.cid;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -17,7 +17,7 @@ public class CidManager {
     public static final String SESSION_CID_PARAM = "SESSION_CID";
     private static final String DIVIDER = "-";
 
-    protected CidManager() {
+    private CidManager() {
         throw new IllegalStateException("Utility class cannot be instantiated");
     }
 

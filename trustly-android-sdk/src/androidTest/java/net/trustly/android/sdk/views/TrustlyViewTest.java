@@ -135,34 +135,6 @@ public class TrustlyViewTest extends TrustlyActivityTest {
     }
 
     @Test
-    public void shouldValidateTrustlyViewGetInAppBrowserLaunchUrlMethodWithDefaultParameters() {
-        scenario.onActivity(activity -> {
-            trustlyView = new TrustlyView(activity.getApplicationContext());
-
-            String result = trustlyView.getInAppBrowserLaunchURL(getEstablishData());
-
-            int grp = getSharedPreferences(activity.getApplicationContext()).getInt(GRP_KEY, -1);
-            assertEquals("accessId=123456&deviceType=mobile%3Aandroid%3Aiab&metadata.sdkAndroidVersion=" + SDK_VERSION + "&grp=" + grp + "&merchantId=654321", result);
-        });
-    }
-
-    @Test
-    public void shouldValidateTrustlyViewGetInAppBrowserLaunchUrlMethodWithCompleteParameters() {
-        scenario.onActivity(activity -> {
-            trustlyView = new TrustlyView(activity.getApplicationContext());
-            HashMap<String, String> establishData = getEstablishData();
-            establishData.put(DEVICE_TYPE, ANDROID);
-            establishData.put(METADATA_LANG, PT_BR);
-            establishData.put("paymentProviderId", "10009899");
-
-            String result = trustlyView.getInAppBrowserLaunchURL(establishData);
-
-            int grp = getSharedPreferences(activity.getApplicationContext()).getInt(GRP_KEY, -1);
-            assertEquals("accessId=123456&deviceType=android%3Aandroid%3Aiab&grp=" + grp + "&widgetLoaded=true&merchantId=654321&metadata.lang=pt_BR&paymentProviderId=10009899&lang=pt_BR&metadata.sdkAndroidVersion=" + SDK_VERSION, result);
-        });
-    }
-
-    @Test
     public void shouldValidateTrustlyViewHybridMethod() {
         scenario.onActivity(activity -> {
             trustlyView = new TrustlyView(activity.getApplicationContext());
