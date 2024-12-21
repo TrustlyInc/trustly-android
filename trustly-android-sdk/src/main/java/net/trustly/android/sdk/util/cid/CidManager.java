@@ -17,7 +17,7 @@ public class CidManager {
     public static final String SESSION_CID_PARAM = "SESSION_CID";
     private static final String DIVIDER = "-";
 
-    private CidManager() {
+    CidManager() {
         throw new IllegalStateException("Utility class cannot be instantiated");
     }
 

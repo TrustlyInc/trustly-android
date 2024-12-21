@@ -53,6 +53,7 @@ public class TrustlyTest {
         clearInvocations(mockTrustly, mockTrustlyCallback, mockTrustlyListener, mockContext);
     }
 
+    @Deprecated
     @Test
     public void shouldThrowExceptionWhenTrustlyInstanceIsCalled() {
         assertThrows(NullPointerException.class, () -> Trustly.Instance.create(mockContext));
