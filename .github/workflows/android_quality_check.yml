@@ -12,6 +12,8 @@ env:
   PR_NUMBER: ${{ github.event.pull_request.number }}
   BRANCH_ORIGIN: ${{ github.head_ref }}
   BASE_BRANCH: ${{ github.base_ref }}
+  PROJECT_DIR: trustly-android-sdk
+  COVERAGE_DIR: ${{ github.workspace }}/trustly-android-sdk/build/reports/coverage
 
 jobs:
   run_tests_and_sonar_analysis:
@@ -24,11 +26,11 @@ jobs:
       - name: Get Git Revision (Commit SHA)
         id: git_revision
         run: |
-          cd trustly-android-sdk || exit
-          git fetch origin "${BRANCH_ORIGIN}"
-          GIT_REVISION=$(git rev-parse origin/${BRANCH_ORIGIN})
+          cd ${{ env.PROJECT_DIR }}
+          git fetch origin "${{ env.BRANCH_ORIGIN }}"
+          GIT_REVISION=$(git rev-parse origin/${{ env.BRANCH_ORIGIN }})
           echo "GIT_REVISION=$GIT_REVISION" >> $GITHUB_ENV
-          echo "Git Revision: $GIT_REVISION"  
+          echo "Git Revision: $GIT_REVISION"
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
@@ -36,28 +38,30 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Enable KVM
+      - name: Enable KVM Temporarily
         run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
+          if [ ! -e /dev/kvm ]; then
+            echo "KVM is not available. Please check your host configuration." >&2
+            exit 1
+          fi
+          sudo chmod 666 /dev/kvm
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
       - name: Run Clean
         run: |
-          cd trustly-android-sdk || exit
+          cd ${{ env.PROJECT_DIR }}
           ./gradlew clean --warning-mode all
 
       - name: Run Build
         run: |
-          cd trustly-android-sdk || exit
+          cd ${{ env.PROJECT_DIR }}
           ./gradlew build --warning-mode all    
 
       - name: Run Unit Test Coverage
         run: |
-          cd trustly-android-sdk || exit
+          cd ${{ env.PROJECT_DIR }}
           ./gradlew createDebugUnitTestCoverageReport
 
       - name: Start Emulator and Run Android Test Coverage
@@ -73,13 +77,13 @@ jobs:
           ram-size: 2048M
           heap-size: 512M
           disk-size: 2048M
-          working-directory: trustly-android-sdk
+          working-directory: ${{ env.PROJECT_DIR }}
           script: |
             ./gradlew createDebugAndroidTestCoverageReport --warning-mode all
 
       - name: Find Coverage Report Files
         run: |
-          find trustly-android-sdk/build/reports/coverage -type f \( \
+          find ${{ env.COVERAGE_DIR }} -type f \( \
             -path "*/androidTest/debug/connected/report.xml" -o \
             -path "*/test/debug/report.xml" \
           \) -print
@@ -111,12 +115,12 @@ jobs:
             -Dsonar.pullrequest.branch=${{ env.BRANCH_ORIGIN }} \
             -Dsonar.pullrequest.base=${{ env.BASE_BRANCH }} \
             -Dsonar.scm.revision=${{ env.GIT_REVISION }} \
-            -Dsonar.coverage.jacoco.xmlReportPaths=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/build/reports/coverage/test/debug/report.xml,/home/runner/work/trustly-android/trustly-android/trustly-android-sdk/build/reports/coverage/androidTest/debug/connected/report.xml \
-            -Dsonar.sources=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
+            -Dsonar.coverage.jacoco.xmlReportPaths=${{ env.COVERAGE_DIR }}/test/debug/report.xml,${{ env.COVERAGE_DIR }}/androidTest/debug/connected/report.xml \
+            -Dsonar.sources=${{ github.workspace }}/${{ env.PROJECT_DIR }}/src \
             -Dsonar.java.coveragePlugin=jacoco \
             -Dsonar.language=kotlin \
-            -Dsonar.java.binaries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
-            -Dsonar.java.libraries=/home/runner/work/trustly-android/trustly-android/trustly-android-sdk \
+            -Dsonar.java.binaries=${{ github.workspace }}/${{ env.PROJECT_DIR }} \
+            -Dsonar.java.libraries=${{ github.workspace }}/${{ env.PROJECT_DIR }} \
             -Dsonar.coverage.exclusions=**/build/**,**/test/**,**/androidTest/** \
             -Dsonar.exclusions=**/build/**,**/test/**,**/androidTest/** \
             -Dsonar.sourceEncoding=UTF-8 \
