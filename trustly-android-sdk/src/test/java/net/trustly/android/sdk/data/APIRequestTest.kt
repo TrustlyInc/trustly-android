@@ -101,6 +101,7 @@ class APIRequestTest {
         assertEquals(null, settingsResult)
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun mockCallbackResponse(mockResponse: Response<Settings>) {
         `when`(mockCall.enqueue(any())).then {
             val callback = it.arguments.first() as retrofit2.Callback<Settings>
