@@ -607,7 +607,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     }
 
     private void showErrorMessage(Exception e) {
-        if (e.getMessage() != null) Log.e("TrustlyView", e.getMessage());
+        Log.e("TrustlyView", Objects.requireNonNull(e.getMessage()));
     }
 
     public static boolean isLocalEnvironment() {

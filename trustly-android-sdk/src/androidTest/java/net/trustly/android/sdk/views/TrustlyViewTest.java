@@ -157,6 +157,16 @@ public class TrustlyViewTest extends TrustlyActivityTest {
     }
 
     @Test
+    public void shouldValidateTrustlyJsInterfaceResizeMethodSameWidthAndHeight() {
+        scenario.onActivity(activity -> {
+            trustlyView = new TrustlyView(activity.getApplicationContext());
+            TrustlyJsInterface trustlyJsInterface = new TrustlyJsInterface(trustlyView);
+            trustlyJsInterface.resize(100, 100);
+            assertNotNull(trustlyJsInterface);
+        });
+    }
+
+    @Test
     public void shouldValidateTrustlyViewHybridMethod() {
         scenario.onActivity(activity -> {
             trustlyView = new TrustlyView(activity.getApplicationContext());
@@ -499,6 +509,8 @@ public class TrustlyViewTest extends TrustlyActivityTest {
             callTrustlyViewEstablishMethod(activity, establishData);
         });
     }
+
+
 
     private void callTrustlyViewSelectBankWidgetMethod(Context activity, HashMap<String, String> establishData) {
         trustlyView = new TrustlyView(activity.getApplicationContext());

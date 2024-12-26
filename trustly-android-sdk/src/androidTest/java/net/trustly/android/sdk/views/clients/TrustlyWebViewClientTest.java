@@ -12,7 +12,6 @@ import androidx.test.filters.LargeTest;
 
 import net.trustly.android.sdk.TrustlyActivityTest;
 import net.trustly.android.sdk.views.TrustlyView;
-import net.trustly.android.sdk.views.oauth.TrustlyOAuthClient;
 
 import org.junit.After;
 import org.junit.Test;
@@ -22,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class TrustlyWebViewClientTest extends TrustlyActivityTest {
