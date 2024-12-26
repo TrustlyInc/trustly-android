@@ -1,4 +1,4 @@
-package net.trustly.android.sdk.views;
+package net.trustly.android.sdk;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;

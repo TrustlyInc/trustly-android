@@ -12,6 +12,8 @@ import android.util.AttributeSet;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import net.trustly.android.sdk.TrustlyActivityTest;
+import net.trustly.android.sdk.TrustlyJsInterface;
 import net.trustly.android.sdk.interfaces.Trustly;
 
 import org.junit.After;
@@ -54,6 +56,11 @@ public class TrustlyViewTest extends TrustlyActivityTest {
             trustlyView = new TrustlyView(activity.getApplicationContext());
             assertNotNull(trustlyView);
         });
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldValidateTrustlyViewInstanceNullContext() {
+        scenario.onActivity(activity -> trustlyView = new TrustlyView(null));
     }
 
     @Test
@@ -111,6 +118,20 @@ public class TrustlyViewTest extends TrustlyActivityTest {
     }
 
     @Test
+    public void shouldValidateSharedPreferencesNull() {
+        scenario.onActivity(activity -> {
+            SharedPreferences.Editor editor = getSharedPreferences(activity.getApplicationContext()).edit();
+            editor.remove("PayWithMyBank");
+            editor.commit();
+
+            trustlyView = new TrustlyView(activity.getApplicationContext());
+            assertNotNull(trustlyView);
+
+            assertNotEquals(101, getSharedPreferences(activity.getApplicationContext()).getInt(GRP_KEY, 0));
+        });
+    }
+
+    @Test
     public void shouldValidateTrustlyViewInstanceSharedPreferencesLessThanZero() {
         scenario.onActivity(activity -> {
             SharedPreferences.Editor editor = getSharedPreferences(activity.getApplicationContext()).edit();
@@ -122,6 +143,16 @@ public class TrustlyViewTest extends TrustlyActivityTest {
 
             int result = getSharedPreferences(activity.getApplicationContext()).getInt(GRP_KEY, 0);
             assertNotEquals(-10, result);
+        });
+    }
+
+    @Test
+    public void shouldValidateTrustlyJsInterfaceResizeMethod() {
+        scenario.onActivity(activity -> {
+            trustlyView = new TrustlyView(activity.getApplicationContext());
+            TrustlyJsInterface trustlyJsInterface = new TrustlyJsInterface(trustlyView);
+            trustlyJsInterface.resize(100, 0);
+            assertNotNull(trustlyJsInterface);
         });
     }
 

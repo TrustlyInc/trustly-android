@@ -1,11 +1,6 @@
 package net.trustly.android.sdk;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.webkit.JavascriptInterface;
-import android.widget.LinearLayout;
 
 import net.trustly.android.sdk.views.TrustlyView;
 
@@ -46,22 +41,7 @@ public class TrustlyJsInterface {
 
     @JavascriptInterface
     public void resize(final float width, final float height) {
-        new Handler(Looper.getMainLooper()).post(() -> {
-            DisplayMetrics displayMetrics = trustlyView.getContext().getResources().getDisplayMetrics();
-            float widthPixels = applyDimension(width, displayMetrics);
-            float heightPixels = 0.0F;
-            if (height != heightPixels) {
-                heightPixels = applyDimension(height, displayMetrics);
-            } else {
-                heightPixels = applyDimension(width * 1.75F, displayMetrics);
-            }
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) widthPixels, (int) heightPixels);
-            trustlyView.setLayoutParams(params);
-        });
-    }
-
-    private float applyDimension(float value, DisplayMetrics displayMetrics) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, displayMetrics);
+        trustlyView.resize(width, height);
     }
 
     protected void addToListenerDetails(String[] params, int index, String eventName, HashMap<String, String> eventDetails) {

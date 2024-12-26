@@ -28,20 +28,17 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.ViewGroup;
-import android.webkit.WebChromeClient;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-
-import androidx.annotation.RequiresApi;
 
 import net.trustly.android.sdk.BuildConfig;
 import net.trustly.android.sdk.TrustlyJsInterface;
@@ -57,6 +54,8 @@ import net.trustly.android.sdk.util.CustomTabsManager;
 import net.trustly.android.sdk.util.UrlUtils;
 import net.trustly.android.sdk.util.api.APIRequestManager;
 import net.trustly.android.sdk.util.cid.CidManager;
+import net.trustly.android.sdk.views.clients.TrustlyWebViewChromeClient;
+import net.trustly.android.sdk.views.clients.TrustlyWebViewClient;
 import net.trustly.android.sdk.views.oauth.TrustlyOAuthView;
 
 import java.nio.charset.StandardCharsets;
@@ -178,8 +177,8 @@ public class TrustlyView extends LinearLayout implements Trustly {
         initGrp(context);
         initWebView(context);
 
-        setWebViewChromeClient(this);
-        setWebViewClient(this);
+        setWebViewChromeClient();
+        setWebViewClient();
 
         addView(webView);
     }
@@ -220,84 +219,69 @@ public class TrustlyView extends LinearLayout implements Trustly {
         webView.addJavascriptInterface(new TrustlyJsInterface(this), "TrustlyNativeSDK");
     }
 
-    private void setWebViewChromeClient(TrustlyView trustlyView) {
-        webView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
-                WebView.HitTestResult result = view.getHitTestResult();
-                String url = result.getExtra();
-
-                if (result.getType() == 0) {
-                    //window.open
-                    final TrustlyOAuthView trustlyOAuthView = new TrustlyOAuthView(view.getContext());
-                    trustlyView.addView(trustlyOAuthView);
-                    WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
-                    transport.setWebView(trustlyOAuthView.getWebView());
-                    resultMsg.sendToTarget();
-                    return true;
-                } else {
-                    if (trustlyView.onExternalUrl != null) {
-                        Map<String, String> params = new HashMap<>();
-                        params.put("url", url);
-                        trustlyView.onExternalUrl.handle(trustlyView, params);
-                    } else {
-                        CustomTabsManager.openCustomTabsIntent(view.getContext(), url);
-                    }
-                    return false;
-                }
+    public void resize(float width, float height) {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+            float widthPixels = applyDimension(width, displayMetrics);
+            float heightPixels = 0.0F;
+            if (height != heightPixels) {
+                heightPixels = applyDimension(height, displayMetrics);
+            } else {
+                heightPixels = applyDimension(width * 1.75F, displayMetrics);
             }
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) widthPixels, (int) heightPixels);
+            this.setLayoutParams(params);
         });
     }
 
-    private void setWebViewClient(TrustlyView trustlyView) {
-        webView.setWebViewClient(new WebViewClient() {
-            /**
-             * @deprecated
-             */
-            @Deprecated
-            @Override
-            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                handleWebViewClientOnReceivedError(trustlyView, failingUrl);
-            }
-
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @SuppressWarnings("deprecation")
-            @Override
-            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                String url = request.getUrl().toString();
-                this.onReceivedError(view, 0, "", url);
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                handleWebViewClientOnPageFinished(view, trustlyView);
-            }
-
-            /**
-             * @deprecated
-             */
-            @Deprecated
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                return handleWebViewClientShouldOverrideUrlLoading(trustlyView, url);
-            }
-        });
+    private float applyDimension(float value, DisplayMetrics displayMetrics) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, displayMetrics);
     }
 
-    private void handleWebViewClientOnReceivedError(TrustlyView trustlyView, String failingUrl) {
-        boolean isNotAssetFile = true;
+    private void setWebViewChromeClient() {
+        webView.setWebChromeClient(new TrustlyWebViewChromeClient(this));
+    }
+
+    private void setWebViewClient() {
+        webView.setWebViewClient(new TrustlyWebViewClient(this));
+    }
+
+    public boolean handleWebChromeClientOnCreateWindow(WebView view, Message resultMsg) {
+        WebView.HitTestResult result = view.getHitTestResult();
+        if (result.getType() == 0) {
+            //window.open
+            final TrustlyOAuthView trustlyOAuthView = new TrustlyOAuthView(view.getContext());
+            this.addView(trustlyOAuthView);
+            WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
+            transport.setWebView(trustlyOAuthView.getWebView());
+            resultMsg.sendToTarget();
+            return true;
+        } else {
+            String url = result.getExtra();
+            if (onExternalUrl != null) {
+                Map<String, String> params = new HashMap<>();
+                params.put("url", url);
+                onExternalUrl.handle(this, params);
+            } else {
+                CustomTabsManager.openCustomTabsIntent(view.getContext(), url);
+            }
+            return false;
+        }
+    }
+
+    public void handleWebViewClientOnReceivedError(TrustlyView trustlyView, String failingUrl) {
         try {
-            isNotAssetFile = !failingUrl.matches(".*\\.svg\\.png\\.jpg\\.jpeg\\.css\\.gif\\.webp");
+            boolean isAssetFile = failingUrl.matches("([^\\\\s]+(\\\\.(?i)(jpg|jpeg|svg|png|css|gif|webp))$)");
+            if (!isLocalEnvironment() && onCancel != null && !isAssetFile) {
+                onCancel.handle(trustlyView, new HashMap<>());
+            }
         } catch (Exception e) {
             onCancel.handle(trustlyView, new HashMap<>());
-        }
-
-        if (!isLocalEnvironment() && onCancel != null && isNotAssetFile) {
-            onCancel.handle(trustlyView, new HashMap<>());
+            showErrorMessage(e);
         }
     }
 
-    private void handleWebViewClientOnPageFinished(WebView view, TrustlyView trustlyView) {
+    public void handleWebViewClientOnPageFinished(WebView view, TrustlyView trustlyView) {
         webView.loadUrl("javascript:TrustlyNativeSDK.resize(document.body.scrollWidth, document.body.scrollHeight)");
 
         if (status.equals(Status.PANEL_LOADING)) {
@@ -320,7 +304,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
         }
     }
 
-    private boolean handleWebViewClientShouldOverrideUrlLoading(TrustlyView trustlyView, String url) {
+    public boolean handleWebViewClientShouldOverrideUrlLoading(TrustlyView trustlyView, String url) {
         if (url.startsWith(returnURL) || url.startsWith(cancelURL)) {
             if (url.startsWith(returnURL) && onReturn != null) {
                 onReturn.handle(trustlyView, UrlUtils.getQueryParametersFromUrl(url));
@@ -331,7 +315,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
             return true;
         } else if (url.startsWith("msg://push?")) {
             String[] params = url.split("\\|");
-            if (params[0].equals("PayWithMyBank.createTransaction")) {
+            if (params[0].contains("PayWithMyBank.createTransaction")) {
                 data.put(PAYMENT_PROVIDER_ID, params.length > 1 ? params[1] : "");
                 if (onWidgetBankSelected != null) {
                     onWidgetBankSelected.handle(trustlyView, data);

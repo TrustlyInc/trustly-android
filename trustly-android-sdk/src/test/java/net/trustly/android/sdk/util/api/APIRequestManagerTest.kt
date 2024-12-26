@@ -21,7 +21,6 @@ import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import java.util.Calendar
 
-
 class APIRequestManagerTest {
 
     @Mock
@@ -96,20 +95,27 @@ class APIRequestManagerTest {
 
     @Test
     fun testGettingDataAPIRequest() {
+        `when`(mockedEdit.putString(anyString(), anyString())).thenReturn(mockedEdit)
+        `when`(mockedPrefs.edit()).thenReturn(mockedEdit)
         `when`(mockedContext.getSharedPreferences("API_STORAGE", Context.MODE_PRIVATE)).thenReturn(mockedPrefs)
+
+        mockStatic(Calendar::class.java, CALLS_REAL_METHODS).use { static ->
+            static.`when`<Any> { Calendar.getInstance() }
+                .thenReturn(mockedCalendar)
+        }
 
         mockStatic(APIRequestStorage::class.java, CALLS_REAL_METHODS).use { static ->
             static.`when`<Any> { APIRequestStorage.readDataFrom(mockedContext, "API_REQUEST") }
                 .thenReturn("1724258668")
         }
 
-        val result = APIRequestManager.getAPIRequest(mockedContext)
-        assertEquals("1724258668", result)
+        val result = APIRequestManager.validateAPIRequest(mockedContext)
+        assertEquals(false, result)
     }
 
     @Test
-    fun testGettingDataAPIRequestSettings() {
-        val output = getSettingsMockData()
+    fun testGettingDataAPIRequestSettingsWithWebView() {
+        val output = getSettingsMockData("webview")
         `when`(mockedContext.getSharedPreferences("API_STORAGE", Context.MODE_PRIVATE)).thenReturn(mockedPrefs)
 
         mockStatic(APIRequestStorage::class.java, CALLS_REAL_METHODS).use { static ->
@@ -122,18 +128,45 @@ class APIRequestManagerTest {
     }
 
     @Test
+    fun testGettingDataAPIRequestSettingsWithInAppBrowser() {
+        val output = getSettingsMockData("in-app-browser")
+        `when`(mockedContext.getSharedPreferences("API_STORAGE", Context.MODE_PRIVATE)).thenReturn(mockedPrefs)
+
+        mockStatic(APIRequestStorage::class.java, CALLS_REAL_METHODS).use { static ->
+            static.`when`<Any> { APIRequestStorage.readDataFrom(mockedContext, "API_REQUEST_SETTINGS") }
+                .thenReturn(output)
+        }
+
+        val settings = APIRequestManager.getAPIRequestSettings(mockedContext)
+        assertEquals("in-app-browser", settings.settings.integrationStrategy)
+    }
+
+    @Test
+    fun testGettingDataAPIRequestSettingsWithNull() {
+        `when`(mockedContext.getSharedPreferences("API_STORAGE", Context.MODE_PRIVATE)).thenReturn(mockedPrefs)
+
+        mockStatic(APIRequestStorage::class.java, CALLS_REAL_METHODS).use { static ->
+            static.`when`<Any> { APIRequestStorage.readDataFrom(mockedContext, "API_REQUEST_SETTINGS") }
+                .thenReturn(null)
+        }
+
+        val settings = APIRequestManager.getAPIRequestSettings(mockedContext)
+        assertEquals("webview", settings.settings.integrationStrategy)
+    }
+
+    @Test
     fun testSavingDataAPIRequestSettings() {
         `when`(mockedEdit.putString(anyString(), anyString())).thenReturn(mockedEdit)
         `when`(mockedPrefs.edit()).thenReturn(mockedEdit)
         `when`(mockedContext.getSharedPreferences("API_STORAGE", Context.MODE_PRIVATE)).thenReturn(mockedPrefs)
 
-        val settings = Gson().fromJson(getSettingsMockData(), Settings::class.java)
+        val settings = Gson().fromJson(getSettingsMockData("webview"), Settings::class.java)
         APIRequestManager.saveAPIRequestSettings(mockedContext, settings)
 
         verify(mockedEdit, times(1)).putString("API_REQUEST_SETTINGS", "{\"settings\":{\"integrationStrategy\":\"webview\"}}")
         verify(mockedEdit, times(1)).apply()
     }
 
-    private fun getSettingsMockData() = "{\"settings\":{\"integrationStrategy\":\"webview\"}}"
+    private fun getSettingsMockData(strategy: String) = "{\"settings\":{\"integrationStrategy\":\"$strategy\"}}"
 
 }

@@ -22,7 +22,7 @@ object APIRequestManager {
         return true
     }
 
-    fun getAPIRequest(context: Context): String? {
+    private fun getAPIRequest(context: Context): String? {
         return APIRequestStorage.readDataFrom(context, API_REQUEST)
     }
 
