@@ -1,6 +1,7 @@
 package net.trustly.android.sdk.views.clients;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import android.net.Uri;
 import android.webkit.WebResourceRequest;
@@ -11,12 +12,14 @@ import androidx.test.filters.LargeTest;
 
 import net.trustly.android.sdk.TrustlyActivityTest;
 import net.trustly.android.sdk.views.TrustlyView;
+import net.trustly.android.sdk.views.oauth.TrustlyOAuthClient;
 
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 @RunWith(AndroidJUnit4.class)
@@ -218,6 +221,107 @@ public class TrustlyWebViewClientTest extends TrustlyActivityTest {
             TrustlyWebViewClient trustlyWebViewClient = new TrustlyWebViewClient(trustlyView);
             trustlyWebViewClient.onReceivedError(webView, getWebResourceRequest(), null);
             assertNotNull(trustlyWebViewClient);
+        });
+    }
+
+    @Test
+    public void shouldValidateTrustlyWebViewClientShouldOverrideUrlLoadingWithReturnUrl() {
+        scenario.onActivity(activity -> {
+            trustlyView = new TrustlyView(activity.getApplicationContext());
+            WebView webView = new WebView(activity.getApplicationContext());
+            TrustlyWebViewClient trustlyWebViewClient = new TrustlyWebViewClient(trustlyView);
+            TrustlyView.setIsLocalEnvironment(false);
+            boolean result = trustlyWebViewClient.shouldOverrideUrlLoading(webView, "msg://return?www.url.com");
+            assertTrue(result);
+        });
+    }
+
+    @Test
+    public void shouldValidateTrustlyWebViewClientShouldOverrideUrlLoadingWithReturnNullUrl() {
+        scenario.onActivity(activity -> {
+            trustlyView = new TrustlyView(activity.getApplicationContext());
+            trustlyView.onReturn(null);
+            WebView webView = new WebView(activity.getApplicationContext());
+            TrustlyWebViewClient trustlyWebViewClient = new TrustlyWebViewClient(trustlyView);
+            TrustlyView.setIsLocalEnvironment(false);
+            boolean result = trustlyWebViewClient.shouldOverrideUrlLoading(webView, "msg://return?www.url.com");
+            assertTrue(result);
+        });
+    }
+
+    @Test
+    public void shouldValidateTrustlyWebViewClientShouldOverrideUrlLoadingWithCancelUrl() {
+        scenario.onActivity(activity -> {
+            trustlyView = new TrustlyView(activity.getApplicationContext());
+            WebView webView = new WebView(activity.getApplicationContext());
+            TrustlyWebViewClient trustlyWebViewClient = new TrustlyWebViewClient(trustlyView);
+            TrustlyView.setIsLocalEnvironment(false);
+            boolean result = trustlyWebViewClient.shouldOverrideUrlLoading(webView, "msg://cancel?www.url.com");
+            assertTrue(result);
+        });
+    }
+
+    @Test
+    public void shouldValidateTrustlyWebViewClientShouldOverrideUrlLoadingWithCancelNullUrl() {
+        scenario.onActivity(activity -> {
+            trustlyView = new TrustlyView(activity.getApplicationContext());
+            trustlyView.onCancel(null);
+            WebView webView = new WebView(activity.getApplicationContext());
+            TrustlyWebViewClient trustlyWebViewClient = new TrustlyWebViewClient(trustlyView);
+            TrustlyView.setIsLocalEnvironment(false);
+            boolean result = trustlyWebViewClient.shouldOverrideUrlLoading(webView, "msg://cancel?www.url.com");
+            assertTrue(result);
+        });
+    }
+
+    @Test
+    public void shouldValidateTrustlyWebViewClientShouldOverrideUrlLoadingWithPushUrlCreateTransaction() {
+        scenario.onActivity(activity -> {
+            Map<String, String> values = new HashMap<>();
+            values.put("key1", "value1");
+            values.put("key2", "value2");
+            values.put("key3", "value3");
+
+            trustlyView = new TrustlyView(activity.getApplicationContext());
+            trustlyView.establish(values);
+
+            WebView webView = new WebView(activity.getApplicationContext());
+            TrustlyWebViewClient trustlyWebViewClient = new TrustlyWebViewClient(trustlyView);
+            TrustlyView.setIsLocalEnvironment(false);
+            boolean result = trustlyWebViewClient.shouldOverrideUrlLoading(webView, "msg://push?PayWithMyBank.createTransaction|123456");
+            assertTrue(result);
+        });
+    }
+
+    @Test
+    public void shouldValidateTrustlyWebViewClientShouldOverrideUrlLoadingWithPushUrlCreateTransactionWidgetBankSelectedNull() {
+        scenario.onActivity(activity -> {
+            Map<String, String> values = new HashMap<>();
+            values.put("key1", "value1");
+            values.put("key2", "value2");
+            values.put("key3", "value3");
+
+            trustlyView = new TrustlyView(activity.getApplicationContext());
+            trustlyView.onBankSelected(null);
+            trustlyView.establish(values);
+
+            WebView webView = new WebView(activity.getApplicationContext());
+            TrustlyWebViewClient trustlyWebViewClient = new TrustlyWebViewClient(trustlyView);
+            TrustlyView.setIsLocalEnvironment(false);
+            boolean result = trustlyWebViewClient.shouldOverrideUrlLoading(webView, "msg://push?PayWithMyBank.createTransaction|123456");
+            assertTrue(result);
+        });
+    }
+
+    @Test
+    public void shouldValidateTrustlyWebViewClientShouldOverrideUrlLoadingWithPushUrlWidgetLoaded() {
+        scenario.onActivity(activity -> {
+            trustlyView = new TrustlyView(activity.getApplicationContext());
+            WebView webView = new WebView(activity.getApplicationContext());
+            TrustlyWebViewClient trustlyWebViewClient = new TrustlyWebViewClient(trustlyView);
+            TrustlyView.setIsLocalEnvironment(false);
+            boolean result = trustlyWebViewClient.shouldOverrideUrlLoading(webView, "msg://push?PayWithMyBank.widgetLoaded|123456");
+            assertTrue(result);
         });
     }
 

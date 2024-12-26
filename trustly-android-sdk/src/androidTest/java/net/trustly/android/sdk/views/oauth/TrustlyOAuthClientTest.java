@@ -1,5 +1,6 @@
 package net.trustly.android.sdk.views.oauth;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
