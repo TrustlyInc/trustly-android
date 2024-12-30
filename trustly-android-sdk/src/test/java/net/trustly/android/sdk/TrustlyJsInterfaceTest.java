@@ -141,6 +141,12 @@ public class TrustlyJsInterfaceTest {
     }
 
     @Test
+    public void shouldValidateTrustlyJsInterfaceResize() {
+        trustlyJsInterface.resize(100, 100);
+        verify(mockTrustlyView, times(1)).resize(100, 100);
+    }
+
+    @Test
     public void shouldValidateTrustlyJsInterfaceAddToListenerDetailsWithAllNullValues() {
         HashMap<String, String> eventDetails = new HashMap<>();
         trustlyJsInterface.addToListenerDetails(null, -1, null, eventDetails);
