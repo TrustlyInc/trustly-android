@@ -1,6 +1,12 @@
 package net.trustly.android.sdk.util;
 
 import android.net.Uri;
+import android.util.Base64;
+
+import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -71,6 +77,44 @@ public class UrlUtils {
         } catch (Exception e) {
             return URLEncoder.encode(str);
         }
+    }
+
+    public static String getJsonFromParameters(Map<String, String> parameters) {
+        try {
+            JSONObject jsonObject = buildJsonObject(parameters);
+            return jsonObject.toString().replace("\"nameValuePairs\":{", "")
+                    .replace(" }\n},", "}")
+                    .replace("\\/", "/");
+        } catch (JSONException e) {
+            return new Gson().toJson(parameters);
+        }
+    }
+
+    public static JSONObject buildJsonObject(Map<String, String> data) throws JSONException {
+        JSONObject json = new JSONObject();
+        for (Map.Entry<String, String> e : data.entrySet()) {
+            String[] keys = e.getKey().split("\\.");
+            JSONObject current = json;
+            for (int i = 0; i < keys.length; ++i) {
+                String key = keys[i];
+                try {
+                    current = current.getJSONObject(key);
+                } catch (JSONException ex) {
+                    if (i == keys.length - 1) {
+                        current.put(key, e.getValue());
+                    } else {
+                        JSONObject tmp = new JSONObject();
+                        current.put(key, tmp);
+                        current = tmp;
+                    }
+                }
+            }
+        }
+        return json;
+    }
+
+    public static String encodeStringToBase64(String value) {
+        return Base64.encodeToString(value.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
     }
 
 }
