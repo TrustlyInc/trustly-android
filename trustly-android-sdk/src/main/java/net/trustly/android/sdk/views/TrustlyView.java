@@ -1,23 +1,44 @@
 package net.trustly.android.sdk.views;
 
+import static net.trustly.android.sdk.views.TrustlyConstants.ACCESS_ID;
+import static net.trustly.android.sdk.views.TrustlyConstants.CANCEL_URL;
+import static net.trustly.android.sdk.views.TrustlyConstants.CID;
+import static net.trustly.android.sdk.views.TrustlyConstants.CUSTOMER_ADDRESS_COUNTRY;
+import static net.trustly.android.sdk.views.TrustlyConstants.CUSTOMER_ADDRESS_STATE;
+import static net.trustly.android.sdk.views.TrustlyConstants.DEVICE_TYPE;
+import static net.trustly.android.sdk.views.TrustlyConstants.ENV;
+import static net.trustly.android.sdk.views.TrustlyConstants.ENV_DYNAMIC;
+import static net.trustly.android.sdk.views.TrustlyConstants.ENV_LOCAL;
+import static net.trustly.android.sdk.views.TrustlyConstants.ENV_PROD;
+import static net.trustly.android.sdk.views.TrustlyConstants.ENV_PRODUCTION;
+import static net.trustly.android.sdk.views.TrustlyConstants.EVENT;
+import static net.trustly.android.sdk.views.TrustlyConstants.EVENT_PAGE;
+import static net.trustly.android.sdk.views.TrustlyConstants.EVENT_TYPE;
+import static net.trustly.android.sdk.views.TrustlyConstants.FUNCTION_INDEX;
+import static net.trustly.android.sdk.views.TrustlyConstants.FUNCTION_MOBILE;
+import static net.trustly.android.sdk.views.TrustlyConstants.MERCHANT_ID;
+import static net.trustly.android.sdk.views.TrustlyConstants.METADATA_CID;
+import static net.trustly.android.sdk.views.TrustlyConstants.PAYMENT_PROVIDER_ID;
+import static net.trustly.android.sdk.views.TrustlyConstants.PAYMENT_TYPE;
+import static net.trustly.android.sdk.views.TrustlyConstants.RETURN_URL;
+import static net.trustly.android.sdk.views.TrustlyConstants.SESSION_CID;
+import static net.trustly.android.sdk.views.TrustlyConstants.WIDGET;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.ViewGroup;
-import android.webkit.WebChromeClient;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-
-import androidx.annotation.RequiresApi;
 
 import net.trustly.android.sdk.BuildConfig;
 import net.trustly.android.sdk.TrustlyJsInterface;
@@ -33,11 +54,15 @@ import net.trustly.android.sdk.util.CustomTabsManager;
 import net.trustly.android.sdk.util.UrlUtils;
 import net.trustly.android.sdk.util.api.APIRequestManager;
 import net.trustly.android.sdk.util.cid.CidManager;
+import net.trustly.android.sdk.views.clients.TrustlyWebViewChromeClient;
+import net.trustly.android.sdk.views.clients.TrustlyWebViewClient;
+import net.trustly.android.sdk.views.oauth.TrustlyOAuthView;
 
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,15 +73,10 @@ import kotlin.Unit;
  */
 public class TrustlyView extends LinearLayout implements Trustly {
 
-    static String PROTOCOL = "https://";
-    static String DOMAIN = "paywithmybank.com";
-    static String version = BuildConfig.SDK_VERSION;
-
-    private static final String DYNAMIC = "dynamic";
-    private static final String INDEX = "index";
-    private static final String LOCAL = "local";
-    private static final String MOBILE = "mobile";
-    private static final String PAYMENT_PROVIDER_ID = "paymentProviderId";
+    private static final String PROTOCOL = "https://";
+    private static final String LOCAL_PROTOCOL = "http://";
+    private static final String DOMAIN = "paywithmybank.com";
+    private static final String SDK_VERSION = BuildConfig.SDK_VERSION;
 
     private static boolean isLocalEnvironment = false;
 
@@ -70,9 +90,9 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
     private Status status = Status.START;
 
-    private final WebView webView;
+    private WebView webView;
 
-    private static int grp = -1;
+    private int grp = -1;
 
     private final String env;
 
@@ -148,28 +168,41 @@ public class TrustlyView extends LinearLayout implements Trustly {
      *                     supplies defaults values for the TypedArray. Can be 0 to not look for defaults.
      * @param env          Set if environment different than production (such as "sandbox")
      */
-    @SuppressLint("SetJavaScriptEnabled")
     public TrustlyView(Context context, AttributeSet attrs, int defStyleAttr, String env) {
         super(context, attrs, defStyleAttr);
         if (env != null) env = env.toLowerCase();
 
         this.env = env;
 
+        initGrp(context);
+        initWebView(context);
+
+        setWebViewChromeClient();
+        setWebViewClient();
+
+        addView(webView);
+    }
+
+    private void initGrp(Context context) {
         try {
             if (grp < 0) {
                 SharedPreferences pref = context.getSharedPreferences("PayWithMyBank", 0);
                 if (pref != null) {
-                    grp = pref.getInt("grp", -1);
+                    grp = pref.getInt(TrustlyConstants.GRP, -1);
                     if (grp < 0) {
-                        grp = new Random().nextInt(100);
-                        pref.edit().putInt("grp", grp).commit();
+                        grp = new SecureRandom().nextInt(100);
+                        pref.edit().putInt(TrustlyConstants.GRP, grp).apply();
                     }
                 }
             }
         } catch (Exception e) {
             grp = 1;
+            showErrorMessage(e);
         }
+    }
 
+    @SuppressLint("SetJavaScriptEnabled")
+    private void initWebView(Context context) {
         webView = new WebView(context);
 
         webView.setScrollContainer(false);
@@ -184,133 +217,113 @@ public class TrustlyView extends LinearLayout implements Trustly {
         webView.getSettings().setDomStorageEnabled(true);
 
         webView.addJavascriptInterface(new TrustlyJsInterface(this), "TrustlyNativeSDK");
+    }
 
-        final TrustlyView self = this;
-
-        webView.setWebChromeClient(new WebChromeClient() {
-
-            @Override
-            public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
-                WebView.HitTestResult result = view.getHitTestResult();
-                String url = result.getExtra();
-
-                if (result.getType() == 0) {
-                    //window.open
-                    final TrustlyOAuthView trustlyOAuthView = new TrustlyOAuthView(view.getContext());
-                    self.addView(trustlyOAuthView);
-                    WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
-                    transport.setWebView(trustlyOAuthView.webView);
-                    resultMsg.sendToTarget();
-                    return true;
-                } else {
-                    if (self.onExternalUrl != null) {
-                        Map<String, String> params = new HashMap<>();
-                        params.put("url", url);
-                        self.onExternalUrl.handle(self, params);
-                    } else {
-                        CustomTabsManager.openCustomTabsIntent(view.getContext(), url);
-                    }
-                    return false;
-                }
-
+    public void resize(float width, float height) {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+            float widthPixels = applyDimension(width, displayMetrics);
+            float heightPixels = 0.0F;
+            if (height != heightPixels) {
+                heightPixels = applyDimension(height, displayMetrics);
+            } else {
+                heightPixels = applyDimension(width * 1.75F, displayMetrics);
             }
-
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) widthPixels, (int) heightPixels);
+            this.setLayoutParams(params);
         });
+    }
 
-        webView.setWebViewClient(new WebViewClient() {
+    private float applyDimension(float value, DisplayMetrics displayMetrics) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, displayMetrics);
+    }
 
-            @Deprecated
-            @Override
-            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                boolean isNotAssetFile = true;
-                try {
-                    isNotAssetFile = !failingUrl.matches(".*\\.svg\\.png\\.jpg\\.jpeg\\.css\\.gif\\.webp");
-                } catch (Exception e) {
-                    onCancel.handle(self, new HashMap<>());
-                }
+    private void setWebViewChromeClient() {
+        webView.setWebChromeClient(new TrustlyWebViewChromeClient(this));
+    }
 
-                if (!isLocalEnvironment() && onCancel != null && isNotAssetFile) {
-                    onCancel.handle(self, new HashMap<>());
+    private void setWebViewClient() {
+        webView.setWebViewClient(new TrustlyWebViewClient(this));
+    }
+
+    public boolean handleWebChromeClientOnCreateWindow(WebView view, Message resultMsg) {
+        WebView.HitTestResult result = view.getHitTestResult();
+        if (result.getType() == 0) {
+            //window.open
+            final TrustlyOAuthView trustlyOAuthView = new TrustlyOAuthView(view.getContext());
+            this.addView(trustlyOAuthView);
+            WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
+            transport.setWebView(trustlyOAuthView.getWebView());
+            resultMsg.sendToTarget();
+            return true;
+        } else {
+            String url = result.getExtra();
+            if (onExternalUrl != null) {
+                Map<String, String> params = new HashMap<>();
+                params.put("url", url);
+                onExternalUrl.handle(this, params);
+            } else {
+                CustomTabsManager.openCustomTabsIntent(view.getContext(), url);
+            }
+            return false;
+        }
+    }
+
+    public void handleWebViewClientOnReceivedError(TrustlyView trustlyView, String failingUrl) {
+        try {
+            boolean isAssetFile = failingUrl.matches("([^\\\\s]+(\\\\.(?i)(jpg|jpeg|svg|png|css|gif|webp))$)");
+            if (!isLocalEnvironment() && onCancel != null && !isAssetFile) {
+                onCancel.handle(trustlyView, new HashMap<>());
+            }
+        } catch (Exception e) {
+            onCancel.handle(trustlyView, new HashMap<>());
+            showErrorMessage(e);
+        }
+    }
+
+    public void handleWebViewClientOnPageFinished(WebView view, TrustlyView trustlyView) {
+        webView.loadUrl("javascript:TrustlyNativeSDK.resize(document.body.scrollWidth, document.body.scrollHeight)");
+
+        if (status.equals(Status.PANEL_LOADING)) {
+            status = Status.PANEL_LOADED;
+        } else if (status.equals(Status.WIDGET_LOADING)) {
+            status = Status.WIDGET_LOADED;
+            notifyWidgetLoaded();
+        }
+
+        String title = view.getTitle();
+        if (title != null) {
+            Pattern p = Pattern.compile("\\d+");
+            Matcher m = p.matcher(title);
+            while (m.find()) {
+                long n = Long.parseLong(m.group()) / 100;
+                if (onCancel != null && (n == 4 || n == 5)) {
+                    onCancel.handle(trustlyView, new HashMap<>());
                 }
             }
+        }
+    }
 
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                String url = request.getUrl().toString();
-                this.onReceivedError(view, 0, "", url);
+    public boolean handleWebViewClientShouldOverrideUrlLoading(TrustlyView trustlyView, String url) {
+        if (url.startsWith(returnURL) || url.startsWith(cancelURL)) {
+            if (url.startsWith(returnURL) && onReturn != null) {
+                onReturn.handle(trustlyView, UrlUtils.getQueryParametersFromUrl(url));
+            } else if (onCancel != null) {
+                onCancel.handle(trustlyView, UrlUtils.getQueryParametersFromUrl(url));
             }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                webView.loadUrl("javascript:TrustlyNativeSDK.resize(document.body.scrollWidth, document.body.scrollHeight)");
-
-                switch (status) {
-                    case PANEL_LOADING:
-                        status = Status.PANEL_LOADED;
-                        break;
-                    case WIDGET_LOADING:
-                        status = Status.WIDGET_LOADED;
-                        notifyWidgetLoaded();
-                        break;
-                }
-
-                String title = view.getTitle();
-
-                if (title != null) {
-                    Pattern p = Pattern.compile("[0-9]+");
-                    Matcher m = p.matcher(title);
-                    while (m.find()) {
-                        long n = Long.parseLong(m.group()) / 100;
-                        if (onCancel != null && (n == 4 || n == 5)) {
-                            onCancel.handle(self, new HashMap<>());
-                        }
-                    }
+            notifyClose();
+            return true;
+        } else if (url.startsWith("msg://push?")) {
+            String[] params = url.split("\\|");
+            if (params[0].contains("PayWithMyBank.createTransaction")) {
+                data.put(PAYMENT_PROVIDER_ID, params.length > 1 ? params[1] : "");
+                if (onWidgetBankSelected != null) {
+                    onWidgetBankSelected.handle(trustlyView, data);
                 }
             }
-
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url != null) {
-                    if ((url).startsWith(returnURL)) {
-                        if (onReturn != null) {
-                            onReturn.handle(self, UrlUtils.getQueryParametersFromUrl(url));
-                            notifyClose();
-                            return true;
-                        }
-                    } else if ((url).startsWith(cancelURL)) {
-                        if (onCancel != null) {
-                            onCancel.handle(self, UrlUtils.getQueryParametersFromUrl(url));
-                            notifyClose();
-                            return true;
-                        }
-                    } else if ((url).startsWith("msg://")) {
-                        if ((url).startsWith("msg://push?")) {
-                            String[] params = url.substring(11).split("\\|");
-                            switch (params[0]) {
-                                case "PayWithMyBank.createTransaction":
-                                    if (params.length > 1) {
-                                        data.put(PAYMENT_PROVIDER_ID, params[1]);
-                                    } else {
-                                        data.put(PAYMENT_PROVIDER_ID, "");
-                                    }
-
-                                    if (onWidgetBankSelected != null) {
-                                        onWidgetBankSelected.handle(self, data);
-                                    }
-                                    break;
-                            }
-                        }
-
-                        return true;
-                    }
-                }
-
-                return super.shouldOverrideUrlLoading(view, url);
-            }
-        });
-
-        addView(webView);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -318,14 +331,13 @@ public class TrustlyView extends LinearLayout implements Trustly {
      */
     @Override
     public Trustly establish(Map<String, String> establishData) {
-        status = Status.PANEL_LOADING;
-        CidManager.generateCid(getContext());
-
-        data = new HashMap<>(establishData);
-
         try {
-            String deviceType = establishData.get("deviceType");
+            status = Status.PANEL_LOADING;
+            CidManager.generateCid(getContext());
 
+            data = new HashMap<>(establishData);
+
+            String deviceType = establishData.get(DEVICE_TYPE);
             if (deviceType != null) {
                 deviceType = deviceType + ":android:native";
             } else {
@@ -335,34 +347,32 @@ public class TrustlyView extends LinearLayout implements Trustly {
             String lang = establishData.get("metadata.lang");
             if (lang != null) data.put("lang", lang);
 
-            data.put("metadata.sdkAndroidVersion", version);
-            data.put("deviceType", deviceType);
-            data.put("returnUrl", returnURL);
-            data.put("cancelUrl", cancelURL);
-            data.put("grp", Integer.toString(grp));
+            data.put("metadata.sdkAndroidVersion", SDK_VERSION);
+            data.put(DEVICE_TYPE, deviceType);
+            data.put(RETURN_URL, returnURL);
+            data.put(CANCEL_URL, cancelURL);
+            data.put(TrustlyConstants.GRP, Integer.toString(grp));
 
             if (data.containsKey(PAYMENT_PROVIDER_ID)) {
                 data.put("widgetLoaded", "true");
             }
 
             Map<String, String> sessionCidValues = CidManager.getOrCreateSessionCid(getContext());
-            if (sessionCidValues != null) {
-                data.put("sessionCid", sessionCidValues.get(CidManager.SESSION_CID_PARAM));
-                data.put("metadata.cid", sessionCidValues.get(CidManager.CID_PARAM));
-            }
+            data.put(SESSION_CID, sessionCidValues.get(CidManager.SESSION_CID_PARAM));
+            data.put(METADATA_CID, sessionCidValues.get(CidManager.CID_PARAM));
 
             notifyOpen();
 
-            if (LOCAL.equals(data.get("env"))) {
-                webView.setWebContentsDebuggingEnabled(true);
-                isLocalEnvironment = true;
+            if (ENV_LOCAL.equals(data.get(ENV))) {
+                WebView.setWebContentsDebuggingEnabled(true);
+                setIsLocalEnvironment(true);
             }
 
             if (APIRequestManager.INSTANCE.validateAPIRequest(getContext())) {
                 Settings settings = APIRequestManager.INSTANCE.getAPIRequestSettings(getContext());
                 openWebViewOrCustomTabs(settings, data);
             } else {
-                APIMethod apiInterface = RetrofitInstance.INSTANCE.getInstance(getDomain(MOBILE, establishData)).create(APIMethod.class);
+                APIMethod apiInterface = RetrofitInstance.INSTANCE.getInstance(getDomain(FUNCTION_MOBILE, establishData)).create(APIMethod.class);
                 APIRequest apiRequest = new APIRequest(apiInterface, settings -> {
                     APIRequestManager.INSTANCE.saveAPIRequestSettings(getContext(), settings);
                     openWebViewOrCustomTabs(settings, data);
@@ -374,7 +384,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 apiRequest.getSettingsData(getTokenByEncodedParameters(data));
             }
         } catch (Exception e) {
-            Log.e("TrustlyView", e.getMessage());
+            showErrorMessage(e);
         }
         return this;
     }
@@ -383,11 +393,11 @@ public class TrustlyView extends LinearLayout implements Trustly {
         if (settings.getSettings().getIntegrationStrategy().equals("webview")) {
             data.put("metadata.integrationContext", "InAppBrowser");
             byte[] encodedParameters = UrlUtils.getParameterString(data).getBytes(StandardCharsets.UTF_8);
-            webView.postUrl(getEndpointUrl(INDEX, establishData), encodedParameters);
+            webView.postUrl(getEndpointUrl(FUNCTION_INDEX, establishData), encodedParameters);
         } else {
-            data.put("returnUrl", establishData.get("metadata.urlScheme"));
-            data.put("cancelUrl", establishData.get("metadata.urlScheme"));
-            CustomTabsManager.openCustomTabsIntent(getContext(), getEndpointUrl(MOBILE, establishData) + "?token=" + getTokenByEncodedParameters(data));
+            data.put(RETURN_URL, establishData.get("metadata.urlScheme"));
+            data.put(CANCEL_URL, establishData.get("metadata.urlScheme"));
+            CustomTabsManager.openCustomTabsIntent(getContext(), getEndpointUrl(FUNCTION_MOBILE, establishData) + "?token=" + getTokenByEncodedParameters(data));
         }
     }
 
@@ -401,9 +411,9 @@ public class TrustlyView extends LinearLayout implements Trustly {
      */
     @Override
     public Trustly selectBankWidget(Map<String, String> establishData) {
-        data = new HashMap<>(establishData);
         try {
-            String deviceType = establishData.get("deviceType");
+            data = new HashMap<>(establishData);
+            String deviceType = establishData.get(DEVICE_TYPE);
 
             if (deviceType != null) {
                 deviceType = deviceType + ":android:hybrid";
@@ -414,46 +424,43 @@ public class TrustlyView extends LinearLayout implements Trustly {
             String lang = establishData.get("metadata.lang");
 
             HashMap<String, String> d = new HashMap<>();
-            d.put("accessId", establishData.get("accessId"));
-            d.put("merchantId", establishData.get("merchantId"));
-            d.put("paymentType", establishData.get("paymentType"));
-            d.put("deviceType", deviceType);
+            d.put(ACCESS_ID, establishData.get(ACCESS_ID));
+            d.put(MERCHANT_ID, establishData.get(MERCHANT_ID));
+            d.put(PAYMENT_TYPE, establishData.get(PAYMENT_TYPE));
+            d.put(DEVICE_TYPE, deviceType);
             if (lang != null) d.put("lang", lang);
-            d.put("grp", Integer.toString(grp));
+            d.put(TrustlyConstants.GRP, Integer.toString(grp));
             d.put("dynamicWidget", "true");
 
-            if (establishData.get("customer.address.country") != null) {
-                d.put("customer.address.country", establishData.get("customer.address.country"));
+            if (establishData.get(CUSTOMER_ADDRESS_COUNTRY) != null) {
+                d.put(CUSTOMER_ADDRESS_COUNTRY, establishData.get(CUSTOMER_ADDRESS_COUNTRY));
             } else {
-                d.put("customer.address.country", "US");
+                d.put(CUSTOMER_ADDRESS_COUNTRY, "US");
             }
 
-            if (establishData.get("customer.address.country") == null || "us".equals(establishData.get("customer.address.country").toLowerCase())) {
-                d.put("customer.address.state", establishData.get("customer.address.state"));
+            if (establishData.get(CUSTOMER_ADDRESS_COUNTRY) == null || "us".equalsIgnoreCase(establishData.get(CUSTOMER_ADDRESS_COUNTRY))) {
+                d.put(CUSTOMER_ADDRESS_STATE, establishData.get(CUSTOMER_ADDRESS_STATE));
             }
 
             Map<String, String> sessionCidValues = CidManager.getOrCreateSessionCid(getContext());
-            if (sessionCidValues != null) {
-                d.put("sessionCid", sessionCidValues.get(CidManager.SESSION_CID_PARAM));
-                d.put("cid", sessionCidValues.get(CidManager.CID_PARAM));
-            }
+            d.put(SESSION_CID, sessionCidValues.get(CidManager.SESSION_CID_PARAM));
+            d.put(CID, sessionCidValues.get(CidManager.CID_PARAM));
 
             Map<String, String> hash = new HashMap<>();
 
             hash.put("merchantReference", establishData.get("merchantReference"));
             hash.put("customer.externalId", establishData.get("customer.externalId"));
 
-            if (status == Status.WIDGET_LOADED) {
-                return this;
+            if (status != Status.WIDGET_LOADED) {
+                status = Status.WIDGET_LOADING;
+                notifyWidgetLoading();
+
+                String url = getEndpointUrl(WIDGET, establishData) + "&" + UrlUtils.getParameterString(d) + "#" + UrlUtils.getParameterString(hash);
+                webView.loadUrl(url);
+                webView.setBackgroundColor(Color.TRANSPARENT);
             }
-            status = Status.WIDGET_LOADING;
-
-            notifyWidgetLoading();
-
-            String url = getEndpointUrl("widget", establishData) + "&" + UrlUtils.getParameterString(d) + "#" + UrlUtils.getParameterString(hash);
-            webView.loadUrl(url);
-            webView.setBackgroundColor(Color.TRANSPARENT);
         } catch (Exception e) {
+            showErrorMessage(e);
         }
         return this;
     }
@@ -523,47 +530,41 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
-    public void notifyListener(String eventName, HashMap<String, String> eventDetails) {
+    public void notifyListener(String eventName, Map<String, String> eventDetails) {
         if (this.trustlyListener != null) {
-            this.trustlyListener.onChange(eventName, eventDetails);
+            this.trustlyListener.onChange(eventName, new HashMap<>(eventDetails));
         }
     }
 
     private String getDomain(String function, Map<String, String> establishData) {
-        String environment = establishData.get("env") != null ? establishData.get("env").toLowerCase() : env;
         String envHost = establishData.get("envHost");
-
+        String environment = establishData.get(ENV) != null ? Objects.requireNonNull(establishData.get(ENV)).toLowerCase() : env;
         if (environment == null) {
             return PROTOCOL + DOMAIN;
         }
-
         switch (environment) {
-            case DYNAMIC: {
+            case ENV_DYNAMIC: {
                 String host = envHost != null ? envHost : "";
-                return "https://" + host + ".int.trustly.one";
+                return PROTOCOL + host + ".int.trustly.one";
             }
-            case LOCAL: {
+            case ENV_LOCAL: {
                 String host = (envHost != null && !envHost.equals("localhost")) ? envHost : BuildConfig.LOCAL_IP;
-                String port = "";
-                String protocol = "http://";
-
-                if (MOBILE.equals(function)) {
+                String port;
+                if (FUNCTION_MOBILE.equals(function)) {
                     port = ":10000";
                 } else {
                     port = ":8000";
                 }
-
-                return protocol + host + port;
+                return LOCAL_PROTOCOL + host + port;
             }
-            case "prod":
-            case "production":
+            case ENV_PROD:
+            case ENV_PRODUCTION:
                 environment = "";
                 break;
             default:
                 environment = environment + ".";
                 break;
         }
-
         return PROTOCOL + environment + DOMAIN;
     }
 
@@ -572,18 +573,15 @@ public class TrustlyView extends LinearLayout implements Trustly {
      */
     protected String getEndpointUrl(String function, Map<String, String> establishData) {
         String domain = getDomain(function, establishData);
-
-        if (MOBILE.equals(function)) {
+        if (FUNCTION_MOBILE.equals(function)) {
              return domain + "/frontend/mobile/establish";
         }
-
-        if (INDEX.equals(function) &&
-                !"Verification".equals(establishData.get("paymentType")) &&
+        if (FUNCTION_INDEX.equals(function) &&
+                !"Verification".equals(establishData.get(PAYMENT_TYPE)) &&
                 establishData.get(PAYMENT_PROVIDER_ID) != null) {
             function = "selectBank";
         }
-
-        return domain + "/start/selectBank/" + function + "?v=" + version + "-android-sdk";
+        return domain + "/start/selectBank/" + function + "?v=" + SDK_VERSION + "-android-sdk";
     }
 
     private void notifyOpen() {
@@ -596,21 +594,28 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
     private void notifyWidgetLoading() {
         HashMap<String, String> eventDetails = new HashMap<>();
-        eventDetails.put("page", "widget");
-        eventDetails.put("type", "loading");
-
-        notifyListener("event", eventDetails);
+        eventDetails.put(EVENT_PAGE, WIDGET);
+        eventDetails.put(EVENT_TYPE, "loading");
+        notifyListener(EVENT, eventDetails);
     }
 
     private void notifyWidgetLoaded() {
         HashMap<String, String> eventDetails = new HashMap<>();
-        eventDetails.put("page", "widget");
-        eventDetails.put("type", "load");
-
-        notifyListener("event", eventDetails);
+        eventDetails.put(EVENT_PAGE, WIDGET);
+        eventDetails.put(EVENT_TYPE, "load");
+        notifyListener(EVENT, eventDetails);
     }
 
-    protected static boolean isLocalEnvironment() {
+    private void showErrorMessage(Exception e) {
+        Log.e("TrustlyView", Objects.requireNonNull(e.getMessage()));
+    }
+
+    public static boolean isLocalEnvironment() {
         return isLocalEnvironment;
     }
+
+    public static void setIsLocalEnvironment(boolean isLocal) {
+        isLocalEnvironment = isLocal;
+    }
+
 }

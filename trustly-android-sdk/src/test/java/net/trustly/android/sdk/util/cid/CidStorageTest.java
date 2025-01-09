@@ -1,7 +1,8 @@
-package net.trustly.android.sdk.util;
+package net.trustly.android.sdk.util.cid;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
@@ -11,8 +12,6 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-
-import net.trustly.android.sdk.util.cid.CidStorage;
 
 import org.junit.After;
 import org.junit.Before;
@@ -46,6 +45,12 @@ public class CidStorageTest {
     @After
     public void tearDown() {
         clearInvocations(mockSharedPreferencesEditor, mockSharedPreferences, mockContext);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenCidStorageInstanceIsCalled() {
+        Throwable exception = assertThrows(IllegalStateException.class, CidStorage::new);
+        assertEquals("Utility class cannot be instantiated", exception.getMessage());
     }
 
     @Test

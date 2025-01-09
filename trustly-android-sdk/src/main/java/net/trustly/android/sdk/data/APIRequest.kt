@@ -10,7 +10,7 @@ class APIRequest(private val apiInterface: APIMethod, private val settings: (Set
     fun getSettingsData(token: String) {
         apiInterface.getSettings(token).enqueue(object : Callback<Settings> {
             override fun onResponse(call: Call<Settings>, response: Response<Settings>) {
-                if (response.isSuccessful && response.body() != null) {
+                if (response.body() != null) {
                     Log.d("APIRequestNew", response.body().toString())
                     settings.invoke(response.body() as Settings)
                 }

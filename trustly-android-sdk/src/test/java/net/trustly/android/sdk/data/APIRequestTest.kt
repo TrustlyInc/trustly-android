@@ -1,8 +1,6 @@
 package net.trustly.android.sdk.data
 
 import com.google.gson.Gson
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -41,6 +39,17 @@ class APIRequestTest {
     }
 
     @Test
+    fun testGetSettingDataWhenReturnSuccessSameObject() {
+        val settingsFake = Settings(StrategySetting("webview"))
+        val mockResponse = Response.success(settingsFake)
+        mockCallbackResponse(mockResponse)
+
+        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
+
+        assertEquals(settingsFake, settingsResult)
+    }
+
+    @Test
     fun testGetSettingDataWhenReturnSuccess() {
         val settingsFake = getSettingsFake()
         val mockResponse = Response.success(settingsFake)
@@ -76,35 +85,51 @@ class APIRequestTest {
     }
 
     @Test
-    fun testGetSettingDataWhenReturnFailure() {
-        val mockResponse = Response.error<Settings>(
-            401,
-            "".toResponseBody("application/json".toMediaTypeOrNull())
-        )
-        mockCallbackResponse(mockResponse)
+    fun testGetSettingDataValuesWhenReturnSuccessWithNullBody() {
+        mockCallbackResponseWithNullBody()
 
         APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
 
         assertEquals(null, settingsResult)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun testGetSettingDataWrongValuesWhenReturnSuccessNotSuccessfulAndWithBody() {
+        val settingsFake = getSettingsFake()
+        Response.success(301, settingsFake)
     }
 
     @Test
-    fun testGetSettingDataWhenReturnNetworkExceptionError() {
-        val mockResponse = Response.error<Settings>(
-            500,
-            "API Not found".toResponseBody("plain/text".toMediaTypeOrNull())
-        )
-        mockCallbackResponse(mockResponse)
+    fun testGetSettingDataWhenReturnFailure() {
+        val mockResponse = Throwable("Error 401")
+        mockCallbackFailure(mockResponse)
 
         APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
 
         assertEquals(null, settingsResult)
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun mockCallbackResponse(mockResponse: Response<Settings>) {
         `when`(mockCall.enqueue(any())).then {
             val callback = it.arguments.first() as retrofit2.Callback<Settings>
             callback.onResponse(mockCall, mockResponse)
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun mockCallbackResponseWithNullBody() {
+        `when`(mockCall.enqueue(any())).then {
+            val callback = it.arguments.first() as retrofit2.Callback<Settings>
+            callback.onResponse(mockCall, Response.success(null))
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun mockCallbackFailure(mockResponse: Throwable) {
+        `when`(mockCall.enqueue(any())).then {
+            val callback = it.arguments.first() as retrofit2.Callback<Settings>
+            callback.onFailure(mockCall, mockResponse)
         }
     }
 

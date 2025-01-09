@@ -1,0 +1,132 @@
+# This workflow ensures that pull requests related to the Android project are tested and analyzed for code quality.
+# Workflow 'Android PR Quality Check' runs tests, generates test coverage reports, and performs a SonarQube analysis.
+# It verifies the quality of the pull request, including unit tests, Android tests, and code coverage, before merging.
+# For further information, check: https://trustly.atlassian.net/wiki/spaces/Engineering/pages/71334625281/Android+PR+Quality+Check
+name: Android PR Quality Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+env:
+  REPO: ${{ github.event.repository.name }}
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SECRET }}
+  SONAR_HOST_URL: "https://sonarqube.trustly.one"
+  SONAR_PROJECT_KEY: "trustly-android"
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+  BRANCH_ORIGIN: ${{ github.head_ref }}
+  BASE_BRANCH: ${{ github.base_ref }}
+  PROJECT_DIR: trustly-android-sdk
+  COVERAGE_DIR: ${{ github.workspace }}/trustly-android-sdk/build/reports/coverage
+
+jobs:
+  run_tests_and_sonar_analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Get Git Revision (Commit SHA)
+        id: git_revision
+        run: |
+          cd ${{ env.PROJECT_DIR }}
+          git fetch origin "${{ env.BRANCH_ORIGIN }}"
+          GIT_REVISION=$(git rev-parse origin/${{ env.BRANCH_ORIGIN }})
+          echo "GIT_REVISION=$GIT_REVISION" >> $GITHUB_ENV
+          echo "Git Revision: $GIT_REVISION"
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Enable KVM Temporarily
+        run: |
+          if [ ! -e /dev/kvm ]; then
+            echo "KVM is not available. Please check your host configuration." >&2
+            exit 1
+          fi
+          sudo chmod 666 /dev/kvm
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Run Clean
+        run: |
+          cd ${{ env.PROJECT_DIR }}
+          ./gradlew clean --warning-mode all
+
+      - name: Run Build
+        run: |
+          cd ${{ env.PROJECT_DIR }}
+          ./gradlew build --warning-mode all    
+
+      - name: Run Unit Test Coverage
+        run: |
+          cd ${{ env.PROJECT_DIR }}
+          ./gradlew createDebugUnitTestCoverageReport
+
+      - name: Start Emulator and Run Android Test Coverage
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          target: google_apis
+          arch: x86_64
+          profile: Nexus 6
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          ram-size: 2048M
+          heap-size: 512M
+          disk-size: 2048M
+          working-directory: ${{ env.PROJECT_DIR }}
+          script: |
+            ./gradlew createDebugAndroidTestCoverageReport --warning-mode all
+
+      - name: Find Coverage Report Files
+        run: |
+          find ${{ env.COVERAGE_DIR }} -type f \( \
+            -path "*/androidTest/debug/connected/report.xml" -o \
+            -path "*/test/debug/report.xml" \
+          \) -print
+
+      - name: Install SonarQube Scanner
+        run: |
+          SONAR_SCANNER_VERSION=5.0.1.3006
+          SONAR_SCANNER_DIR=/opt/sonar-scanner
+
+          curl -o sonar-scanner-cli.zip -L "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux.zip"
+
+          sudo apt-get install -y unzip
+          unzip sonar-scanner-cli.zip
+          sudo mv sonar-scanner-${SONAR_SCANNER_VERSION}-linux ${SONAR_SCANNER_DIR}
+
+          echo "${SONAR_SCANNER_DIR}/bin" >> $GITHUB_PATH
+          echo "SonarScanner installed successfully!"
+
+      - name: Verify SonarQube Scanner Installation
+        run: sonar-scanner --version
+
+      - name: Run SonarQube Scanner
+        run: |
+          sonar-scanner \
+            -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }} \
+            -Dsonar.host.url=${{ env.SONAR_HOST_URL }} \
+            -Dsonar.login=${{ env.SONAR_TOKEN }} \
+            -Dsonar.pullrequest.key=${{ env.PR_NUMBER }} \
+            -Dsonar.pullrequest.branch=${{ env.BRANCH_ORIGIN }} \
+            -Dsonar.pullrequest.base=${{ env.BASE_BRANCH }} \
+            -Dsonar.scm.revision=${{ env.GIT_REVISION }} \
+            -Dsonar.coverage.jacoco.xmlReportPaths=${{ env.COVERAGE_DIR }}/test/debug/report.xml,${{ env.COVERAGE_DIR }}/androidTest/debug/connected/report.xml \
+            -Dsonar.sources=${{ github.workspace }}/${{ env.PROJECT_DIR }}/src \
+            -Dsonar.java.coveragePlugin=jacoco \
+            -Dsonar.language=kotlin \
+            -Dsonar.java.binaries=${{ github.workspace }}/${{ env.PROJECT_DIR }} \
+            -Dsonar.java.libraries=${{ github.workspace }}/${{ env.PROJECT_DIR }} \
+            -Dsonar.coverage.exclusions=**/build/**,**/test/**,**/androidTest/** \
+            -Dsonar.exclusions=**/build/**,**/test/**,**/androidTest/** \
+            -Dsonar.sourceEncoding=UTF-8 \
+            -Dsonar.verbose=true \
+            -Dsonar.scm.disabled=true

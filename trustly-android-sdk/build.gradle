@@ -5,7 +5,7 @@ plugins {
     id 'org.jetbrains.kotlin.android' version '1.9.24'
 }
 
-def sdkVersion = "3.3.0"
+def sdkVersion = "3.4.0"
 def localIP = "10.0.2.2"
 
 android {
@@ -19,9 +19,10 @@ android {
     compileSdk 35
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 34
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     buildTypes {
         debug {
@@ -45,6 +46,11 @@ android {
     buildFeatures {
         buildConfig true
     }
+    sourceSets {
+        debug {
+            root 'src/mock'
+        }
+    }
     kotlinOptions {
         jvmTarget = '11'
     }
@@ -57,7 +63,9 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.browser:browser:1.8.0'
-    implementation 'androidx.core:core-ktx:1.15.0'
+    //noinspection GradleDependency
+    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.11.0'
@@ -68,11 +76,11 @@ dependencies {
     testImplementation 'org.mockito:mockito-inline:4.2.0'
 
     androidTestImplementation 'androidx.test:core:1.6.1'
-    androidTestImplementation 'androidx.test:runner:1.6.2'
-    androidTestImplementation 'androidx.test:rules:1.6.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.6.1'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'androidx.test.ext:truth:1.6.0'
-    androidTestImplementation 'com.google.truth:truth:1.1.3'
+    androidTestImplementation 'androidx.test:runner:1.6.2'
+    androidTestImplementation 'androidx.test:rules:1.6.1'
 }
 
 tasks.register('javadoc', Javadoc) {

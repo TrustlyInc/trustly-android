@@ -1,33 +1,42 @@
-package net.trustly.android.sdk.views;
+package net.trustly.android.sdk.views.oauth;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import androidx.annotation.RequiresApi;
-
-import net.trustly.android.sdk.util.CustomTabsManager;
-
+/**
+ * View for Trustly OAuth login
+ */
 public class TrustlyOAuthView extends LinearLayout {
 
-    public final WebView webView;
+    private final WebView webView;
 
+    /**
+     * @param context Interface to global information about an application environment.
+     */
     public TrustlyOAuthView(Context context) {
         this(context, null);
     }
 
+    /**
+     * @param context Interface to global information about an application environment.
+     * @param attrs   A collection of attributes, as found associated with a tag in an XML document.
+     */
     public TrustlyOAuthView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
+    /**
+     * @param context      Interface to global information about an application environment.
+     * @param attrs        A collection of attributes, as found associated with a tag in an XML document.
+     * @param defStyleAttr An attribute in the current theme that contains a reference to a style resource that
+     *                     supplies defaults values for the TypedArray. Can be 0 to not look for defaults.
+     */
     @SuppressLint("SetJavaScriptEnabled")
     public TrustlyOAuthView(final Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
@@ -39,24 +48,14 @@ public class TrustlyOAuthView extends LinearLayout {
         settings.setDomStorageEnabled(true);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
         webView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-        webView.setWebViewClient(new WebViewClient() {
-            @Deprecated
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (TrustlyView.isLocalEnvironment() || ((url.contains("paywithmybank.com") || url.contains("trustly.one")) && url.contains("/oauth/login/"))) {
-                    CustomTabsManager.openCustomTabsIntent(view.getContext(), url);
-                }
-                return true;
-            }
-
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                String url = request.getUrl().toString();
-                this.shouldOverrideUrlLoading(view, url);
-                return true;
-            }
-        });
+        webView.setWebViewClient(new TrustlyOAuthClient());
     }
+
+    /**
+     * @return The WebView which contains the OAuth login page.
+     */
+    public WebView getWebView() {
+        return webView;
+    }
+
 }

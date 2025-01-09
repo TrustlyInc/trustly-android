@@ -3,6 +3,8 @@ package net.trustly.android.sdk.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.clearInvocations;
@@ -10,6 +12,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import android.net.Uri;
+import android.util.Base64;
 
 import org.junit.After;
 import org.junit.Before;
@@ -44,6 +47,8 @@ public class UrlUtilsTest {
 
     private MockedStatic<URLEncoder> mockedStaticURLEncoder;
 
+    private MockedStatic<Base64> mockedStaticBase64;
+
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -51,12 +56,14 @@ public class UrlUtilsTest {
         mockedStaticUri = mockStatic(Uri.class, CALLS_REAL_METHODS);
         mockedStaticUri.when(() -> Uri.parse(anyString())).thenReturn(mockUri);
         mockedStaticURLEncoder = mockStatic(URLEncoder.class, CALLS_REAL_METHODS);
+        mockedStaticBase64 = mockStatic(Base64.class, CALLS_REAL_METHODS);
     }
 
     @After
     public void tearDown() {
         mockedStaticUri.close();
         mockedStaticURLEncoder.close();
+        mockedStaticBase64.close();
         clearInvocations(mockUri);
     }
 
@@ -204,6 +211,46 @@ public class UrlUtilsTest {
     public void shouldValidateReturnedValueWhenGetQueryParameterFromUrlWithManyParameters() {
         Map<String, String> parameters = UrlUtils.getQueryParametersFromUrl("http://www.url.com/search?q=value&a=value2&b=value3");
         assertEquals("http://www.url.com/search?q=value&a=value2&b=value3", parameters.get("url"));
+    }
+
+    @Test
+    public void shouldValidateReturnedValueWhenGetJsonFromParametersWithEstablishData() {
+        Map<String, String> values = new HashMap<>();
+        values.put(KEY_1, VALUE_1);
+        values.put(KEY_2, VALUE_2);
+        values.put(KEY_3, VALUE_3);
+        String result = UrlUtils.getJsonFromParameters(values);
+        assertEquals("{\"key1\":\"value1\",\"key2\":\"value2\",\"key3\":\"value3\"}", result);
+    }
+
+    @Test
+    public void shouldValidateReturnedValueWhenGetJsonFromParametersWithEstablishDataWithDotKeys() {
+        Map<String, String> values = new HashMap<>();
+        values.put(KEY_1, VALUE_1);
+        values.put(KEY_2, VALUE_2);
+        values.put("key3.subKey3", VALUE_3);
+        String result = UrlUtils.getJsonFromParameters(values);
+        assertEquals("{\"key1\":\"value1\",\"key2\":\"value2\",\"key3\":{\"subKey3\":\"value3\"}}", result);
+    }
+
+    @Test
+    public void shouldValidateReturnedValueWhenGetJsonFromParametersWithEstablishDataWithExistingKeys() {
+        Map<String, String> values = new HashMap<>();
+        values.put(KEY_1, VALUE_1);
+        values.put(KEY_2, VALUE_2);
+        values.put("key3.subKey1", VALUE_3);
+        values.put("key3.subKey2", VALUE_3);
+        String result = UrlUtils.getJsonFromParameters(values);
+        assertEquals("{\"key1\":\"value1\",\"key2\":\"value2\",\"key3\":{\"subKey2\":\"value3\",\"subKey1\":\"value3\"}}", result);
+    }
+
+    @Test
+    public void shouldValidateReturnedValueWhenGetJsonFromParametersWithEstablishDataWithNullKeys() {
+        mockedStaticBase64.when(() -> Base64.encodeToString(any(), anyInt())).thenReturn("eyJrZXkxIjoidmFsdWUxImtleTMiOiJ2YWx1ZTMifQ==");
+
+        String jsonParameters = "{\"key1\":\"value1\",\"key2\":\"value2\",\"key3\":\"value3\"}";
+        String result = UrlUtils.encodeStringToBase64(jsonParameters);
+        assertEquals("eyJrZXkxIjoidmFsdWUxImtleTMiOiJ2YWx1ZTMifQ==", result);
     }
 
 }

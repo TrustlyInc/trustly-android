@@ -1,5 +1,6 @@
 package net.trustly.android.sdk.interfaces;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -53,9 +54,17 @@ public class TrustlyTest {
         clearInvocations(mockTrustly, mockTrustlyCallback, mockTrustlyListener, mockContext);
     }
 
+    @Deprecated
     @Test
     public void shouldThrowExceptionWhenTrustlyInstanceIsCalled() {
         assertThrows(NullPointerException.class, () -> Trustly.Instance.create(mockContext));
+    }
+
+    @Deprecated
+    @Test
+    public void shouldValidateTrustlyInstance() {
+        Trustly.Instance instance = new Trustly.Instance();
+        assertNotNull(instance);
     }
 
     @Test
