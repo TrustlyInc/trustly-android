@@ -333,7 +333,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     public Trustly establish(Map<String, String> establishData) {
         try {
             status = Status.PANEL_LOADING;
-            CidManager.generateCid(getContext());
+            CidManager.INSTANCE.generateCid(getContext());
 
             data = new HashMap<>(establishData);
 
@@ -357,7 +357,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 data.put("widgetLoaded", "true");
             }
 
-            Map<String, String> sessionCidValues = CidManager.getOrCreateSessionCid(getContext());
+            Map<String, String> sessionCidValues = CidManager.INSTANCE.getOrCreateSessionCid(getContext());
             data.put(SESSION_CID, sessionCidValues.get(CidManager.SESSION_CID_PARAM));
             data.put(METADATA_CID, sessionCidValues.get(CidManager.CID_PARAM));
 
@@ -442,7 +442,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 d.put(CUSTOMER_ADDRESS_STATE, establishData.get(CUSTOMER_ADDRESS_STATE));
             }
 
-            Map<String, String> sessionCidValues = CidManager.getOrCreateSessionCid(getContext());
+            Map<String, String> sessionCidValues = CidManager.INSTANCE.getOrCreateSessionCid(getContext());
             d.put(SESSION_CID, sessionCidValues.get(CidManager.SESSION_CID_PARAM));
             d.put(CID, sessionCidValues.get(CidManager.CID_PARAM));
 
