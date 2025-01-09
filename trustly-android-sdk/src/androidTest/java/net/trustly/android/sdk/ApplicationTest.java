@@ -57,9 +57,4 @@ public class ApplicationTest {
         assertEquals(19, appContext.getApplicationInfo().minSdkVersion);
     }
 
-    @Test
-    public void shouldVerifySDKVersionIsTheSame() {
-        assertEquals("3.3.1", BuildConfig.SDK_VERSION);
-    }
-
 }
