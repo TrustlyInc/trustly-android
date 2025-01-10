@@ -1,6 +1,6 @@
 plugins {
     id 'maven-publish'
-    id 'com.android.library' version '8.6.1'
+    id 'com.android.library' version '8.8.0'
     id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
     id 'org.jetbrains.kotlin.android' version '1.9.24'
 }
@@ -14,24 +14,24 @@ android {
             withSourcesJar()
         }
     }
-    namespace 'net.trustly.android.sdk'
+    namespace = 'net.trustly.android.sdk'
 
-    compileSdk 35
+    compileSdk = 35
 
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 34
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        multiDexEnabled true
+        multiDexEnabled = true
     }
     buildTypes {
         debug {
-            testCoverageEnabled true
+            testCoverageEnabled = true
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            testCoverageEnabled true
+            testCoverageEnabled = true
         }
     }
 
@@ -44,11 +44,11 @@ android {
         unitTests.returnDefaultValues = true
     }
     buildFeatures {
-        buildConfig true
+        buildConfig = true
     }
     sourceSets {
         debug {
-            root 'src/mock'
+            root = 'src/mock'
         }
     }
     kotlinOptions {
