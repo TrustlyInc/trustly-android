@@ -24,7 +24,7 @@ class TrustlyTest {
     private lateinit var mockTrustly: Trustly
 
     @Mock
-    private lateinit var mockTrustlyCallback: TrustlyCallback<Trustly?, Map<String?, String?>>
+    private lateinit var mockTrustlyCallback: TrustlyCallback<Trustly, Map<String, String>>
 
     @Mock
     private lateinit var mockTrustlyListener: TrustlyListener
@@ -207,26 +207,26 @@ class TrustlyTest {
         verify(mockTrustly, times(1)).proceedToChooseAccount()
     }
 
-    private fun getEstablishData() = mapOf<String?, String?>(
+    private fun getEstablishData() = mapOf(
         "accessId" to "123456",
         "merchantId" to "654321"
     )
 
     private class TrustlyImpl(private val trustly: Trustly) {
 
-        fun callSelectBankWidget(establishData: Map<String?, String?>?) = trustly.selectBankWidget(establishData)
+        fun callSelectBankWidget(establishData: Map<String, String>?) = trustly.selectBankWidget(establishData)
 
-        fun callOnBankSelected(callback: TrustlyCallback<Trustly?, Map<String?, String?>>?) = trustly.onBankSelected(callback)
+        fun callOnBankSelected(callback: TrustlyCallback<Trustly, Map<String, String>>?) = trustly.onBankSelected(callback)
 
-        fun callEstablish(establishData: Map<String?, String?>?) = trustly.establish(establishData)
+        fun callEstablish(establishData: Map<String, String>?) = trustly.establish(establishData)
 
         fun callHybrid(url: String?, returnUrl: String?, cancelUrl: String?) = trustly.hybrid(url, returnUrl, cancelUrl)
 
-        fun callOnReturn(callback: TrustlyCallback<Trustly?, Map<String?, String?>>?) = trustly.onReturn(callback)
+        fun callOnReturn(callback: TrustlyCallback<Trustly, Map<String, String>>?) = trustly.onReturn(callback)
 
-        fun callOnCancel(callback: TrustlyCallback<Trustly?, Map<String?, String?>>?) = trustly.onCancel(callback)
+        fun callOnCancel(callback: TrustlyCallback<Trustly, Map<String, String>>?) = trustly.onCancel(callback)
 
-        fun callOnExternalUrl(callback: TrustlyCallback<Trustly?, Map<String?, String?>>?) = trustly.onExternalUrl(callback)
+        fun callOnExternalUrl(callback: TrustlyCallback<Trustly, Map<String, String>>?) = trustly.onExternalUrl(callback)
 
         fun callSetListener(listener: TrustlyListener?) = trustly.setListener(listener)
 

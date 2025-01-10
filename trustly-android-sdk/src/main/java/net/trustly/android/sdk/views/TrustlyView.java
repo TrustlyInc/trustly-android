@@ -585,11 +585,11 @@ public class TrustlyView extends LinearLayout implements Trustly {
     }
 
     private void notifyOpen() {
-        notifyListener("open", null);
+        notifyListener("open", new HashMap<>());
     }
 
     private void notifyClose() {
-        notifyListener("close", null);
+        notifyListener("close", new HashMap<>());
     }
 
     private void notifyWidgetLoading() {

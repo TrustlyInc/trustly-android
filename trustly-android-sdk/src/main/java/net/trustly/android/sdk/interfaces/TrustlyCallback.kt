@@ -12,6 +12,6 @@ fun interface TrustlyCallback<T, V> {
      * @param trustly    The Trustly instance object that is calling the callback handler
      * @param returnParameters The map containing the returned parameters from the TrustlyView.
      */
-    fun handle(trustly: T?, returnParameters: V?)
+    fun handle(trustly: T, returnParameters: V)
 
 }

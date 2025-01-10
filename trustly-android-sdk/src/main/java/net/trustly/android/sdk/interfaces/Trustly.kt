@@ -14,7 +14,7 @@ interface Trustly {
      * on the JavaScript API.
      * @return this
      */
-    fun selectBankWidget(establishData: Map<String?, String?>?): Trustly
+    fun selectBankWidget(establishData: Map<String, String>?): Trustly
 
     /**
      * Sets the callback handler for when the user selects a bank on the widget.
@@ -24,7 +24,7 @@ interface Trustly {
      * for the key "paymentProviderId" with the id of the selected bank.
      * @return this
      */
-    fun onBankSelected(handler: TrustlyCallback<Trustly?, Map<String?, String?>>?): Trustly
+    fun onBankSelected(handler: TrustlyCallback<Trustly, Map<String, String>>?): Trustly
 
     /**
      * Establishes a new transaction. Shows the Trustly bank authentication on the TrustlyView
@@ -33,7 +33,7 @@ interface Trustly {
      * JavaScript API.
      * @return this
      */
-    fun establish(establishData: Map<String?, String?>?): Trustly
+    fun establish(establishData: Map<String, String>?): Trustly
 
     /**
      * Opens a hybrid application page
@@ -55,7 +55,7 @@ interface Trustly {
      * (check the definition on the Integration Guide).
      * @return this
      */
-    fun onReturn(onReturnHandler: TrustlyCallback<Trustly?, Map<String?, String?>>?): Trustly
+    fun onReturn(onReturnHandler: TrustlyCallback<Trustly, Map<String, String>>?): Trustly
 
     /**
      * Sets a callback to handle user cancellation of the flow.
@@ -65,7 +65,7 @@ interface Trustly {
      * definition on the Integration Guide).
      * @return this
      */
-    fun onCancel(handler: TrustlyCallback<Trustly?, Map<String?, String?>>?): Trustly
+    fun onCancel(handler: TrustlyCallback<Trustly, Map<String, String>>?): Trustly
 
     /**
      * Sets a callback to handle external URLs
@@ -75,7 +75,7 @@ interface Trustly {
      * entry key "url".
      * @return this
      */
-    fun onExternalUrl(handler: TrustlyCallback<Trustly?, Map<String?, String?>>?): Trustly
+    fun onExternalUrl(handler: TrustlyCallback<Trustly, Map<String, String>>?): Trustly
 
     /**
      * Sets a listener to capture internal payment flow events

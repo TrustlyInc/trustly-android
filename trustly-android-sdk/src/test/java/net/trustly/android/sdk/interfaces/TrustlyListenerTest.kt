@@ -33,15 +33,9 @@ class TrustlyListenerTest {
         verify(mockTrustlyListener).onChange(EVENT_WITH_DETAILS, eventNames)
     }
 
-    @Test
-    fun shouldValidateTrustlyListenerWhenEventAndNullDetailsArePassed() {
-        TrustlyListenerImpl(mockTrustlyListener).sendEventChange(EVENT_WITHOUT_DETAILS, null)
-        verify(mockTrustlyListener).onChange(EVENT_WITHOUT_DETAILS, null)
-    }
-
     private class TrustlyListenerImpl(private val trustlyListener: TrustlyListener) {
 
-        fun sendEventChange(event: String, eventDetails: HashMap<String, String>?) {
+        fun sendEventChange(event: String, eventDetails: HashMap<String, String>) {
             trustlyListener.onChange(event, eventDetails)
         }
 
@@ -49,7 +43,6 @@ class TrustlyListenerTest {
 
     companion object {
         private const val EVENT_WITH_DETAILS = "eventWithDetails"
-        private const val EVENT_WITHOUT_DETAILS = "eventWithoutDetails"
     }
 
 }
