@@ -263,7 +263,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 params.put("url", url);
                 onExternalUrl.handle(this, params);
             } else {
-                CustomTabsManager.openCustomTabsIntent(view.getContext(), url);
+                CustomTabsManager.INSTANCE.openCustomTabsIntent(view.getContext(), url);
             }
             return false;
         }
@@ -397,7 +397,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
         } else {
             data.put(RETURN_URL, establishData.get("metadata.urlScheme"));
             data.put(CANCEL_URL, establishData.get("metadata.urlScheme"));
-            CustomTabsManager.openCustomTabsIntent(getContext(), getEndpointUrl(FUNCTION_MOBILE, establishData) + "?token=" + getTokenByEncodedParameters(data));
+            CustomTabsManager.INSTANCE.openCustomTabsIntent(getContext(), getEndpointUrl(FUNCTION_MOBILE, establishData) + "?token=" + getTokenByEncodedParameters(data));
         }
     }
 

@@ -25,7 +25,7 @@ public class TrustlyOAuthClient extends WebViewClient {
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         if (TrustlyView.isLocalEnvironment() || ((url.contains("paywithmybank.com") || url.contains("trustly.one")) && url.contains("/oauth/login/"))) {
-            CustomTabsManager.openCustomTabsIntent(view.getContext(), url);
+            CustomTabsManager.INSTANCE.openCustomTabsIntent(view.getContext(), url);
         }
         return true;
     }
