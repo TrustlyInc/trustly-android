@@ -1,28 +1,28 @@
 package net.trustly.android.sdk.views;
 
-import static net.trustly.android.sdk.views.TrustlyConstants.ACCESS_ID;
-import static net.trustly.android.sdk.views.TrustlyConstants.CANCEL_URL;
-import static net.trustly.android.sdk.views.TrustlyConstants.CID;
-import static net.trustly.android.sdk.views.TrustlyConstants.CUSTOMER_ADDRESS_COUNTRY;
-import static net.trustly.android.sdk.views.TrustlyConstants.CUSTOMER_ADDRESS_STATE;
-import static net.trustly.android.sdk.views.TrustlyConstants.DEVICE_TYPE;
-import static net.trustly.android.sdk.views.TrustlyConstants.ENV;
-import static net.trustly.android.sdk.views.TrustlyConstants.ENV_DYNAMIC;
-import static net.trustly.android.sdk.views.TrustlyConstants.ENV_LOCAL;
-import static net.trustly.android.sdk.views.TrustlyConstants.ENV_PROD;
-import static net.trustly.android.sdk.views.TrustlyConstants.ENV_PRODUCTION;
-import static net.trustly.android.sdk.views.TrustlyConstants.EVENT;
-import static net.trustly.android.sdk.views.TrustlyConstants.EVENT_PAGE;
-import static net.trustly.android.sdk.views.TrustlyConstants.EVENT_TYPE;
-import static net.trustly.android.sdk.views.TrustlyConstants.FUNCTION_INDEX;
-import static net.trustly.android.sdk.views.TrustlyConstants.FUNCTION_MOBILE;
-import static net.trustly.android.sdk.views.TrustlyConstants.MERCHANT_ID;
-import static net.trustly.android.sdk.views.TrustlyConstants.METADATA_CID;
-import static net.trustly.android.sdk.views.TrustlyConstants.PAYMENT_PROVIDER_ID;
-import static net.trustly.android.sdk.views.TrustlyConstants.PAYMENT_TYPE;
-import static net.trustly.android.sdk.views.TrustlyConstants.RETURN_URL;
-import static net.trustly.android.sdk.views.TrustlyConstants.SESSION_CID;
-import static net.trustly.android.sdk.views.TrustlyConstants.WIDGET;
+import static net.trustly.android.sdk.util.TrustlyConstants.ACCESS_ID;
+import static net.trustly.android.sdk.util.TrustlyConstants.CANCEL_URL;
+import static net.trustly.android.sdk.util.TrustlyConstants.CID;
+import static net.trustly.android.sdk.util.TrustlyConstants.CUSTOMER_ADDRESS_COUNTRY;
+import static net.trustly.android.sdk.util.TrustlyConstants.CUSTOMER_ADDRESS_STATE;
+import static net.trustly.android.sdk.util.TrustlyConstants.DEVICE_TYPE;
+import static net.trustly.android.sdk.util.TrustlyConstants.ENV;
+import static net.trustly.android.sdk.util.TrustlyConstants.ENV_DYNAMIC;
+import static net.trustly.android.sdk.util.TrustlyConstants.ENV_LOCAL;
+import static net.trustly.android.sdk.util.TrustlyConstants.ENV_PROD;
+import static net.trustly.android.sdk.util.TrustlyConstants.ENV_PRODUCTION;
+import static net.trustly.android.sdk.util.TrustlyConstants.EVENT;
+import static net.trustly.android.sdk.util.TrustlyConstants.EVENT_PAGE;
+import static net.trustly.android.sdk.util.TrustlyConstants.EVENT_TYPE;
+import static net.trustly.android.sdk.util.TrustlyConstants.FUNCTION_INDEX;
+import static net.trustly.android.sdk.util.TrustlyConstants.FUNCTION_MOBILE;
+import static net.trustly.android.sdk.util.TrustlyConstants.MERCHANT_ID;
+import static net.trustly.android.sdk.util.TrustlyConstants.METADATA_CID;
+import static net.trustly.android.sdk.util.TrustlyConstants.PAYMENT_PROVIDER_ID;
+import static net.trustly.android.sdk.util.TrustlyConstants.PAYMENT_TYPE;
+import static net.trustly.android.sdk.util.TrustlyConstants.RETURN_URL;
+import static net.trustly.android.sdk.util.TrustlyConstants.SESSION_CID;
+import static net.trustly.android.sdk.util.TrustlyConstants.WIDGET;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -51,7 +51,7 @@ import net.trustly.android.sdk.data.StrategySetting;
 import net.trustly.android.sdk.interfaces.Trustly;
 import net.trustly.android.sdk.interfaces.TrustlyCallback;
 import net.trustly.android.sdk.interfaces.TrustlyListener;
-import net.trustly.android.sdk.util.CustomTabsManager;
+import net.trustly.android.sdk.util.TrustlyConstants;
 import net.trustly.android.sdk.util.UrlUtils;
 import net.trustly.android.sdk.util.api.APIRequestManager;
 import net.trustly.android.sdk.util.cid.CidManager;
@@ -256,7 +256,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 params.put("url", url);
                 onExternalUrl.handle(this, params);
             } else {
-                CustomTabsManager.INSTANCE.openCustomTabsIntent(view.getContext(), url);
+                TrustlyCustomTabsManager.INSTANCE.openCustomTabsIntent(view.getContext(), url);
             }
             return false;
         }
@@ -391,7 +391,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
         } else {
             data.put(RETURN_URL, establishData.get("metadata.urlScheme"));
             data.put(CANCEL_URL, establishData.get("metadata.urlScheme"));
-            CustomTabsManager.INSTANCE.openCustomTabsIntent(getContext(), getEndpointUrl(FUNCTION_MOBILE, establishData) + "?token=" + getTokenByEncodedParameters(data));
+            TrustlyCustomTabsManager.INSTANCE.openCustomTabsIntent(getContext(), getEndpointUrl(FUNCTION_MOBILE, establishData) + "?token=" + getTokenByEncodedParameters(data));
         }
     }
 

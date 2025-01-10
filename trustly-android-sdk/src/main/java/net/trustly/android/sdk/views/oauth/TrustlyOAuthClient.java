@@ -7,7 +7,7 @@ import android.webkit.WebViewClient;
 
 import androidx.annotation.RequiresApi;
 
-import net.trustly.android.sdk.util.CustomTabsManager;
+import net.trustly.android.sdk.views.TrustlyCustomTabsManager;
 import net.trustly.android.sdk.views.TrustlyView;
 
 /**
@@ -25,7 +25,7 @@ public class TrustlyOAuthClient extends WebViewClient {
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         if (TrustlyView.isLocalEnvironment() || ((url.contains("paywithmybank.com") || url.contains("trustly.one")) && url.contains("/oauth/login/"))) {
-            CustomTabsManager.INSTANCE.openCustomTabsIntent(view.getContext(), url);
+            TrustlyCustomTabsManager.INSTANCE.openCustomTabsIntent(view.getContext(), url);
         }
         return true;
     }

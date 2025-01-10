@@ -1,4 +1,4 @@
-package net.trustly.android.sdk.util
+package net.trustly.android.sdk.views
 
 import android.app.AlertDialog
 import android.content.Context
@@ -8,7 +8,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
 
-object CustomTabsManager {
+object TrustlyCustomTabsManager {
 
     private const val TAG = "CustomTabsManager"
 

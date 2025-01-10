@@ -1,4 +1,4 @@
-package net.trustly.android.sdk.views
+package net.trustly.android.sdk.util
 
 object TrustlyConstants {
 
