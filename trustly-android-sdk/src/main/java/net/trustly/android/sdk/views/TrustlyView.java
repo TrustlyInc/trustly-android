@@ -307,9 +307,9 @@ public class TrustlyView extends LinearLayout implements Trustly {
     public boolean handleWebViewClientShouldOverrideUrlLoading(TrustlyView trustlyView, String url) {
         if (url.startsWith(returnURL) || url.startsWith(cancelURL)) {
             if (url.startsWith(returnURL) && onReturn != null) {
-                onReturn.handle(trustlyView, UrlUtils.getQueryParametersFromUrl(url));
+                onReturn.handle(trustlyView, UrlUtils.INSTANCE.getQueryParametersFromUrl(url));
             } else if (onCancel != null) {
-                onCancel.handle(trustlyView, UrlUtils.getQueryParametersFromUrl(url));
+                onCancel.handle(trustlyView, UrlUtils.INSTANCE.getQueryParametersFromUrl(url));
             }
             notifyClose();
             return true;
@@ -392,7 +392,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     private void openWebViewOrCustomTabs(Settings settings, Map<String, String> establishData) {
         if (settings.getSettings().getIntegrationStrategy().equals("webview")) {
             data.put("metadata.integrationContext", "InAppBrowser");
-            byte[] encodedParameters = UrlUtils.getParameterString(data).getBytes(StandardCharsets.UTF_8);
+            byte[] encodedParameters = UrlUtils.INSTANCE.getParameterString(data).getBytes(StandardCharsets.UTF_8);
             webView.postUrl(getEndpointUrl(FUNCTION_INDEX, establishData), encodedParameters);
         } else {
             data.put(RETURN_URL, establishData.get("metadata.urlScheme"));
@@ -402,8 +402,8 @@ public class TrustlyView extends LinearLayout implements Trustly {
     }
 
     private String getTokenByEncodedParameters(Map<String, String> data) {
-        String jsonFromParameters = UrlUtils.getJsonFromParameters(data);
-        return UrlUtils.encodeStringToBase64(jsonFromParameters).replace("\n", "");
+        String jsonFromParameters = UrlUtils.INSTANCE.getJsonFromParameters(data);
+        return UrlUtils.INSTANCE.encodeStringToBase64(jsonFromParameters).replace("\n", "");
     }
 
     /**
@@ -455,7 +455,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 status = Status.WIDGET_LOADING;
                 notifyWidgetLoading();
 
-                String url = getEndpointUrl(WIDGET, establishData) + "&" + UrlUtils.getParameterString(d) + "#" + UrlUtils.getParameterString(hash);
+                String url = getEndpointUrl(WIDGET, establishData) + "&" + UrlUtils.INSTANCE.getParameterString(d) + "#" + UrlUtils.INSTANCE.getParameterString(hash);
                 webView.loadUrl(url);
                 webView.setBackgroundColor(Color.TRANSPARENT);
             }
