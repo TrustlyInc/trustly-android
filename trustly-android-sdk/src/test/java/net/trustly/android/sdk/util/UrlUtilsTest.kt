@@ -8,7 +8,6 @@ import net.trustly.android.sdk.util.UrlUtils.getParameterString
 import net.trustly.android.sdk.util.UrlUtils.getQueryParameterNames
 import net.trustly.android.sdk.util.UrlUtils.getQueryParametersFromUrl
 import org.junit.After
-import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Before
@@ -16,7 +15,8 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.MockedStatic
-import org.mockito.Mockito
+import org.mockito.Mockito.CALLS_REAL_METHODS
+import org.mockito.Mockito.clearInvocations
 import org.mockito.Mockito.mockStatic
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
@@ -48,10 +48,10 @@ class UrlUtilsTest {
     fun setUp() {
         MockitoAnnotations.openMocks(this)
 
-        mockedStaticUri = mockStatic(Uri::class.java, Mockito.CALLS_REAL_METHODS)
+        mockedStaticUri = mockStatic(Uri::class.java, CALLS_REAL_METHODS)
         mockedStaticUri.`when`<Any?> { Uri.parse(ArgumentMatchers.anyString()) }.thenReturn(mockUri)
-        mockedStaticURLEncoder = mockStatic(URLEncoder::class.java, Mockito.CALLS_REAL_METHODS)
-        mockedStaticBase64 = mockStatic(Base64::class.java, Mockito.CALLS_REAL_METHODS)
+        mockedStaticURLEncoder = mockStatic(URLEncoder::class.java, CALLS_REAL_METHODS)
+        mockedStaticBase64 = mockStatic(Base64::class.java, CALLS_REAL_METHODS)
     }
 
     @After
@@ -59,7 +59,7 @@ class UrlUtilsTest {
         mockedStaticUri.close()
         mockedStaticURLEncoder.close()
         mockedStaticBase64.close()
-        Mockito.clearInvocations(mockUri)
+        clearInvocations(mockUri)
     }
 
     @Test
@@ -70,7 +70,7 @@ class UrlUtilsTest {
             KEY_3 to VALUE_3
         )
         val parameter = getParameterString(values)
-        Assert.assertNotEquals("key1=value1,key2=value2,key3=value3", parameter)
+        assertNotEquals("key1=value1,key2=value2,key3=value3", parameter)
     }
 
     @Test
@@ -81,7 +81,7 @@ class UrlUtilsTest {
             KEY_3 to VALUE_3
         )
         val parameter = getParameterString(values)
-        Assert.assertEquals("key1=value1&key2=value2&key3=value3", parameter)
+        assertEquals("key1=value1&key2=value2&key3=value3", parameter)
     }
 
     @Test
@@ -92,7 +92,7 @@ class UrlUtilsTest {
             KEY_3 to VALUE_3
         )
         val parameter = getParameterString(values)
-        Assert.assertEquals("=value1&key2=value2&key3=value3", parameter)
+        assertEquals("=value1&key2=value2&key3=value3", parameter)
     }
 
     @Test
@@ -103,7 +103,7 @@ class UrlUtilsTest {
             KEY_3 to VALUE_3
         )
         val parameter = getParameterString(values)
-        Assert.assertEquals("key1=value1&key2=&key3=value3", parameter)
+        assertEquals("key1=value1&key2=&key3=value3", parameter)
     }
 
     @Test(expected = UnsupportedEncodingException::class)

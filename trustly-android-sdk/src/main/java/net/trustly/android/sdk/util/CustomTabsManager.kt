@@ -10,6 +10,8 @@ import androidx.browser.customtabs.CustomTabsIntent
 
 object CustomTabsManager {
 
+    private const val TAG = "CustomTabsManager"
+
     fun openCustomTabsIntent(context: Context?, url: String?) {
         try {
             val builder = CustomTabsIntent.Builder()
@@ -21,7 +23,7 @@ object CustomTabsManager {
                 launchUrl(context!!, Uri.parse(url))
             }
         } catch (e: Exception) {
-            Log.e("CustomTabsManager", e.toString())
+            Log.e(TAG, e.toString())
             showDisabledBrowserMessage(context)
         }
     }

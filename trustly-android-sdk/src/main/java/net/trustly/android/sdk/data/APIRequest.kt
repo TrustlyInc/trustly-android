@@ -11,16 +11,20 @@ class APIRequest(private val apiInterface: APIMethod, private val settings: (Set
         apiInterface.getSettings(token).enqueue(object : Callback<Settings> {
             override fun onResponse(call: Call<Settings>, response: Response<Settings>) {
                 if (response.body() != null) {
-                    Log.d("APIRequestNew", response.body().toString())
+                    Log.d(TAG, response.body().toString())
                     settings.invoke(response.body() as Settings)
                 }
             }
 
             override fun onFailure(call: Call<Settings>, t: Throwable) {
-                Log.e("APIRequestNew", t.message.toString())
+                Log.e(TAG, t.message.toString())
                 error.invoke(t.message.toString())
             }
         })
+    }
+
+    companion object {
+        private const val TAG = "APIRequest"
     }
 
 }

@@ -68,8 +68,7 @@ object UrlUtils {
     private fun buildJsonObjectSecond(data: Map<String, String>): JsonObject {
         val json = JsonObject()
         for ((key1, value) in data) {
-            val keys = key1.split(SEPARATOR.toRegex())
-                .toTypedArray()
+            val keys = key1.split(SEPARATOR.toRegex()).toTypedArray()
             var current = json
             for (i in keys.indices) {
                 val key = keys[i]

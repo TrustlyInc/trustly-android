@@ -1,7 +1,6 @@
 package net.trustly.android.sdk.util.api
 
 import android.content.Context
-import android.content.SharedPreferences
 
 object APIRequestStorage {
 
@@ -11,12 +10,10 @@ object APIRequestStorage {
         getSharedPreferences(context).edit().putString(preferenceId, preferenceValue).apply()
     }
 
-    fun readDataFrom(context: Context, preferenceId: String?): String? {
-        return getSharedPreferences(context).getString(preferenceId, null)
-    }
+    fun readDataFrom(context: Context, preferenceId: String?) =
+        getSharedPreferences(context).getString(preferenceId, null)
 
-    private fun getSharedPreferences(context: Context): SharedPreferences {
-        return context.getSharedPreferences(API_STORAGE, Context.MODE_PRIVATE)
-    }
+    private fun getSharedPreferences(context: Context) =
+        context.getSharedPreferences(API_STORAGE, Context.MODE_PRIVATE)
 
 }

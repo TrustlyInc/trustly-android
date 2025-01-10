@@ -12,8 +12,11 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.MockedStatic
-import org.mockito.Mockito
+import org.mockito.Mockito.CALLS_REAL_METHODS
+import org.mockito.Mockito.clearInvocations
 import org.mockito.Mockito.mockStatic
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import java.util.Calendar
@@ -60,12 +63,7 @@ class CidManagerTest {
     @After
     fun tearDown() {
         mockSettingsSecure.close()
-        Mockito.clearInvocations(
-            mockSharedPreferencesEditor,
-            mockSharedPreferences,
-            mockContext,
-            mockCalendar
-        )
+        clearInvocations(mockSharedPreferencesEditor, mockSharedPreferences, mockContext, mockCalendar)
     }
 
     @Test
@@ -74,15 +72,15 @@ class CidManagerTest {
         mockCalendar.time = timeNow
         val mockUUID = UUID.fromString("bbcc4621-d88f-4a94-ae2f-b38072bf5087")
 
-        mockStatic(UUID::class.java, Mockito.CALLS_REAL_METHODS).`when`<Any> { UUID.randomUUID() }.thenReturn(mockUUID)
-        mockStatic(Calendar::class.java, Mockito.CALLS_REAL_METHODS).`when`<Any> { Calendar.getInstance() }.thenReturn(mockCalendar)
+        mockStatic(UUID::class.java, CALLS_REAL_METHODS).`when`<Any> { UUID.randomUUID() }.thenReturn(mockUUID)
+        mockStatic(Calendar::class.java, CALLS_REAL_METHODS).`when`<Any> { Calendar.getInstance() }.thenReturn(mockCalendar)
         mockSettingsSecure.`when`<Any> { Secure.getString(mockContext.contentResolver, ANDROID_ID) }.thenReturn(ANDROID_ID_VALUE)
 
         CidManager.generateCid(mockContext)
 
-        Mockito.verify(mockSharedPreferencesEditor, Mockito.times(1)).putString(CID_PARAM, CID_VALUE)
-        Mockito.verify(mockSharedPreferencesEditor, Mockito.times(1)).apply()
-        Mockito.verify(mockSharedPreferences, Mockito.times(1)).edit()
+        verify(mockSharedPreferencesEditor, times(1)).putString(CID_PARAM, CID_VALUE)
+        verify(mockSharedPreferencesEditor, times(1)).apply()
+        verify(mockSharedPreferences, times(1)).edit()
     }
 
     @Test
@@ -96,8 +94,8 @@ class CidManagerTest {
 
         val result = CidManager.getOrCreateSessionCid(mockContext)
 
-        Mockito.verify(mockSharedPreferencesEditor, Mockito.times(1)).putString(SESSION_CID, SESSION_CID_VALUE_2 + timeStampNow)
-        Mockito.verify(mockSharedPreferences, Mockito.times(1)).edit()
+        verify(mockSharedPreferencesEditor, times(1)).putString(SESSION_CID, SESSION_CID_VALUE_2 + timeStampNow)
+        verify(mockSharedPreferences, times(1)).edit()
         assertNotEquals(getCIDParams(), result)
     }
 
@@ -116,8 +114,8 @@ class CidManagerTest {
 
         val result = CidManager.getOrCreateSessionCid(mockContext)
 
-        Mockito.verify(mockSharedPreferencesEditor, Mockito.times(1)).putString(SESSION_CID, SESSION_CID_VALUE_1 + timeStampNow)
-        Mockito.verify(mockSharedPreferences, Mockito.times(1)).edit()
+        verify(mockSharedPreferencesEditor, times(1)).putString(SESSION_CID, SESSION_CID_VALUE_1 + timeStampNow)
+        verify(mockSharedPreferences, times(1)).edit()
         assertEquals(CID_VALUE, result[SESSION_CID])
     }
 
@@ -134,8 +132,8 @@ class CidManagerTest {
 
         val result = CidManager.getOrCreateSessionCid(mockContext)
 
-        Mockito.verify(mockSharedPreferencesEditor, Mockito.times(1)).putString(SESSION_CID, SESSION_CID_VALUE)
-        Mockito.verify(mockSharedPreferences, Mockito.times(1)).edit()
+        verify(mockSharedPreferencesEditor, times(1)).putString(SESSION_CID, SESSION_CID_VALUE)
+        verify(mockSharedPreferences, times(1)).edit()
         assertEquals(SESSION_CID_VALUE, result[SESSION_CID])
     }
 
@@ -148,8 +146,8 @@ class CidManagerTest {
 
         val result = CidManager.getOrCreateSessionCid(mockContext)
 
-        Mockito.verify(mockSharedPreferencesEditor, Mockito.times(0)).putString(SESSION_CID, CID_VALUE)
-        Mockito.verify(mockSharedPreferences, Mockito.times(1)).edit()
+        verify(mockSharedPreferencesEditor, times(0)).putString(SESSION_CID, CID_VALUE)
+        verify(mockSharedPreferences, times(1)).edit()
         assertNotEquals(CID_VALUE, result[SESSION_CID])
     }
 
@@ -172,8 +170,8 @@ class CidManagerTest {
 
         val result = CidManager.getOrCreateSessionCid(mockContext)
 
-        Mockito.verify(mockSharedPreferencesEditor, Mockito.times(1)).putString(SESSION_CID, SESSION_CID_LESS_VALUE)
-        Mockito.verify(mockSharedPreferences, Mockito.times(1)).edit()
+        verify(mockSharedPreferencesEditor, times(1)).putString(SESSION_CID, SESSION_CID_LESS_VALUE)
+        verify(mockSharedPreferences, times(1)).edit()
         assertNotEquals(getCIDParams(), result)
     }
 

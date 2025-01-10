@@ -40,6 +40,8 @@ import android.webkit.WebView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
+
 import net.trustly.android.sdk.BuildConfig;
 import net.trustly.android.sdk.TrustlyJsInterface;
 import net.trustly.android.sdk.data.APIMethod;
@@ -77,6 +79,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     private static final String LOCAL_PROTOCOL = "http://";
     private static final String DOMAIN = "paywithmybank.com";
     private static final String SDK_VERSION = BuildConfig.SDK_VERSION;
+    private static final String TAG = "TrustlyView";
 
     private static boolean isLocalEnvironment = false;
 
@@ -329,6 +332,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
+    @NonNull
     @Override
     public Trustly establish(Map<String, String> establishData) {
         try {
@@ -409,6 +413,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
+    @NonNull
     @Override
     public Trustly selectBankWidget(Map<String, String> establishData) {
         try {
@@ -465,6 +470,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
         return this;
     }
 
+    @NonNull
     @Override
     public Trustly hybrid(String url, String returnURL, String cancelURL) {
         this.returnURL = returnURL;
@@ -473,6 +479,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
         return this;
     }
 
+    @NonNull
     @Override
     public Trustly setListener(TrustlyListener trustlyListener) {
         this.trustlyListener = trustlyListener;
@@ -483,12 +490,14 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
+    @NonNull
     @Override
     public Trustly onReturn(TrustlyCallback<Trustly, Map<String, String>> handler) {
         this.onReturn = handler;
         return this;
     }
 
+    @NonNull
     @Override
     public Trustly destroy() {
         this.webView.destroy();
@@ -503,6 +512,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
+    @NonNull
     @Override
     public Trustly onBankSelected(TrustlyCallback<Trustly, Map<String, String>> handler) {
         this.onWidgetBankSelected = handler;
@@ -512,6 +522,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
+    @NonNull
     @Override
     public Trustly onCancel(TrustlyCallback<Trustly, Map<String, String>> handler) {
         this.onCancel = handler;
@@ -521,6 +532,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
+    @NonNull
     @Override
     public Trustly onExternalUrl(TrustlyCallback<Trustly, Map<String, String>> handler) {
         this.onExternalUrl = handler;
@@ -607,7 +619,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     }
 
     private void showErrorMessage(Exception e) {
-        Log.e("TrustlyView", Objects.requireNonNull(e.getMessage()));
+        Log.e(TAG, Objects.requireNonNull(e.getMessage()));
     }
 
     public static boolean isLocalEnvironment() {
