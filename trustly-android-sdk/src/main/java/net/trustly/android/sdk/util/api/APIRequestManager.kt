@@ -22,22 +22,22 @@ object APIRequestManager {
         return true
     }
 
-    private fun getAPIRequest(context: Context): String? {
-        return APIRequestStorage.readDataFrom(context, API_REQUEST)
-    }
+    private fun getAPIRequest(context: Context) =
+        APIRequestStorage.readDataFrom(context, API_REQUEST)
 
     fun saveAPIRequestSettings(context: Context, settings: Settings) {
         APIRequestStorage.saveData(context, API_REQUEST_SETTINGS, Gson().toJson(settings))
     }
 
     fun getAPIRequestSettings(context: Context): Settings {
-        val settings = Gson().fromJson(APIRequestStorage.readDataFrom(context, API_REQUEST_SETTINGS), Settings::class.java)
+        val settings = Gson().fromJson(
+            APIRequestStorage.readDataFrom(context, API_REQUEST_SETTINGS),
+            Settings::class.java
+        )
         return settings ?: Settings(StrategySetting("webview"))
     }
 
-    private fun getTimestamp(): String {
-        return Calendar.getInstance().timeInMillis.toString()
-    }
+    private fun getTimestamp() = Calendar.getInstance().timeInMillis.toString()
 
     private fun isValid(timestamp: String): Boolean {
         val lastTime = Calendar.getInstance()

@@ -26,7 +26,6 @@ import static net.trustly.android.sdk.views.TrustlyConstants.WIDGET;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
@@ -56,6 +55,7 @@ import net.trustly.android.sdk.util.CustomTabsManager;
 import net.trustly.android.sdk.util.UrlUtils;
 import net.trustly.android.sdk.util.api.APIRequestManager;
 import net.trustly.android.sdk.util.cid.CidManager;
+import net.trustly.android.sdk.util.grp.GRPManager;
 import net.trustly.android.sdk.views.clients.TrustlyWebViewChromeClient;
 import net.trustly.android.sdk.views.clients.TrustlyWebViewClient;
 import net.trustly.android.sdk.views.oauth.TrustlyOAuthView;
@@ -187,20 +187,10 @@ public class TrustlyView extends LinearLayout implements Trustly {
     }
 
     private void initGrp(Context context) {
-        try {
-            if (grp < 0) {
-                SharedPreferences pref = context.getSharedPreferences("PayWithMyBank", 0);
-                if (pref != null) {
-                    grp = pref.getInt(TrustlyConstants.GRP, -1);
-                    if (grp < 0) {
-                        grp = new SecureRandom().nextInt(100);
-                        pref.edit().putInt(TrustlyConstants.GRP, grp).apply();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            grp = 1;
-            showErrorMessage(e);
+        grp = GRPManager.INSTANCE.getGRP(context);
+        if (grp < 0) {
+            grp = new SecureRandom().nextInt(100);
+            GRPManager.INSTANCE.saveGRP(context, grp);
         }
     }
 
