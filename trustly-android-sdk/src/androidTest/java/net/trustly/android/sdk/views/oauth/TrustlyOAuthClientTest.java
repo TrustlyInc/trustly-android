@@ -11,8 +11,8 @@ import android.webkit.WebView;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
-import net.trustly.android.sdk.views.TrustlyView;
 import net.trustly.android.sdk.TrustlyActivityTest;
+import net.trustly.android.sdk.views.TrustlyView;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

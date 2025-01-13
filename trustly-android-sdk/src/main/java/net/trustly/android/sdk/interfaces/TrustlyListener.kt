@@ -1,15 +1,14 @@
-package net.trustly.android.sdk.interfaces;
-
-import java.util.HashMap;
+package net.trustly.android.sdk.interfaces
 
 /**
  * Trustly listener definition
  */
-public interface TrustlyListener {
+fun interface TrustlyListener {
 
     /**
      * @param eventName The Trustly event name that triggered the listener
      * @param eventDetails The Trustly event details that triggered the listener
      */
-    void onChange(String eventName, HashMap<String, String> eventDetails);
+    fun onChange(eventName: String, eventDetails: HashMap<String, String>)
+
 }

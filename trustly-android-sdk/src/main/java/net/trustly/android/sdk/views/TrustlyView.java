@@ -1,32 +1,31 @@
 package net.trustly.android.sdk.views;
 
-import static net.trustly.android.sdk.views.TrustlyConstants.ACCESS_ID;
-import static net.trustly.android.sdk.views.TrustlyConstants.CANCEL_URL;
-import static net.trustly.android.sdk.views.TrustlyConstants.CID;
-import static net.trustly.android.sdk.views.TrustlyConstants.CUSTOMER_ADDRESS_COUNTRY;
-import static net.trustly.android.sdk.views.TrustlyConstants.CUSTOMER_ADDRESS_STATE;
-import static net.trustly.android.sdk.views.TrustlyConstants.DEVICE_TYPE;
-import static net.trustly.android.sdk.views.TrustlyConstants.ENV;
-import static net.trustly.android.sdk.views.TrustlyConstants.ENV_DYNAMIC;
-import static net.trustly.android.sdk.views.TrustlyConstants.ENV_LOCAL;
-import static net.trustly.android.sdk.views.TrustlyConstants.ENV_PROD;
-import static net.trustly.android.sdk.views.TrustlyConstants.ENV_PRODUCTION;
-import static net.trustly.android.sdk.views.TrustlyConstants.EVENT;
-import static net.trustly.android.sdk.views.TrustlyConstants.EVENT_PAGE;
-import static net.trustly.android.sdk.views.TrustlyConstants.EVENT_TYPE;
-import static net.trustly.android.sdk.views.TrustlyConstants.FUNCTION_INDEX;
-import static net.trustly.android.sdk.views.TrustlyConstants.FUNCTION_MOBILE;
-import static net.trustly.android.sdk.views.TrustlyConstants.MERCHANT_ID;
-import static net.trustly.android.sdk.views.TrustlyConstants.METADATA_CID;
-import static net.trustly.android.sdk.views.TrustlyConstants.PAYMENT_PROVIDER_ID;
-import static net.trustly.android.sdk.views.TrustlyConstants.PAYMENT_TYPE;
-import static net.trustly.android.sdk.views.TrustlyConstants.RETURN_URL;
-import static net.trustly.android.sdk.views.TrustlyConstants.SESSION_CID;
-import static net.trustly.android.sdk.views.TrustlyConstants.WIDGET;
+import static net.trustly.android.sdk.util.TrustlyConstants.ACCESS_ID;
+import static net.trustly.android.sdk.util.TrustlyConstants.CANCEL_URL;
+import static net.trustly.android.sdk.util.TrustlyConstants.CID;
+import static net.trustly.android.sdk.util.TrustlyConstants.CUSTOMER_ADDRESS_COUNTRY;
+import static net.trustly.android.sdk.util.TrustlyConstants.CUSTOMER_ADDRESS_STATE;
+import static net.trustly.android.sdk.util.TrustlyConstants.DEVICE_TYPE;
+import static net.trustly.android.sdk.util.TrustlyConstants.ENV;
+import static net.trustly.android.sdk.util.TrustlyConstants.ENV_DYNAMIC;
+import static net.trustly.android.sdk.util.TrustlyConstants.ENV_LOCAL;
+import static net.trustly.android.sdk.util.TrustlyConstants.ENV_PROD;
+import static net.trustly.android.sdk.util.TrustlyConstants.ENV_PRODUCTION;
+import static net.trustly.android.sdk.util.TrustlyConstants.EVENT;
+import static net.trustly.android.sdk.util.TrustlyConstants.EVENT_PAGE;
+import static net.trustly.android.sdk.util.TrustlyConstants.EVENT_TYPE;
+import static net.trustly.android.sdk.util.TrustlyConstants.FUNCTION_INDEX;
+import static net.trustly.android.sdk.util.TrustlyConstants.FUNCTION_MOBILE;
+import static net.trustly.android.sdk.util.TrustlyConstants.MERCHANT_ID;
+import static net.trustly.android.sdk.util.TrustlyConstants.METADATA_CID;
+import static net.trustly.android.sdk.util.TrustlyConstants.PAYMENT_PROVIDER_ID;
+import static net.trustly.android.sdk.util.TrustlyConstants.PAYMENT_TYPE;
+import static net.trustly.android.sdk.util.TrustlyConstants.RETURN_URL;
+import static net.trustly.android.sdk.util.TrustlyConstants.SESSION_CID;
+import static net.trustly.android.sdk.util.TrustlyConstants.WIDGET;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
@@ -40,6 +39,8 @@ import android.webkit.WebView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
+
 import net.trustly.android.sdk.BuildConfig;
 import net.trustly.android.sdk.TrustlyJsInterface;
 import net.trustly.android.sdk.data.APIMethod;
@@ -50,10 +51,11 @@ import net.trustly.android.sdk.data.StrategySetting;
 import net.trustly.android.sdk.interfaces.Trustly;
 import net.trustly.android.sdk.interfaces.TrustlyCallback;
 import net.trustly.android.sdk.interfaces.TrustlyListener;
-import net.trustly.android.sdk.util.CustomTabsManager;
+import net.trustly.android.sdk.util.TrustlyConstants;
 import net.trustly.android.sdk.util.UrlUtils;
 import net.trustly.android.sdk.util.api.APIRequestManager;
 import net.trustly.android.sdk.util.cid.CidManager;
+import net.trustly.android.sdk.util.grp.GRPManager;
 import net.trustly.android.sdk.views.clients.TrustlyWebViewChromeClient;
 import net.trustly.android.sdk.views.clients.TrustlyWebViewClient;
 import net.trustly.android.sdk.views.oauth.TrustlyOAuthView;
@@ -77,6 +79,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     private static final String LOCAL_PROTOCOL = "http://";
     private static final String DOMAIN = "paywithmybank.com";
     private static final String SDK_VERSION = BuildConfig.SDK_VERSION;
+    private static final String TAG = "TrustlyView";
 
     private static boolean isLocalEnvironment = false;
 
@@ -184,20 +187,10 @@ public class TrustlyView extends LinearLayout implements Trustly {
     }
 
     private void initGrp(Context context) {
-        try {
-            if (grp < 0) {
-                SharedPreferences pref = context.getSharedPreferences("PayWithMyBank", 0);
-                if (pref != null) {
-                    grp = pref.getInt(TrustlyConstants.GRP, -1);
-                    if (grp < 0) {
-                        grp = new SecureRandom().nextInt(100);
-                        pref.edit().putInt(TrustlyConstants.GRP, grp).apply();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            grp = 1;
-            showErrorMessage(e);
+        grp = GRPManager.INSTANCE.getGRP(context);
+        if (grp < 0) {
+            grp = new SecureRandom().nextInt(100);
+            GRPManager.INSTANCE.saveGRP(context, grp);
         }
     }
 
@@ -263,7 +256,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 params.put("url", url);
                 onExternalUrl.handle(this, params);
             } else {
-                CustomTabsManager.openCustomTabsIntent(view.getContext(), url);
+                TrustlyCustomTabsManager.INSTANCE.openCustomTabsIntent(view.getContext(), url);
             }
             return false;
         }
@@ -307,9 +300,9 @@ public class TrustlyView extends LinearLayout implements Trustly {
     public boolean handleWebViewClientShouldOverrideUrlLoading(TrustlyView trustlyView, String url) {
         if (url.startsWith(returnURL) || url.startsWith(cancelURL)) {
             if (url.startsWith(returnURL) && onReturn != null) {
-                onReturn.handle(trustlyView, UrlUtils.getQueryParametersFromUrl(url));
+                onReturn.handle(trustlyView, UrlUtils.INSTANCE.getQueryParametersFromUrl(url));
             } else if (onCancel != null) {
-                onCancel.handle(trustlyView, UrlUtils.getQueryParametersFromUrl(url));
+                onCancel.handle(trustlyView, UrlUtils.INSTANCE.getQueryParametersFromUrl(url));
             }
             notifyClose();
             return true;
@@ -329,11 +322,12 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
+    @NonNull
     @Override
     public Trustly establish(Map<String, String> establishData) {
         try {
             status = Status.PANEL_LOADING;
-            CidManager.generateCid(getContext());
+            CidManager.INSTANCE.generateCid(getContext());
 
             data = new HashMap<>(establishData);
 
@@ -357,7 +351,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 data.put("widgetLoaded", "true");
             }
 
-            Map<String, String> sessionCidValues = CidManager.getOrCreateSessionCid(getContext());
+            Map<String, String> sessionCidValues = CidManager.INSTANCE.getOrCreateSessionCid(getContext());
             data.put(SESSION_CID, sessionCidValues.get(CidManager.SESSION_CID_PARAM));
             data.put(METADATA_CID, sessionCidValues.get(CidManager.CID_PARAM));
 
@@ -392,23 +386,24 @@ public class TrustlyView extends LinearLayout implements Trustly {
     private void openWebViewOrCustomTabs(Settings settings, Map<String, String> establishData) {
         if (settings.getSettings().getIntegrationStrategy().equals("webview")) {
             data.put("metadata.integrationContext", "InAppBrowser");
-            byte[] encodedParameters = UrlUtils.getParameterString(data).getBytes(StandardCharsets.UTF_8);
+            byte[] encodedParameters = UrlUtils.INSTANCE.getParameterString(data).getBytes(StandardCharsets.UTF_8);
             webView.postUrl(getEndpointUrl(FUNCTION_INDEX, establishData), encodedParameters);
         } else {
             data.put(RETURN_URL, establishData.get("metadata.urlScheme"));
             data.put(CANCEL_URL, establishData.get("metadata.urlScheme"));
-            CustomTabsManager.openCustomTabsIntent(getContext(), getEndpointUrl(FUNCTION_MOBILE, establishData) + "?token=" + getTokenByEncodedParameters(data));
+            TrustlyCustomTabsManager.INSTANCE.openCustomTabsIntent(getContext(), getEndpointUrl(FUNCTION_MOBILE, establishData) + "?token=" + getTokenByEncodedParameters(data));
         }
     }
 
     private String getTokenByEncodedParameters(Map<String, String> data) {
-        String jsonFromParameters = UrlUtils.getJsonFromParameters(data);
-        return UrlUtils.encodeStringToBase64(jsonFromParameters).replace("\n", "");
+        String jsonFromParameters = UrlUtils.INSTANCE.getJsonFromParameters(data);
+        return UrlUtils.INSTANCE.encodeStringToBase64(jsonFromParameters).replace("\n", "");
     }
 
     /**
      * {@inheritDoc}
      */
+    @NonNull
     @Override
     public Trustly selectBankWidget(Map<String, String> establishData) {
         try {
@@ -442,7 +437,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 d.put(CUSTOMER_ADDRESS_STATE, establishData.get(CUSTOMER_ADDRESS_STATE));
             }
 
-            Map<String, String> sessionCidValues = CidManager.getOrCreateSessionCid(getContext());
+            Map<String, String> sessionCidValues = CidManager.INSTANCE.getOrCreateSessionCid(getContext());
             d.put(SESSION_CID, sessionCidValues.get(CidManager.SESSION_CID_PARAM));
             d.put(CID, sessionCidValues.get(CidManager.CID_PARAM));
 
@@ -455,7 +450,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 status = Status.WIDGET_LOADING;
                 notifyWidgetLoading();
 
-                String url = getEndpointUrl(WIDGET, establishData) + "&" + UrlUtils.getParameterString(d) + "#" + UrlUtils.getParameterString(hash);
+                String url = getEndpointUrl(WIDGET, establishData) + "&" + UrlUtils.INSTANCE.getParameterString(d) + "#" + UrlUtils.INSTANCE.getParameterString(hash);
                 webView.loadUrl(url);
                 webView.setBackgroundColor(Color.TRANSPARENT);
             }
@@ -465,6 +460,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
         return this;
     }
 
+    @NonNull
     @Override
     public Trustly hybrid(String url, String returnURL, String cancelURL) {
         this.returnURL = returnURL;
@@ -473,6 +469,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
         return this;
     }
 
+    @NonNull
     @Override
     public Trustly setListener(TrustlyListener trustlyListener) {
         this.trustlyListener = trustlyListener;
@@ -483,12 +480,14 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
+    @NonNull
     @Override
     public Trustly onReturn(TrustlyCallback<Trustly, Map<String, String>> handler) {
         this.onReturn = handler;
         return this;
     }
 
+    @NonNull
     @Override
     public Trustly destroy() {
         this.webView.destroy();
@@ -503,6 +502,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
+    @NonNull
     @Override
     public Trustly onBankSelected(TrustlyCallback<Trustly, Map<String, String>> handler) {
         this.onWidgetBankSelected = handler;
@@ -512,6 +512,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
+    @NonNull
     @Override
     public Trustly onCancel(TrustlyCallback<Trustly, Map<String, String>> handler) {
         this.onCancel = handler;
@@ -521,6 +522,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
+    @NonNull
     @Override
     public Trustly onExternalUrl(TrustlyCallback<Trustly, Map<String, String>> handler) {
         this.onExternalUrl = handler;
@@ -585,11 +587,11 @@ public class TrustlyView extends LinearLayout implements Trustly {
     }
 
     private void notifyOpen() {
-        notifyListener("open", null);
+        notifyListener("open", new HashMap<>());
     }
 
     private void notifyClose() {
-        notifyListener("close", null);
+        notifyListener("close", new HashMap<>());
     }
 
     private void notifyWidgetLoading() {
@@ -607,7 +609,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     }
 
     private void showErrorMessage(Exception e) {
-        Log.e("TrustlyView", Objects.requireNonNull(e.getMessage()));
+        Log.e(TAG, Objects.requireNonNull(e.getMessage()));
     }
 
     public static boolean isLocalEnvironment() {
