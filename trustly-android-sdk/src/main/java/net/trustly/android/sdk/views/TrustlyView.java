@@ -42,7 +42,6 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 
 import net.trustly.android.sdk.BuildConfig;
-import net.trustly.android.sdk.TrustlyJsInterface;
 import net.trustly.android.sdk.data.APIMethod;
 import net.trustly.android.sdk.data.APIRequest;
 import net.trustly.android.sdk.data.RetrofitInstance;
@@ -50,6 +49,7 @@ import net.trustly.android.sdk.data.Settings;
 import net.trustly.android.sdk.data.StrategySetting;
 import net.trustly.android.sdk.interfaces.Trustly;
 import net.trustly.android.sdk.interfaces.TrustlyCallback;
+import net.trustly.android.sdk.interfaces.TrustlyJsInterface;
 import net.trustly.android.sdk.interfaces.TrustlyListener;
 import net.trustly.android.sdk.util.TrustlyConstants;
 import net.trustly.android.sdk.util.UrlUtils;

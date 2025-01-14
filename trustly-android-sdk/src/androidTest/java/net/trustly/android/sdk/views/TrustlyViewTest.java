@@ -13,7 +13,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
 import net.trustly.android.sdk.TrustlyActivityTest;
-import net.trustly.android.sdk.TrustlyJsInterface;
 import net.trustly.android.sdk.interfaces.Trustly;
 
 import org.junit.After;
