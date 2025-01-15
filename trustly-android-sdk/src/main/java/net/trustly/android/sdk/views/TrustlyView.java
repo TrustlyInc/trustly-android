@@ -1,10 +1,6 @@
 package net.trustly.android.sdk.views;
 
-import static net.trustly.android.sdk.util.TrustlyConstants.ACCESS_ID;
 import static net.trustly.android.sdk.util.TrustlyConstants.CANCEL_URL;
-import static net.trustly.android.sdk.util.TrustlyConstants.CID;
-import static net.trustly.android.sdk.util.TrustlyConstants.CUSTOMER_ADDRESS_COUNTRY;
-import static net.trustly.android.sdk.util.TrustlyConstants.CUSTOMER_ADDRESS_STATE;
 import static net.trustly.android.sdk.util.TrustlyConstants.DEVICE_TYPE;
 import static net.trustly.android.sdk.util.TrustlyConstants.ENV;
 import static net.trustly.android.sdk.util.TrustlyConstants.ENV_DYNAMIC;
@@ -16,7 +12,6 @@ import static net.trustly.android.sdk.util.TrustlyConstants.EVENT_PAGE;
 import static net.trustly.android.sdk.util.TrustlyConstants.EVENT_TYPE;
 import static net.trustly.android.sdk.util.TrustlyConstants.FUNCTION_INDEX;
 import static net.trustly.android.sdk.util.TrustlyConstants.FUNCTION_MOBILE;
-import static net.trustly.android.sdk.util.TrustlyConstants.MERCHANT_ID;
 import static net.trustly.android.sdk.util.TrustlyConstants.METADATA_CID;
 import static net.trustly.android.sdk.util.TrustlyConstants.PAYMENT_PROVIDER_ID;
 import static net.trustly.android.sdk.util.TrustlyConstants.PAYMENT_TYPE;
@@ -26,7 +21,6 @@ import static net.trustly.android.sdk.util.TrustlyConstants.WIDGET;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -58,6 +52,7 @@ import net.trustly.android.sdk.util.cid.CidManager;
 import net.trustly.android.sdk.util.grp.GRPManager;
 import net.trustly.android.sdk.views.clients.TrustlyWebViewChromeClient;
 import net.trustly.android.sdk.views.clients.TrustlyWebViewClient;
+import net.trustly.android.sdk.views.components.TrustlyWidget;
 import net.trustly.android.sdk.views.oauth.TrustlyOAuthView;
 
 import java.nio.charset.StandardCharsets;
@@ -83,7 +78,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
     private static boolean isLocalEnvironment = false;
 
-    enum Status {
+    public enum Status {
         START,
         WIDGET_LOADING,
         WIDGET_LOADED,
@@ -406,57 +401,15 @@ public class TrustlyView extends LinearLayout implements Trustly {
     @NonNull
     @Override
     public Trustly selectBankWidget(Map<String, String> establishData) {
-        try {
-            data = new HashMap<>(establishData);
-            String deviceType = establishData.get(DEVICE_TYPE);
-
-            if (deviceType != null) {
-                deviceType = deviceType + ":android:hybrid";
-            } else {
-                deviceType = "mobile:android:hybrid";
-            }
-
-            String lang = establishData.get("metadata.lang");
-
-            HashMap<String, String> d = new HashMap<>();
-            d.put(ACCESS_ID, establishData.get(ACCESS_ID));
-            d.put(MERCHANT_ID, establishData.get(MERCHANT_ID));
-            d.put(PAYMENT_TYPE, establishData.get(PAYMENT_TYPE));
-            d.put(DEVICE_TYPE, deviceType);
-            if (lang != null) d.put("lang", lang);
-            d.put(TrustlyConstants.GRP, Integer.toString(grp));
-            d.put("dynamicWidget", "true");
-
-            if (establishData.get(CUSTOMER_ADDRESS_COUNTRY) != null) {
-                d.put(CUSTOMER_ADDRESS_COUNTRY, establishData.get(CUSTOMER_ADDRESS_COUNTRY));
-            } else {
-                d.put(CUSTOMER_ADDRESS_COUNTRY, "US");
-            }
-
-            if (establishData.get(CUSTOMER_ADDRESS_COUNTRY) == null || "us".equalsIgnoreCase(establishData.get(CUSTOMER_ADDRESS_COUNTRY))) {
-                d.put(CUSTOMER_ADDRESS_STATE, establishData.get(CUSTOMER_ADDRESS_STATE));
-            }
-
-            Map<String, String> sessionCidValues = CidManager.INSTANCE.getOrCreateSessionCid(getContext());
-            d.put(SESSION_CID, sessionCidValues.get(CidManager.SESSION_CID_PARAM));
-            d.put(CID, sessionCidValues.get(CidManager.CID_PARAM));
-
-            Map<String, String> hash = new HashMap<>();
-
-            hash.put("merchantReference", establishData.get("merchantReference"));
-            hash.put("customer.externalId", establishData.get("customer.externalId"));
-
-            if (status != Status.WIDGET_LOADED) {
-                status = Status.WIDGET_LOADING;
-                notifyWidgetLoading();
-
-                String url = getEndpointUrl(WIDGET, establishData) + "&" + UrlUtils.INSTANCE.getParameterString(d) + "#" + UrlUtils.INSTANCE.getParameterString(hash);
-                webView.loadUrl(url);
-                webView.setBackgroundColor(Color.TRANSPARENT);
-            }
-        } catch (Exception e) {
-            showErrorMessage(e);
-        }
+        data = establishData;
+        TrustlyWidget trustlyWidget = new TrustlyWidget(getContext(), this, webView, status, statusChanged -> {
+            status = statusChanged;
+            return Unit.INSTANCE;
+        }, () -> {
+            notifyWidgetLoading();
+            return Unit.INSTANCE;
+        });
+        trustlyWidget.updateEstablishData(establishData, grp);
         return this;
     }
 
@@ -573,7 +526,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     /**
      * {@inheritDoc}
      */
-    protected String getEndpointUrl(String function, Map<String, String> establishData) {
+    public String getEndpointUrl(String function, Map<String, String> establishData) {
         String domain = getDomain(function, establishData);
         if (FUNCTION_MOBILE.equals(function)) {
              return domain + "/frontend/mobile/establish";

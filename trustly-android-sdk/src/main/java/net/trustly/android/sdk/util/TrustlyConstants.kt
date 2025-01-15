@@ -19,13 +19,18 @@ object TrustlyConstants {
     const val CANCEL_URL: String = "cancelUrl"
     const val ACCESS_ID: String = "accessId"
     const val MERCHANT_ID: String = "merchantId"
+    const val MERCHANT_REFERENCE: String = "merchantReference"
+    const val CUSTOMER_EXTERNAL_ID: String = "customer.externalId"
     const val CUSTOMER_ADDRESS_COUNTRY: String = "customer.address.country"
     const val CUSTOMER_ADDRESS_STATE: String = "customer.address.state"
 
     const val WIDGET: String = "widget"
+    const val DYNAMIC_WIDGET: String = "dynamicWidget"
 
     const val CID: String = "cid"
+    const val LANG: String = "lang"
     const val METADATA_CID: String = "metadata.cid"
+    const val METADATA_LANG: String = "metadata.lang"
     const val SESSION_CID: String = "sessionCid"
 
     const val EVENT: String = "event"
