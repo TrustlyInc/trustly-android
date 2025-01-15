@@ -75,7 +75,7 @@ class TrustlyWidget(
 
                 val dataParameters = UrlUtils.getParameterString(data)
                 val hashParameters = UrlUtils.getParameterString(hash)
-                val url: String = getEndpointUrl(
+                val url: String = UrlUtils.getEndpointUrl(
                     WIDGET,
                     establishData
                 ) + AMPERSAND_CHAR + dataParameters + HASHTAG_SIGN + hashParameters

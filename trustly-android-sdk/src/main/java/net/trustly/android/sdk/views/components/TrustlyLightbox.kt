@@ -82,7 +82,7 @@ class TrustlyLightbox(
                 val settings = APIRequestManager.getAPIRequestSettings(context)
                 openWebViewOrCustomTabs(settings, data)
             } else {
-                val apiInterface = getInstance(getDomain(FUNCTION_MOBILE, establishData)).create(APIMethod::class.java)
+                val apiInterface = getInstance(UrlUtils.getDomain(FUNCTION_MOBILE, establishData)).create(APIMethod::class.java)
                 val apiRequest = APIRequest(apiInterface, { settings: Settings ->
                     APIRequestManager.saveAPIRequestSettings(context, settings)
                     openWebViewOrCustomTabs(settings, data)
@@ -100,13 +100,13 @@ class TrustlyLightbox(
         if (settings.settings.integrationStrategy == INTEGRATION_STRATEGY_DEFAULT) {
             establishData[METADATA_INTEGRATION_CONTEXT] = "InAppBrowser"
             val encodedParameters = UrlUtils.getParameterString(establishData.toMap()).toByteArray(StandardCharsets.UTF_8)
-            webView.postUrl(getEndpointUrl(FUNCTION_INDEX, establishData), encodedParameters)
+            webView.postUrl(UrlUtils.getEndpointUrl(FUNCTION_INDEX, establishData), encodedParameters)
         } else {
             establishData[RETURN_URL] = establishData[METADATA_URL_SCHEME]!!
             establishData[CANCEL_URL] = establishData[METADATA_URL_SCHEME]!!
             TrustlyCustomTabsManager.openCustomTabsIntent(
                 context,
-                getEndpointUrl(
+                UrlUtils.getEndpointUrl(
                     FUNCTION_MOBILE,
                     establishData
                 ) + "?token=" + getTokenByEncodedParameters(establishData)
