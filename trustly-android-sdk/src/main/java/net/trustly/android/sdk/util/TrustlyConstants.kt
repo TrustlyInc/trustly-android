@@ -4,6 +4,7 @@ object TrustlyConstants {
 
     const val ENV_DYNAMIC: String = "dynamic"
     const val ENV_LOCAL: String = "local"
+    const val ENV_LOCALHOST: String = "localhost"
     const val ENV_PROD: String = "prod"
     const val ENV_PRODUCTION: String = "production"
     const val ENV: String = "env"
@@ -12,6 +13,7 @@ object TrustlyConstants {
     const val FUNCTION_MOBILE: String = "mobile"
 
     const val GRP: String = "grp"
+    const val ENV_HOST: String = "envHost"
     const val PAYMENT_PROVIDER_ID: String = "paymentProviderId"
     const val PAYMENT_TYPE: String = "paymentType"
     const val DEVICE_TYPE: String = "deviceType"
@@ -25,16 +27,22 @@ object TrustlyConstants {
     const val CUSTOMER_ADDRESS_STATE: String = "customer.address.state"
 
     const val WIDGET: String = "widget"
+    const val WIDGET_LOADED: String = "widgetLoaded"
     const val DYNAMIC_WIDGET: String = "dynamicWidget"
 
     const val CID: String = "cid"
     const val LANG: String = "lang"
+    const val METADATA_SDK_ANDROID_VERSION: String = "metadata.sdkAndroidVersion"
     const val METADATA_CID: String = "metadata.cid"
+    const val METADATA_INTEGRATION_CONTEXT: String = "metadata.integrationContext"
     const val METADATA_LANG: String = "metadata.lang"
+    const val METADATA_URL_SCHEME: String = "metadata.urlScheme"
     const val SESSION_CID: String = "sessionCid"
 
     const val EVENT: String = "event"
     const val EVENT_PAGE: String = "page"
     const val EVENT_TYPE: String = "type"
+
+    const val INTEGRATION_STRATEGY_DEFAULT = "webview"
 
 }

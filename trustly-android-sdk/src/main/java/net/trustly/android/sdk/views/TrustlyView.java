@@ -1,22 +1,9 @@
 package net.trustly.android.sdk.views;
 
-import static net.trustly.android.sdk.util.TrustlyConstants.CANCEL_URL;
-import static net.trustly.android.sdk.util.TrustlyConstants.DEVICE_TYPE;
-import static net.trustly.android.sdk.util.TrustlyConstants.ENV;
-import static net.trustly.android.sdk.util.TrustlyConstants.ENV_DYNAMIC;
-import static net.trustly.android.sdk.util.TrustlyConstants.ENV_LOCAL;
-import static net.trustly.android.sdk.util.TrustlyConstants.ENV_PROD;
-import static net.trustly.android.sdk.util.TrustlyConstants.ENV_PRODUCTION;
 import static net.trustly.android.sdk.util.TrustlyConstants.EVENT;
 import static net.trustly.android.sdk.util.TrustlyConstants.EVENT_PAGE;
 import static net.trustly.android.sdk.util.TrustlyConstants.EVENT_TYPE;
-import static net.trustly.android.sdk.util.TrustlyConstants.FUNCTION_INDEX;
-import static net.trustly.android.sdk.util.TrustlyConstants.FUNCTION_MOBILE;
-import static net.trustly.android.sdk.util.TrustlyConstants.METADATA_CID;
 import static net.trustly.android.sdk.util.TrustlyConstants.PAYMENT_PROVIDER_ID;
-import static net.trustly.android.sdk.util.TrustlyConstants.PAYMENT_TYPE;
-import static net.trustly.android.sdk.util.TrustlyConstants.RETURN_URL;
-import static net.trustly.android.sdk.util.TrustlyConstants.SESSION_CID;
 import static net.trustly.android.sdk.util.TrustlyConstants.WIDGET;
 
 import android.annotation.SuppressLint;
@@ -35,27 +22,18 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 
-import net.trustly.android.sdk.BuildConfig;
-import net.trustly.android.sdk.data.APIMethod;
-import net.trustly.android.sdk.data.APIRequest;
-import net.trustly.android.sdk.data.RetrofitInstance;
-import net.trustly.android.sdk.data.Settings;
-import net.trustly.android.sdk.data.StrategySetting;
 import net.trustly.android.sdk.interfaces.Trustly;
 import net.trustly.android.sdk.interfaces.TrustlyCallback;
 import net.trustly.android.sdk.interfaces.TrustlyJsInterface;
 import net.trustly.android.sdk.interfaces.TrustlyListener;
-import net.trustly.android.sdk.util.TrustlyConstants;
 import net.trustly.android.sdk.util.UrlUtils;
-import net.trustly.android.sdk.util.api.APIRequestManager;
-import net.trustly.android.sdk.util.cid.CidManager;
 import net.trustly.android.sdk.util.grp.GRPManager;
 import net.trustly.android.sdk.views.clients.TrustlyWebViewChromeClient;
 import net.trustly.android.sdk.views.clients.TrustlyWebViewClient;
+import net.trustly.android.sdk.views.components.TrustlyLightbox;
 import net.trustly.android.sdk.views.components.TrustlyWidget;
 import net.trustly.android.sdk.views.oauth.TrustlyOAuthView;
 
-import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,10 +48,6 @@ import kotlin.Unit;
  */
 public class TrustlyView extends LinearLayout implements Trustly {
 
-    private static final String PROTOCOL = "https://";
-    private static final String LOCAL_PROTOCOL = "http://";
-    private static final String DOMAIN = "paywithmybank.com";
-    private static final String SDK_VERSION = BuildConfig.SDK_VERSION;
     private static final String TAG = "TrustlyView";
 
     private static boolean isLocalEnvironment = false;
@@ -92,8 +66,6 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
     private int grp = -1;
 
-    private final String env;
-
     private Map<String, String> data;
     TrustlyCallback<Trustly, Map<String, String>> onReturn;
     TrustlyCallback<Trustly, Map<String, String>> onCancel;
@@ -111,17 +83,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
      * @param context Interface to global information about an application environment.
      */
     public TrustlyView(Context context) {
-        this(context, (String) null);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @param context Interface to global information about an application environment.
-     * @param env     Set if environment different than production (such as "sandbox")
-     */
-    public TrustlyView(Context context, String env) {
-        this(context, null, 0, env);
+        this(context, null);
     }
 
     /**
@@ -131,18 +93,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
      * @param attrs   A collection of attributes, as found associated with a tag in an XML document.
      */
     public TrustlyView(Context context, AttributeSet attrs) {
-        this(context, attrs, null);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @param context Interface to global information about an application environment.
-     * @param attrs   A collection of attributes, as found associated with a tag in an XML document.
-     * @param env     Set if environment different than production (such as "sandbox")
-     */
-    public TrustlyView(Context context, AttributeSet attrs, String env) {
-        this(context, attrs, 0, env);
+        this(context, attrs, 0);
     }
 
     /**
@@ -154,23 +105,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
      *                     supplies defaults values for the TypedArray. Can be 0 to not look for defaults.
      */
     public TrustlyView(Context context, AttributeSet attrs, int defStyleAttr) {
-        this(context, attrs, defStyleAttr, null);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @param context      Interface to global information about an application environment.
-     * @param attrs        A collection of attributes, as found associated with a tag in an XML document.
-     * @param defStyleAttr An attribute in the current theme that contains a reference to a style resource that
-     *                     supplies defaults values for the TypedArray. Can be 0 to not look for defaults.
-     * @param env          Set if environment different than production (such as "sandbox")
-     */
-    public TrustlyView(Context context, AttributeSet attrs, int defStyleAttr, String env) {
         super(context, attrs, defStyleAttr);
-        if (env != null) env = env.toLowerCase();
-
-        this.env = env;
 
         initGrp(context);
         initWebView(context);
@@ -320,79 +255,16 @@ public class TrustlyView extends LinearLayout implements Trustly {
     @NonNull
     @Override
     public Trustly establish(Map<String, String> establishData) {
-        try {
-            status = Status.PANEL_LOADING;
-            CidManager.INSTANCE.generateCid(getContext());
-
-            data = new HashMap<>(establishData);
-
-            String deviceType = establishData.get(DEVICE_TYPE);
-            if (deviceType != null) {
-                deviceType = deviceType + ":android:native";
-            } else {
-                deviceType = "mobile:android:native";
-            }
-
-            String lang = establishData.get("metadata.lang");
-            if (lang != null) data.put("lang", lang);
-
-            data.put("metadata.sdkAndroidVersion", SDK_VERSION);
-            data.put(DEVICE_TYPE, deviceType);
-            data.put(RETURN_URL, returnURL);
-            data.put(CANCEL_URL, cancelURL);
-            data.put(TrustlyConstants.GRP, Integer.toString(grp));
-
-            if (data.containsKey(PAYMENT_PROVIDER_ID)) {
-                data.put("widgetLoaded", "true");
-            }
-
-            Map<String, String> sessionCidValues = CidManager.INSTANCE.getOrCreateSessionCid(getContext());
-            data.put(SESSION_CID, sessionCidValues.get(CidManager.SESSION_CID_PARAM));
-            data.put(METADATA_CID, sessionCidValues.get(CidManager.CID_PARAM));
-
+        data = establishData;
+        TrustlyLightbox trustlyLightbox = new TrustlyLightbox(getContext(), webView, returnURL, cancelURL, statusChanged -> {
+            status = statusChanged;
+            return Unit.INSTANCE;
+        }, () -> {
             notifyOpen();
-
-            if (ENV_LOCAL.equals(data.get(ENV))) {
-                WebView.setWebContentsDebuggingEnabled(true);
-                setIsLocalEnvironment(true);
-            }
-
-            if (APIRequestManager.INSTANCE.validateAPIRequest(getContext())) {
-                Settings settings = APIRequestManager.INSTANCE.getAPIRequestSettings(getContext());
-                openWebViewOrCustomTabs(settings, data);
-            } else {
-                APIMethod apiInterface = RetrofitInstance.INSTANCE.getInstance(getDomain(FUNCTION_MOBILE, establishData)).create(APIMethod.class);
-                APIRequest apiRequest = new APIRequest(apiInterface, settings -> {
-                    APIRequestManager.INSTANCE.saveAPIRequestSettings(getContext(), settings);
-                    openWebViewOrCustomTabs(settings, data);
-                    return Unit.INSTANCE;
-                }, error -> {
-                    openWebViewOrCustomTabs(new Settings(new StrategySetting("webview")), data);
-                    return Unit.INSTANCE;
-                });
-                apiRequest.getSettingsData(getTokenByEncodedParameters(data));
-            }
-        } catch (Exception e) {
-            showErrorMessage(e);
-        }
+            return Unit.INSTANCE;
+        });
+        trustlyLightbox.updateEstablishData(establishData, grp);
         return this;
-    }
-
-    private void openWebViewOrCustomTabs(Settings settings, Map<String, String> establishData) {
-        if (settings.getSettings().getIntegrationStrategy().equals("webview")) {
-            data.put("metadata.integrationContext", "InAppBrowser");
-            byte[] encodedParameters = UrlUtils.INSTANCE.getParameterString(data).getBytes(StandardCharsets.UTF_8);
-            webView.postUrl(getEndpointUrl(FUNCTION_INDEX, establishData), encodedParameters);
-        } else {
-            data.put(RETURN_URL, establishData.get("metadata.urlScheme"));
-            data.put(CANCEL_URL, establishData.get("metadata.urlScheme"));
-            TrustlyCustomTabsManager.INSTANCE.openCustomTabsIntent(getContext(), getEndpointUrl(FUNCTION_MOBILE, establishData) + "?token=" + getTokenByEncodedParameters(data));
-        }
-    }
-
-    private String getTokenByEncodedParameters(Map<String, String> data) {
-        String jsonFromParameters = UrlUtils.INSTANCE.getJsonFromParameters(data);
-        return UrlUtils.INSTANCE.encodeStringToBase64(jsonFromParameters).replace("\n", "");
     }
 
     /**
@@ -402,7 +274,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     @Override
     public Trustly selectBankWidget(Map<String, String> establishData) {
         data = establishData;
-        TrustlyWidget trustlyWidget = new TrustlyWidget(getContext(), this, webView, status, statusChanged -> {
+        TrustlyWidget trustlyWidget = new TrustlyWidget(getContext(), webView, status, statusChanged -> {
             status = statusChanged;
             return Unit.INSTANCE;
         }, () -> {
@@ -489,54 +361,6 @@ public class TrustlyView extends LinearLayout implements Trustly {
         if (this.trustlyListener != null) {
             this.trustlyListener.onChange(eventName, new HashMap<>(eventDetails));
         }
-    }
-
-    private String getDomain(String function, Map<String, String> establishData) {
-        String envHost = establishData.get("envHost");
-        String environment = establishData.get(ENV) != null ? Objects.requireNonNull(establishData.get(ENV)).toLowerCase() : env;
-        if (environment == null) {
-            return PROTOCOL + DOMAIN;
-        }
-        switch (environment) {
-            case ENV_DYNAMIC: {
-                String host = envHost != null ? envHost : "";
-                return PROTOCOL + host + ".int.trustly.one";
-            }
-            case ENV_LOCAL: {
-                String host = (envHost != null && !envHost.equals("localhost")) ? envHost : BuildConfig.LOCAL_IP;
-                String port;
-                if (FUNCTION_MOBILE.equals(function)) {
-                    port = ":10000";
-                } else {
-                    port = ":8000";
-                }
-                return LOCAL_PROTOCOL + host + port;
-            }
-            case ENV_PROD:
-            case ENV_PRODUCTION:
-                environment = "";
-                break;
-            default:
-                environment = environment + ".";
-                break;
-        }
-        return PROTOCOL + environment + DOMAIN;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String getEndpointUrl(String function, Map<String, String> establishData) {
-        String domain = getDomain(function, establishData);
-        if (FUNCTION_MOBILE.equals(function)) {
-             return domain + "/frontend/mobile/establish";
-        }
-        if (FUNCTION_INDEX.equals(function) &&
-                !"Verification".equals(establishData.get(PAYMENT_TYPE)) &&
-                establishData.get(PAYMENT_PROVIDER_ID) != null) {
-            function = "selectBank";
-        }
-        return domain + "/start/selectBank/" + function + "?v=" + SDK_VERSION + "-android-sdk";
     }
 
     private void notifyOpen() {

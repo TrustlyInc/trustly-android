@@ -2,7 +2,6 @@ package net.trustly.android.sdk.views.components
 
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import android.webkit.WebView
 import net.trustly.android.sdk.util.TrustlyConstants.ACCESS_ID
 import net.trustly.android.sdk.util.TrustlyConstants.CID
@@ -21,12 +20,10 @@ import net.trustly.android.sdk.util.TrustlyConstants.SESSION_CID
 import net.trustly.android.sdk.util.TrustlyConstants.WIDGET
 import net.trustly.android.sdk.util.UrlUtils
 import net.trustly.android.sdk.util.cid.CidManager
-import net.trustly.android.sdk.views.TrustlyView
 import net.trustly.android.sdk.views.TrustlyView.Status
 
 class TrustlyWidget(
     val context: Context,
-    private val trustlyView: TrustlyView,
     private val webView: WebView,
     private var status: Status,
     private val notifyStatusChanged: (Status) -> Unit,
@@ -78,7 +75,7 @@ class TrustlyWidget(
 
                 val dataParameters = UrlUtils.getParameterString(data)
                 val hashParameters = UrlUtils.getParameterString(hash)
-                val url: String = trustlyView.getEndpointUrl(
+                val url: String = getEndpointUrl(
                     WIDGET,
                     establishData
                 ) + AMPERSAND_CHAR + dataParameters + HASHTAG_SIGN + hashParameters
@@ -89,12 +86,8 @@ class TrustlyWidget(
                 }
             }
         } catch (e: Exception) {
-            showErrorMessage(e)
+            showErrorMessage(TAG, e)
         }
-    }
-
-    private fun showErrorMessage(e: Exception) {
-        Log.e(TAG, e.message, e)
     }
 
 }
