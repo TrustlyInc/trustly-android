@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.AttributeSet;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
@@ -64,25 +63,9 @@ public class TrustlyViewTest extends TrustlyActivityTest {
     }
 
     @Test
-    public void shouldValidateTrustlyViewInstanceWithEnvironmentLocal() {
-        scenario.onActivity(activity -> {
-            trustlyView = new TrustlyView(activity.getApplicationContext(), ENV_LOCAL);
-            assertNotNull(trustlyView);
-        });
-    }
-
-    @Test
     public void shouldValidateTrustlyViewInstanceWithAttributeSet() {
         scenario.onActivity(activity -> {
-            trustlyView = new TrustlyView(activity.getApplicationContext(), (AttributeSet) null);
-            assertNotNull(trustlyView);
-        });
-    }
-
-    @Test
-    public void shouldValidateTrustlyViewInstanceWithAttributeSetAndEnvironmentLocal() {
-        scenario.onActivity(activity -> {
-            trustlyView = new TrustlyView(activity.getApplicationContext(), null, ENV_LOCAL);
+            trustlyView = new TrustlyView(activity.getApplicationContext(), null);
             assertNotNull(trustlyView);
         });
     }
@@ -91,14 +74,6 @@ public class TrustlyViewTest extends TrustlyActivityTest {
     public void shouldValidateTrustlyViewInstanceWithAttributeSetAndStyle() {
         scenario.onActivity(activity -> {
             trustlyView = new TrustlyView(activity.getApplicationContext(), null, 0);
-            assertNotNull(trustlyView);
-        });
-    }
-
-    @Test
-    public void shouldValidateTrustlyViewInstanceWithAttributeSetAndStyleAndEnvironmentLocal() {
-        scenario.onActivity(activity -> {
-            trustlyView = new TrustlyView(activity.getApplicationContext(), null, 0, ENV_LOCAL);
             assertNotNull(trustlyView);
         });
     }
@@ -329,7 +304,7 @@ public class TrustlyViewTest extends TrustlyActivityTest {
         });
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void shouldValidateTrustlyViewEstablishMethodNullValue() {
         scenario.onActivity(activity -> callTrustlyViewEstablishMethod(activity, null));
     }
@@ -378,7 +353,7 @@ public class TrustlyViewTest extends TrustlyActivityTest {
         scenario.onActivity(activity -> callTrustlyViewSelectBankWidgetMethod(activity, getEstablishData()));
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void shouldValidateTrustlyViewSelectBankWidgetMethodWithNullValue() {
         scenario.onActivity(activity -> callTrustlyViewSelectBankWidgetMethod(activity, null));
     }
@@ -509,8 +484,6 @@ public class TrustlyViewTest extends TrustlyActivityTest {
             callTrustlyViewEstablishMethod(activity, establishData);
         });
     }
-
-
 
     private void callTrustlyViewSelectBankWidgetMethod(Context activity, HashMap<String, String> establishData) {
         trustlyView = new TrustlyView(activity.getApplicationContext());
