@@ -23,7 +23,7 @@ import net.trustly.android.sdk.util.cid.CidManager
 import net.trustly.android.sdk.views.TrustlyView.Status
 
 class TrustlyWidget(
-    val context: Context,
+    private val context: Context,
     private val webView: WebView,
     private var status: Status,
     private val notifyStatusChanged: (Status) -> Unit,

@@ -35,7 +35,7 @@ import net.trustly.android.sdk.views.TrustlyView.Status
 import java.nio.charset.StandardCharsets
 
 class TrustlyLightbox(
-    val context: Context,
+    private val context: Context,
     private val webView: WebView,
     private val returnURL: String,
     private val cancelURL: String,
