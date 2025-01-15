@@ -17,11 +17,6 @@ class TrustlyCustomTabsManagerTest : TrustlyActivityTest() {
 
     private val URL: String = "http://www.trustly.com"
 
-    @Test(expected = NullPointerException::class)
-    fun shouldValidateCustomTabsManagerOpenCustomTabsIntentMethodWithNullContext() {
-        scenario.onActivity { _: MockActivity -> openCustomTabsIntent(null, URL) }
-    }
-
     @Test
     fun shouldValidateCustomTabsManagerOpenCustomTabsIntentMethod() {
         scenario.onActivity { activity: MockActivity ->

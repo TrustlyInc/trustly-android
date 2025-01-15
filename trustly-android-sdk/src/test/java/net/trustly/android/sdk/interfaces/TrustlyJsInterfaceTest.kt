@@ -72,6 +72,14 @@ class TrustlyJsInterfaceTest {
     }
 
     @Test
+    fun shouldValidateTrustlyJsInterfacePostMessageWithNoDividerMessage() {
+        trustlyJsInterface.postMessage("event")
+        verify(mockTrustlyView, times(0)).notifyListener(
+            EVENT_NAME, HashMap<String, String>()
+        )
+    }
+
+    @Test
     fun shouldValidateTrustlyJsInterfacePostMessageWithNoValidEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.eventNotValid|event")
         verify(mockTrustlyView, times(0)).notifyListener(
