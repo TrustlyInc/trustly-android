@@ -30,64 +30,52 @@ class TrustlyWidget(
     private val notifyWidgetLoading: () -> Unit
 ) : TrustlyComponent() {
 
-    private val TAG = "TrustlyWidget"
     private val AMPERSAND_CHAR: String = "&"
     private val HASHTAG_SIGN: String = "#"
     private val CUSTOMER_ADDRESS_COUNTRY_DEFAULT = "US"
 
     override fun updateEstablishData(establishData: Map<String, String>, grp: Int) {
-        try {
-            val data = HashMap<String?, String?>()
-            data[ACCESS_ID] = establishData[ACCESS_ID]
-            data[MERCHANT_ID] = establishData[MERCHANT_ID]
-            data[PAYMENT_TYPE] = establishData[PAYMENT_TYPE]
-            data[DEVICE_TYPE] = "${establishData[DEVICE_TYPE] ?: "mobile"}:android:hybrid"
+        val data = HashMap<String?, String?>()
+        data[ACCESS_ID] = establishData[ACCESS_ID]
+        data[MERCHANT_ID] = establishData[MERCHANT_ID]
+        data[PAYMENT_TYPE] = establishData[PAYMENT_TYPE]
+        data[DEVICE_TYPE] = "${establishData[DEVICE_TYPE] ?: "mobile"}:android:hybrid"
 
-            val lang = establishData[METADATA_LANG]
-            if (lang != null) data[LANG] = lang
-            data[GRP] = grp.toString()
-            data[DYNAMIC_WIDGET] = "true"
+        val lang = establishData[METADATA_LANG]
+        if (lang != null) data[LANG] = lang
+        data[GRP] = grp.toString()
+        data[DYNAMIC_WIDGET] = "true"
 
-            if (establishData[CUSTOMER_ADDRESS_COUNTRY] != null) {
-                data[CUSTOMER_ADDRESS_COUNTRY] = establishData[CUSTOMER_ADDRESS_COUNTRY]
-            } else {
-                data[CUSTOMER_ADDRESS_COUNTRY] = CUSTOMER_ADDRESS_COUNTRY_DEFAULT
-                if (CUSTOMER_ADDRESS_COUNTRY_DEFAULT.equals(
-                        establishData[CUSTOMER_ADDRESS_COUNTRY],
-                        ignoreCase = true
-                    )
-                ) {
-                    data[CUSTOMER_ADDRESS_STATE] = establishData[CUSTOMER_ADDRESS_STATE]
-                }
+        if (establishData[CUSTOMER_ADDRESS_COUNTRY] != null) {
+            data[CUSTOMER_ADDRESS_COUNTRY] = establishData[CUSTOMER_ADDRESS_COUNTRY]
+        } else {
+            data[CUSTOMER_ADDRESS_COUNTRY] = CUSTOMER_ADDRESS_COUNTRY_DEFAULT
+            data[CUSTOMER_ADDRESS_STATE] = establishData[CUSTOMER_ADDRESS_STATE]
+        }
+
+        val sessionCidValues = CidManager.getOrCreateSessionCid(context)
+        data[SESSION_CID] = sessionCidValues[CidManager.SESSION_CID_PARAM]
+        data[CID] = sessionCidValues[CidManager.CID_PARAM]
+
+        val hash: MutableMap<String?, String?> = HashMap()
+        hash[MERCHANT_REFERENCE] = establishData[MERCHANT_REFERENCE]
+        hash[CUSTOMER_EXTERNAL_ID] = establishData[CUSTOMER_EXTERNAL_ID]
+
+        if (status != Status.WIDGET_LOADED) {
+            notifyStatusChanged.invoke(Status.WIDGET_LOADING)
+            notifyWidgetLoading.invoke()
+
+            val dataParameters = UrlUtils.getParameterString(data)
+            val hashParameters = UrlUtils.getParameterString(hash)
+            val url: String = UrlUtils.getEndpointUrl(
+                WIDGET,
+                establishData
+            ) + AMPERSAND_CHAR + dataParameters + HASHTAG_SIGN + hashParameters
+
+            with(webView) {
+                loadUrl(url)
+                setBackgroundColor(Color.TRANSPARENT)
             }
-
-            val sessionCidValues = CidManager.getOrCreateSessionCid(context)
-            data[SESSION_CID] = sessionCidValues[CidManager.SESSION_CID_PARAM]
-            data[CID] = sessionCidValues[CidManager.CID_PARAM]
-
-            val hash: MutableMap<String?, String?> = HashMap()
-            hash[MERCHANT_REFERENCE] = establishData[MERCHANT_REFERENCE]
-            hash[CUSTOMER_EXTERNAL_ID] = establishData[CUSTOMER_EXTERNAL_ID]
-
-            if (status != Status.WIDGET_LOADED) {
-                notifyStatusChanged.invoke(Status.WIDGET_LOADING)
-                notifyWidgetLoading.invoke()
-
-                val dataParameters = UrlUtils.getParameterString(data)
-                val hashParameters = UrlUtils.getParameterString(hash)
-                val url: String = UrlUtils.getEndpointUrl(
-                    WIDGET,
-                    establishData
-                ) + AMPERSAND_CHAR + dataParameters + HASHTAG_SIGN + hashParameters
-
-                with(webView) {
-                    loadUrl(url)
-                    setBackgroundColor(Color.TRANSPARENT)
-                }
-            }
-        } catch (e: Exception) {
-            showErrorMessage(TAG, e)
         }
     }
-
 }
