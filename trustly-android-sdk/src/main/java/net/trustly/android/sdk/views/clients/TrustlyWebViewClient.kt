@@ -19,7 +19,7 @@ class TrustlyWebViewClient(private val trustlyView: TrustlyView) : WebViewClient
      * @return `true` to cancel the current load, otherwise return `false`.
      */
     @Deprecated("Deprecated in Java")
-    override fun shouldOverrideUrlLoading(view: WebView?, url: String?) =
+    override fun shouldOverrideUrlLoading(view: WebView, url: String) =
         trustlyView.handleWebViewClientShouldOverrideUrlLoading(trustlyView, url)
 
     /**
@@ -29,12 +29,12 @@ class TrustlyWebViewClient(private val trustlyView: TrustlyView) : WebViewClient
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Suppress("deprecation")
-    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest): Boolean {
+    override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
         val url = request.url.toString()
         return this.shouldOverrideUrlLoading(view, url)
     }
 
-    override fun onPageFinished(view: WebView?, url: String?) {
+    override fun onPageFinished(view: WebView, url: String) {
         trustlyView.handleWebViewClientOnPageFinished(view, trustlyView)
     }
 

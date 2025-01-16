@@ -14,7 +14,7 @@ interface Trustly {
      * on the JavaScript API.
      * @return this
      */
-    fun selectBankWidget(establishData: Map<String, String>?): Trustly
+    fun selectBankWidget(establishData: Map<String, String>): Trustly
 
     /**
      * Sets the callback handler for when the user selects a bank on the widget.
@@ -33,29 +33,29 @@ interface Trustly {
      * JavaScript API.
      * @return this
      */
-    fun establish(establishData: Map<String, String>?): Trustly
+    fun establish(establishData: Map<String, String>): Trustly
 
     /**
      * Opens a hybrid application page
      *
      * @param url Url that open a hybrid application page
-     * @param returnUrl The gateway redirects the customer browser to this URL if the customer authorizes payment
+     * @param returnUrlHybrid The gateway redirects the customer browser to this URL if the customer authorizes payment
      * (must be a valid URL or function).
-     * @param cancelUrl The gateway redirects the customer browser to this URL if the customer cancels payment
+     * @param cancelUrlHybrid The gateway redirects the customer browser to this URL if the customer cancels payment
      * (must be a valid URL or function).
      * @return this
      */
-    fun hybrid(url: String?, returnUrl: String?, cancelUrl: String?): Trustly
+    fun hybrid(url: String, returnUrlHybrid: String, cancelUrlHybrid: String): Trustly
 
     /**
      * Sets a callback to handle when the user flow finishes
      *
-     * @param onReturnHandler Called when the user flow finishes and control is returned to the application.
+     * @param handler Called when the user flow finishes and control is returned to the application.
      * The returnParameters has as entries the same parameters of the returnURL on the web
      * (check the definition on the Integration Guide).
      * @return this
      */
-    fun onReturn(onReturnHandler: TrustlyCallback<Trustly, Map<String, String>>?): Trustly
+    fun onReturn(handler: TrustlyCallback<Trustly, Map<String, String>>?): Trustly
 
     /**
      * Sets a callback to handle user cancellation of the flow.

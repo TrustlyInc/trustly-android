@@ -35,7 +35,6 @@ class UrlUtilsTest {
     private val KEY_2: String = "key2"
     private val VALUE_3: String = "value3"
     private val KEY_3: String = "key3"
-    private val URL_SEARCH: String = "http://www.url.com/search"
     private val URL_SEARCH_WITH_QUERY: String = "http://www.url.com/search?q=value"
     private val SDK_VERSION = BuildConfig.SDK_VERSION
 
@@ -134,47 +133,84 @@ class UrlUtilsTest {
         val encode = URLEncoder.encode("q=example", StandardCharsets.UTF_8)
         val parse = Uri.parse("http://www.google.com:80/help/me/book%20name+me/?$encode")
         val parameterNames = getQueryParameterNames(parse)
-        assertEquals(emptySet<Any>(), parameterNames)
+        assertEquals(emptyMap<String, String>(), parameterNames)
     }
 
     @Test
     fun shouldInvalidateReturnedValueWhenGetQueryParameterFromUrl() {
-        `when`(mockUri.encodedQuery).thenReturn("q=value")
+        val expected = mapOf(
+            "url" to URL_SEARCH_WITH_QUERY,
+            "transactionId" to "1234567",
+            "transactionType" to "1",
+            "merchantReference" to "123456",
+            "status" to "2",
+            "payment.paymentType" to "2",
+            "payment.paymentProvider.type" to "1",
+            "payment.account.verified" to "true",
+            "panel" to "1"
+        )
+        `when`(mockUri.encodedQuery).thenReturn("transactionId=1234567&transactionType=1&merchantReference=123456&status=2&payment.paymentType=2&payment.paymentProvider.type=1&payment.account.verified=true&panel=1")
 
         val parameters = getQueryParametersFromUrl(URL_SEARCH_WITH_QUERY)
-        assertNotEquals(URL_SEARCH, parameters["url"])
+        assertEquals(expected, parameters)
     }
 
     @Test
     fun shouldInvalidateReturnedValueWhenGetQueryParameterWithAmpersandFromUrl() {
+        val expected = mapOf(
+            "url" to URL_SEARCH_WITH_QUERY,
+            "q" to "value"
+        )
         `when`(mockUri.encodedQuery).thenReturn("q=value&")
 
         val parameters = getQueryParametersFromUrl(URL_SEARCH_WITH_QUERY)
-        assertNotEquals(URL_SEARCH, parameters["url"])
+        assertEquals(expected, parameters)
     }
 
     @Test
     fun shouldInvalidateReturnedValueWhenGetQueryParameterWithNoValueFromUrl() {
+        val expected = mapOf(
+            "url" to URL_SEARCH_WITH_QUERY,
+            "q" to ""
+        )
         `when`(mockUri.encodedQuery).thenReturn("q=")
 
         val parameters = getQueryParametersFromUrl(URL_SEARCH_WITH_QUERY)
-        assertNotEquals(URL_SEARCH, parameters["url"])
+        assertEquals(expected, parameters)
     }
 
     @Test
     fun shouldInvalidateReturnedValueWhenGetQueryParameterWithJustQueryNameFromUrl() {
+        val expected = mapOf(
+            "url" to URL_SEARCH_WITH_QUERY
+        )
         `when`(mockUri.encodedQuery).thenReturn("q")
 
         val parameters = getQueryParametersFromUrl(URL_SEARCH_WITH_QUERY)
-        assertNotEquals(URL_SEARCH, parameters["url"])
+        assertEquals(expected, parameters)
     }
 
     @Test
-    fun shouldInvalidateReturnedValueWhenGetQueryParameterWithNoValueAndTwoSeparatorFromUrl() {
+    fun shouldInvalidateReturnedValueWhenGetQueryParameterWithNoValueAndOneSeparatorFromUrl() {
+        val expected = mapOf(
+            "url" to URL_SEARCH_WITH_QUERY,
+            "a" to ""
+        )
         `when`(mockUri.encodedQuery).thenReturn("q&a=")
 
         val parameters = getQueryParametersFromUrl(URL_SEARCH_WITH_QUERY)
-        assertNotEquals(URL_SEARCH, parameters["url"])
+        assertEquals(expected, parameters)
+    }
+
+    @Test
+    fun shouldInvalidateReturnedValueWhenGetQueryParameterWithNoValueForQueriesFromUrl() {
+        val expected = mapOf(
+            "url" to URL_SEARCH_WITH_QUERY
+        )
+        `when`(mockUri.encodedQuery).thenReturn("q&a")
+
+        val parameters = getQueryParametersFromUrl(URL_SEARCH_WITH_QUERY)
+        assertEquals(expected, parameters)
     }
 
     @Test

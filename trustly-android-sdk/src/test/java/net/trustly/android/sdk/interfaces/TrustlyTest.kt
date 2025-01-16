@@ -5,7 +5,9 @@ import org.junit.After
 import org.junit.Assert.assertSame
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.anyMap
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito.clearInvocations
 import org.mockito.Mockito.doNothing
@@ -24,7 +26,7 @@ class TrustlyTest {
     private lateinit var mockTrustly: Trustly
 
     @Mock
-    private lateinit var mockTrustlyCallback: TrustlyCallback<Trustly, Map<String, String>>
+    private var mockTrustlyCallback: TrustlyCallback<Trustly, Map<String, String>>? = null
 
     @Mock
     private lateinit var mockTrustlyListener: TrustlyListener
@@ -48,7 +50,7 @@ class TrustlyTest {
 
     @Test
     fun shouldValidateTrustlySelectBankWidgetWhenIsCalled() {
-        `when`(mockTrustly.selectBankWidget(ArgumentMatchers.anyMap())).thenReturn(mockTrustly)
+        `when`(mockTrustly.selectBankWidget(anyMap())).thenReturn(mockTrustly)
         val establishData = getEstablishData()
         val result = trustlyImpl.callSelectBankWidget(establishData)
         verify(mockTrustly, times(1)).selectBankWidget(establishData)
@@ -56,15 +58,15 @@ class TrustlyTest {
     }
 
     @Test
-    fun shouldValidateTrustlySelectBankNullValuesWidgetWhenIsCalled() {
-        val result = trustlyImpl.callSelectBankWidget(null)
-        verify(mockTrustly, times(1)).selectBankWidget(null)
+    fun shouldValidateTrustlySelectBankEmptyValuesWidgetWhenIsCalled() {
+        val result = trustlyImpl.callSelectBankWidget(emptyMap())
+        verify(mockTrustly, times(1)).selectBankWidget(emptyMap())
         assertSame(null, result)
     }
 
     @Test
     fun shouldValidateTrustlyOnBankSelectedWhenIsCalled() {
-        `when`(mockTrustly.onBankSelected(ArgumentMatchers.any())).thenReturn(mockTrustly)
+        `when`(mockTrustly.onBankSelected(any())).thenReturn(mockTrustly)
         val result = trustlyImpl.callOnBankSelected(mockTrustlyCallback)
         verify(mockTrustly, times(1)).onBankSelected(mockTrustlyCallback)
         assertSame(mockTrustly, result)
@@ -79,7 +81,7 @@ class TrustlyTest {
 
     @Test
     fun shouldValidateTrustlyEstablishWhenIsCalled() {
-        `when`(mockTrustly.establish(ArgumentMatchers.anyMap())).thenReturn(mockTrustly)
+        `when`(mockTrustly.establish(anyMap())).thenReturn(mockTrustly)
         val establishData = getEstablishData()
         val result = trustlyImpl.callEstablish(establishData)
         verify(mockTrustly, times(1)).establish(establishData)
@@ -87,46 +89,23 @@ class TrustlyTest {
     }
 
     @Test
-    fun shouldValidateTrustlyEstablishNullValuesWidgetWhenIsCalled() {
-        val result = trustlyImpl.callEstablish(null)
-        verify(mockTrustly, times(1)).establish(null)
+    fun shouldValidateTrustlyEstablishEmptyValuesWidgetWhenIsCalled() {
+        val result = trustlyImpl.callEstablish(emptyMap())
+        verify(mockTrustly, times(1)).establish(emptyMap())
         assertSame(null, result)
     }
 
     @Test
     fun shouldValidateTrustlyHybridWhenIsCalled() {
-        `when`(mockTrustly.hybrid(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(mockTrustly)
+        `when`(mockTrustly.hybrid(anyString(), anyString(), anyString())).thenReturn(mockTrustly)
         val result = trustlyImpl.callHybrid(URL, RETURN_URL, CANCEL_URL)
         verify(mockTrustly, times(1)).hybrid(URL, RETURN_URL, CANCEL_URL)
         assertSame(mockTrustly, result)
     }
 
     @Test
-    fun shouldValidateTrustlyHybridWithoutReturnUrlWhenIsCalled() {
-        `when`(mockTrustly.hybrid(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(mockTrustly)
-        val result = trustlyImpl.callHybrid(URL, null, CANCEL_URL)
-        verify(mockTrustly, times(1)).hybrid(URL, null, CANCEL_URL)
-        assertSame(mockTrustly, result)
-    }
-
-    @Test
-    fun shouldValidateTrustlyHybridWithoutCancelUrlWhenIsCalled() {
-        `when`(mockTrustly.hybrid(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(mockTrustly)
-        val result = trustlyImpl.callHybrid(URL, RETURN_URL, null)
-        verify(mockTrustly, times(1)).hybrid(URL, RETURN_URL, null)
-        assertSame(mockTrustly, result)
-    }
-
-    @Test
-    fun shouldValidateTrustlyHybridNullValuesWidgetWhenIsCalled() {
-        val result = trustlyImpl.callHybrid(null, null, null)
-        verify(mockTrustly, times(1)).hybrid(null, null, null)
-        assertSame(null, result)
-    }
-
-    @Test
     fun shouldValidateTrustlyOnReturnWhenIsCalled() {
-        `when`(mockTrustly.onReturn(ArgumentMatchers.any())).thenReturn(mockTrustly)
+        `when`(mockTrustly.onReturn(any())).thenReturn(mockTrustly)
         val result = trustlyImpl.callOnReturn(mockTrustlyCallback)
         verify(mockTrustly, times(1)).onReturn(mockTrustlyCallback)
         assertSame(mockTrustly, result)
@@ -141,7 +120,7 @@ class TrustlyTest {
 
     @Test
     fun shouldValidateTrustlyOnCancelWhenIsCalled() {
-        `when`(mockTrustly.onCancel(ArgumentMatchers.any())).thenReturn(mockTrustly)
+        `when`(mockTrustly.onCancel(any())).thenReturn(mockTrustly)
         val result = trustlyImpl.callOnCancel(mockTrustlyCallback)
         verify(mockTrustly, times(1)).onCancel(mockTrustlyCallback)
         assertSame(mockTrustly, result)
@@ -156,7 +135,7 @@ class TrustlyTest {
 
     @Test
     fun shouldValidateTrustlyOnExternalUrlWhenIsCalled() {
-        `when`(mockTrustly.onExternalUrl(ArgumentMatchers.any())).thenReturn(mockTrustly)
+        `when`(mockTrustly.onExternalUrl(any())).thenReturn(mockTrustly)
         val result = trustlyImpl.callOnExternalUrl(mockTrustlyCallback)
         verify(mockTrustly, times(1)).onExternalUrl(mockTrustlyCallback)
         assertSame(mockTrustly, result)
@@ -171,7 +150,7 @@ class TrustlyTest {
 
     @Test
     fun shouldValidateTrustlySetListenerWhenIsCalled() {
-        `when`(mockTrustly.setListener(ArgumentMatchers.any())).thenReturn(mockTrustly)
+        `when`(mockTrustly.setListener(any())).thenReturn(mockTrustly)
         val result = trustlyImpl.callSetListener(mockTrustlyListener)
         verify(mockTrustly, times(1)).setListener(mockTrustlyListener)
         assertSame(mockTrustly, result)
@@ -214,13 +193,13 @@ class TrustlyTest {
 
     private class TrustlyImpl(private val trustly: Trustly) {
 
-        fun callSelectBankWidget(establishData: Map<String, String>?) = trustly.selectBankWidget(establishData)
+        fun callSelectBankWidget(establishData: Map<String, String>) = trustly.selectBankWidget(establishData)
 
         fun callOnBankSelected(callback: TrustlyCallback<Trustly, Map<String, String>>?) = trustly.onBankSelected(callback)
 
-        fun callEstablish(establishData: Map<String, String>?) = trustly.establish(establishData)
+        fun callEstablish(establishData: Map<String, String>) = trustly.establish(establishData)
 
-        fun callHybrid(url: String?, returnUrl: String?, cancelUrl: String?) = trustly.hybrid(url, returnUrl, cancelUrl)
+        fun callHybrid(url: String, returnUrl: String, cancelUrl: String) = trustly.hybrid(url, returnUrl, cancelUrl)
 
         fun callOnReturn(callback: TrustlyCallback<Trustly, Map<String, String>>?) = trustly.onReturn(callback)
 

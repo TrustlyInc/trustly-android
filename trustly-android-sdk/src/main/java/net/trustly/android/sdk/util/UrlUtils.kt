@@ -18,7 +18,6 @@ import net.trustly.android.sdk.util.TrustlyConstants.PAYMENT_PROVIDER_ID
 import net.trustly.android.sdk.util.TrustlyConstants.PAYMENT_TYPE
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import java.util.Collections
 import java.util.Locale
 import java.util.Objects
 
@@ -35,9 +34,9 @@ object UrlUtils {
     private const val PAYWITHMYBANK: String = "paywithmybank"
     private const val DOMAIN: String = "$PAYWITHMYBANK.com"
 
-    fun getQueryParameterNames(uri: Uri): Set<String> {
-        val query = uri.encodedQuery ?: return emptySet()
-        val names: MutableSet<String> = LinkedHashSet()
+    fun getQueryParameterNames(uri: Uri): Map<String, String> {
+        val query = uri.encodedQuery ?: return emptyMap()
+        val names: HashMap<String, String> = HashMap()
         var start = 0
         do {
             val next = query.indexOf(AMPERSAND_CHAR, start)
@@ -47,21 +46,20 @@ object UrlUtils {
                 separator = end
             }
             val name = query.substring(start, separator)
-            names.add(name)
+            if (separator + 1 <= end) {
+                names[name] = query.substring(separator + 1, end)
+            }
             // Move start to end of name.
             start = end + 1
         } while (start < query.length)
-        return Collections.unmodifiableSet(names)
+        return names
     }
 
-    fun getQueryParametersFromUrl(url: String): Map<String, String?> {
+    fun getQueryParametersFromUrl(url: String): Map<String, String> {
         val uri = Uri.parse(url)
-        val queryParameters: MutableMap<String, String?> = HashMap()
+        val queryParameters: HashMap<String, String> = HashMap()
         queryParameters[URL] = url.replace(REQUEST_SIGNATURE.toRegex(), EMPTY)
-        val queryParametersKeys = getQueryParameterNames(uri)
-        for (queryParameterKey in queryParametersKeys) {
-            queryParameters[queryParameterKey] = uri.getQueryParameter(queryParameterKey)
-        }
+        queryParameters.putAll(getQueryParameterNames(uri))
         return queryParameters
     }
 

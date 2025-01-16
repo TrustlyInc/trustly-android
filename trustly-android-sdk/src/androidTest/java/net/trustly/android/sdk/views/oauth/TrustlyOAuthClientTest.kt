@@ -13,6 +13,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
+@Suppress("DEPRECATION")
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class TrustlyOAuthClientTest : TrustlyActivityTest() {
@@ -25,12 +26,10 @@ class TrustlyOAuthClientTest : TrustlyActivityTest() {
         }
     }
 
-    @Test(expected = NullPointerException::class)
-    fun shouldValidateTrustlyOAuthClientShouldOverrideUrlLoadingWithNullUrl() {
+    @Test
+    fun shouldValidateTrustlyOAuthClientShouldOverrideUrlLoadingWithEmptyUrl() {
         scenario.onActivity { activity: MockActivity ->
-            TrustlyOAuthClient().shouldOverrideUrlLoading(
-                WebView(activity), (null as String)
-            )
+            TrustlyOAuthClient().shouldOverrideUrlLoading(WebView(activity), "")
         }
     }
 

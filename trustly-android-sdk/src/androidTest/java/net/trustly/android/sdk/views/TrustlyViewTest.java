@@ -73,7 +73,7 @@ public class TrustlyViewTest extends TrustlyActivityTest {
     @Test
     public void shouldValidateTrustlyViewInstanceWithAttributeSetAndStyle() {
         scenario.onActivity(activity -> {
-            trustlyView = new TrustlyView(activity.getApplicationContext(), null, 0);
+            trustlyView = new TrustlyView(activity.getApplicationContext(), null);
             assertNotNull(trustlyView);
         });
     }

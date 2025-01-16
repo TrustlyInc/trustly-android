@@ -11,10 +11,10 @@ import net.trustly.android.sdk.views.TrustlyView
 class TrustlyWebViewChromeClient(private val trustlyView: TrustlyView) : WebChromeClient() {
 
     override fun onCreateWindow(
-        view: WebView?,
+        view: WebView,
         isDialog: Boolean,
         isUserGesture: Boolean,
-        resultMsg: Message?
+        resultMsg: Message
     ) = trustlyView.handleWebChromeClientOnCreateWindow(view, resultMsg);
 
 }

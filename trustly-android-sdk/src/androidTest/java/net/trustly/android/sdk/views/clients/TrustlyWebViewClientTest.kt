@@ -76,11 +76,11 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
         }
     }
 
-    @Test
+    @Test(expected = NullPointerException::class)
     fun shouldValidateTrustlyWebViewClientOnErrorReceivedCallOnCancel() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
-            trustlyView.onCancel { trustly: Trustly?, _: Map<String, String>? -> assertNotNull(trustly) }
+            trustlyView.onCancel { trustly: Trustly?, _: Map<String, String?>? -> assertNotNull(trustly) }
             val webView = WebView(activity.applicationContext)
             val trustlyWebViewClient = TrustlyWebViewClient(trustlyView)
             trustlyWebViewClient.onReceivedError(webView, 0, "", null)
@@ -92,7 +92,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
             TrustlyView.setIsLocalEnvironment(false)
-            trustlyView.onCancel { trustly: Trustly?, _: Map<String, String>? -> assertNotNull(trustly) }
+            trustlyView.onCancel { trustly: Trustly?, _: Map<String, String?>? -> assertNotNull(trustly) }
             val webView = WebView(activity.applicationContext)
             val trustlyWebViewClient = TrustlyWebViewClient(trustlyView)
             trustlyWebViewClient.onReceivedError(webView, 0, "", URL)
@@ -158,7 +158,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
             TrustlyView.setIsLocalEnvironment(false)
-            trustlyView.onCancel { trustly: Trustly?, _: Map<String, String>? -> assertNotNull(trustly) }
+            trustlyView.onCancel { trustly: Trustly?, _: Map<String, String?>? -> assertNotNull(trustly) }
             val webView = WebView(activity.applicationContext)
             val trustlyWebViewClient = TrustlyWebViewClient(trustlyView)
             trustlyWebViewClient.onReceivedError(webView, 0, "", "$URL/document.doc")

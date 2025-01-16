@@ -27,12 +27,16 @@ class TrustlyWebViewChromeClientTest : TrustlyActivityTest() {
     }
 
     @Test(expected = NullPointerException::class)
-    fun shouldValidateTrustlyViewChromeClientOnCreateWindowMethodNullMessage() {
+    fun shouldValidateTrustlyViewChromeClientOnCreateWindowMethodEmptyMessage() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
             val webView = WebView(activity.applicationContext)
             val trustlyViewChromeClient = TrustlyWebViewChromeClient(trustlyView)
-            trustlyViewChromeClient.onCreateWindow(webView, false, false, null)
+            trustlyViewChromeClient.onCreateWindow(webView,
+                isDialog = false,
+                isUserGesture = false,
+                resultMsg = Message()
+            )
         }
     }
 
@@ -44,7 +48,11 @@ class TrustlyWebViewChromeClientTest : TrustlyActivityTest() {
             val message = Message.obtain()
             message.obj = Any()
             val trustlyViewChromeClient = TrustlyWebViewChromeClient(trustlyView)
-            trustlyViewChromeClient.onCreateWindow(webView, false, false, message)
+            trustlyViewChromeClient.onCreateWindow(webView,
+                isDialog = false,
+                isUserGesture = false,
+                resultMsg = message
+            )
             assertNotNull(trustlyViewChromeClient)
         }
     }
