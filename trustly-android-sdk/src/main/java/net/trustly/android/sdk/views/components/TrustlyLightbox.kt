@@ -4,7 +4,6 @@ import android.content.Context
 import android.webkit.WebView
 import net.trustly.android.sdk.BuildConfig
 import net.trustly.android.sdk.data.APIMethod
-import net.trustly.android.sdk.data.APIRequest
 import net.trustly.android.sdk.data.RetrofitInstance.getInstance
 import net.trustly.android.sdk.data.Settings
 import net.trustly.android.sdk.data.StrategySetting
@@ -43,56 +42,49 @@ class TrustlyLightbox(
     private val notifyOpen: () -> Unit
 ) : TrustlyComponent() {
 
-    private val TAG = "TrustlyLightbox"
-
     private val SDK_VERSION: String = BuildConfig.SDK_VERSION
     
     override fun updateEstablishData(establishData: Map<String, String>, grp: Int) {
-        try {
-            notifyStatusChanged.invoke(Status.PANEL_LOADING)
-            CidManager.generateCid(context)
+        notifyStatusChanged.invoke(Status.PANEL_LOADING)
+        CidManager.generateCid(context)
 
-            val data = HashMap<String, String>(establishData)
+        val data = HashMap<String, String>(establishData)
 
-            val lang = establishData[METADATA_LANG]
-            if (lang != null) data[LANG] = lang
+        val lang = establishData[METADATA_LANG]
+        if (lang != null) data[LANG] = lang
 
-            data[METADATA_SDK_ANDROID_VERSION] = SDK_VERSION
-            data[DEVICE_TYPE] = "${establishData[DEVICE_TYPE] ?: "mobile"}:android:native"
-            data[RETURN_URL] = returnURL
-            data[CANCEL_URL] = cancelURL
-            data[GRP] = grp.toString()
+        data[METADATA_SDK_ANDROID_VERSION] = SDK_VERSION
+        data[DEVICE_TYPE] = "${establishData[DEVICE_TYPE] ?: "mobile"}:android:native"
+        data[RETURN_URL] = returnURL
+        data[CANCEL_URL] = cancelURL
+        data[GRP] = grp.toString()
 
-            if (data.containsKey(PAYMENT_PROVIDER_ID)) {
-                data[WIDGET_LOADED] = "true"
-            }
+        if (data.containsKey(PAYMENT_PROVIDER_ID)) {
+            data[WIDGET_LOADED] = "true"
+        }
 
-            val sessionCidValues = CidManager.getOrCreateSessionCid(context)
-            sessionCidValues[CidManager.SESSION_CID_PARAM]?.let { data[SESSION_CID] = it }
-            sessionCidValues[CidManager.CID_PARAM]?.let { data[METADATA_CID] = it }
+        val sessionCidValues = CidManager.getOrCreateSessionCid(context)
+        data[SESSION_CID] = sessionCidValues[CidManager.SESSION_CID_PARAM]!!
+        data[METADATA_CID] = sessionCidValues[CidManager.CID_PARAM]!!
 
-            notifyOpen.invoke()
+        notifyOpen.invoke()
 
-            if (ENV_LOCAL == data[ENV]) {
-                WebView.setWebContentsDebuggingEnabled(true)
-                TrustlyView.setIsLocalEnvironment(true)
-            }
+        if (ENV_LOCAL == data[ENV]) {
+            WebView.setWebContentsDebuggingEnabled(true)
+            TrustlyView.setIsLocalEnvironment(true)
+        }
 
-            if (APIRequestManager.validateAPIRequest(context)) {
-                val settings = APIRequestManager.getAPIRequestSettings(context)
+        if (APIRequestManager.validateAPIRequest(context)) {
+            val settings = APIRequestManager.getAPIRequestSettings(context)
+            openWebViewOrCustomTabs(settings, data)
+        } else {
+            val apiInterface = getInstance(UrlUtils.getDomain(FUNCTION_MOBILE, establishData)).create(APIMethod::class.java)
+            super.getSettingsData(apiInterface, getTokenByEncodedParameters(data), { settings ->
+                APIRequestManager.saveAPIRequestSettings(context, settings)
                 openWebViewOrCustomTabs(settings, data)
-            } else {
-                val apiInterface = getInstance(UrlUtils.getDomain(FUNCTION_MOBILE, establishData)).create(APIMethod::class.java)
-                val apiRequest = APIRequest(apiInterface, { settings: Settings ->
-                    APIRequestManager.saveAPIRequestSettings(context, settings)
-                    openWebViewOrCustomTabs(settings, data)
-                }, { _: String ->
-                    openWebViewOrCustomTabs(Settings(StrategySetting(INTEGRATION_STRATEGY_DEFAULT)), data)
-                })
-                apiRequest.getSettingsData(getTokenByEncodedParameters(data))
-            }
-        } catch (e: Exception) {
-            showErrorMessage(TAG, e)
+            }, {
+                openWebViewOrCustomTabs(Settings(StrategySetting(INTEGRATION_STRATEGY_DEFAULT)), data)
+            })
         }
     }
 
@@ -102,8 +94,10 @@ class TrustlyLightbox(
             val encodedParameters = UrlUtils.getParameterString(establishData.toMap()).toByteArray(StandardCharsets.UTF_8)
             webView.postUrl(UrlUtils.getEndpointUrl(FUNCTION_INDEX, establishData), encodedParameters)
         } else {
-            establishData[RETURN_URL] = establishData[METADATA_URL_SCHEME]!!
-            establishData[CANCEL_URL] = establishData[METADATA_URL_SCHEME]!!
+            establishData[METADATA_URL_SCHEME]?.let {
+                establishData[RETURN_URL] = it
+                establishData[CANCEL_URL] = it
+            }
             TrustlyCustomTabsManager.openCustomTabsIntent(
                 context,
                 UrlUtils.getEndpointUrl(

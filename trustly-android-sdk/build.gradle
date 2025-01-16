@@ -22,6 +22,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 34
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled = true
     }
     buildTypes {
         debug {
@@ -73,6 +74,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'androidx.test:runner:1.6.2'
     androidTestImplementation 'androidx.test:rules:1.6.1'
+    androidTestImplementation 'org.mockito:mockito-android:5.10.0'
 }
 
 tasks.register('javadoc', Javadoc) {

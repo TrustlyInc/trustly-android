@@ -9,7 +9,6 @@ import net.trustly.android.sdk.views.TrustlyCustomTabsManager.openCustomTabsInte
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.concurrent.TimeUnit
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -23,8 +22,7 @@ class TrustlyCustomTabsManagerTest : TrustlyActivityTest() {
             openCustomTabsIntent(activity, URL)
             assertEquals(5, TrustlyCustomTabsManager::class.java.declaredMethods.size)
         }
-        TimeUnit.SECONDS.sleep(1L)
-        scenario.close()
+        waitToCloseCustomTabs()
     }
 
 }
