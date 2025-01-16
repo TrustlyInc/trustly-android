@@ -27,7 +27,9 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
     lateinit var webView: WebView
 
     @Before
-    fun setup() {
+    override fun setUp() {
+        super.setUp()
+
         MockitoAnnotations.openMocks(this)
 
         `when`(webView.postUrl(anyString(), any())).then {  }

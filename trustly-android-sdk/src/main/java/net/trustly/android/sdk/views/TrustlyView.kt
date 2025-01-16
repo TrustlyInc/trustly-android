@@ -4,14 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import android.os.Message
 import android.util.AttributeSet
 import android.util.DisplayMetrics
-import android.util.Log
 import android.util.TypedValue
 import android.view.ViewGroup
 import android.webkit.WebView
-import android.webkit.WebView.WebViewTransport
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import net.trustly.android.sdk.interfaces.Trustly
@@ -23,17 +20,13 @@ import net.trustly.android.sdk.util.TrustlyConstants.EVENT_PAGE
 import net.trustly.android.sdk.util.TrustlyConstants.EVENT_TYPE
 import net.trustly.android.sdk.util.TrustlyConstants.PAYMENT_PROVIDER_ID
 import net.trustly.android.sdk.util.TrustlyConstants.WIDGET
-import net.trustly.android.sdk.util.UrlUtils.getQueryParametersFromUrl
-import net.trustly.android.sdk.util.grp.GRPManager.getGRP
-import net.trustly.android.sdk.util.grp.GRPManager.saveGRP
-import net.trustly.android.sdk.views.TrustlyCustomTabsManager.openCustomTabsIntent
+import net.trustly.android.sdk.util.UrlUtils
+import net.trustly.android.sdk.util.grp.GRPManager
 import net.trustly.android.sdk.views.clients.TrustlyWebViewChromeClient
 import net.trustly.android.sdk.views.clients.TrustlyWebViewClient
 import net.trustly.android.sdk.views.components.TrustlyLightbox
 import net.trustly.android.sdk.views.components.TrustlyWidget
-import net.trustly.android.sdk.views.oauth.TrustlyOAuthView
 import java.security.SecureRandom
-import java.util.Objects
 import java.util.regex.Pattern
 
 /**
@@ -42,8 +35,6 @@ import java.util.regex.Pattern
 class TrustlyView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
 ) : LinearLayout(context, attrs), Trustly {
-
-    private val TAG: String = "TrustlyView"
 
     enum class Status {
         START,
@@ -64,27 +55,25 @@ class TrustlyView @JvmOverloads constructor(
     private var onCancel: TrustlyCallback<Trustly, Map<String, String>>? = null
     private var onWidgetBankSelected: TrustlyCallback<Trustly, Map<String, String>>? = null
     private var onExternalUrl: TrustlyCallback<Trustly, Map<String, String>>? = null
-
     private var trustlyListener: TrustlyListener? = null
 
     private var returnURL = "msg://return"
     private var cancelURL = "msg://cancel"
 
     init {
-        initGrp(context)
-        initWebView(context)
-
-        setWebViewChromeClient()
-        setWebViewClient()
+        this.initGrp(context)
+        this.initWebView(context)
+        this.setWebViewChromeClient()
+        this.setWebViewClient()
 
         addView(webView)
     }
 
     private fun initGrp(context: Context) {
-        grp = getGRP(context)
+        grp = GRPManager.getGRP(context)
         if (grp < 0) {
             grp = SecureRandom().nextInt(100)
-            saveGRP(context, grp)
+            GRPManager.saveGRP(context, grp)
         }
     }
 
@@ -111,7 +100,7 @@ class TrustlyView @JvmOverloads constructor(
     }
 
     private fun setWebViewChromeClient() {
-        webView.webChromeClient = TrustlyWebViewChromeClient(this)
+        webView.webChromeClient = TrustlyWebViewChromeClient(context, this, onExternalUrl)
     }
 
     private fun setWebViewClient() {
@@ -121,9 +110,9 @@ class TrustlyView @JvmOverloads constructor(
     override fun selectBankWidget(establishData: Map<String, String>): Trustly {
         data = HashMap(establishData)
         val trustlyWidget = TrustlyWidget(context, webView, status, { statusChanged: Status ->
-            status = statusChanged
+            this.status = statusChanged
         }, {
-            notifyWidgetLoading()
+            this.notifyWidgetLoading()
         })
         trustlyWidget.updateEstablishData(establishData, grp)
         return this
@@ -138,9 +127,9 @@ class TrustlyView @JvmOverloads constructor(
         data = HashMap(establishData)
         val trustlyLightbox =
             TrustlyLightbox(context, webView, returnURL, cancelURL, { statusChanged: Status ->
-                status = statusChanged
+                this.status = statusChanged
             }, {
-                notifyOpen()
+                this.notifyOpen()
             })
         trustlyLightbox.updateEstablishData(establishData, grp)
         return this
@@ -197,43 +186,14 @@ class TrustlyView @JvmOverloads constructor(
         }
     }
 
-    private fun applyDimension(value: Float, displayMetrics: DisplayMetrics): Float {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, displayMetrics)
-    }
-
-    fun handleWebChromeClientOnCreateWindow(view: WebView, resultMsg: Message): Boolean {
-        val result = view.hitTestResult
-        if (result.type == 0) {
-            //window.open
-            val trustlyOAuthView = TrustlyOAuthView(view.context)
-            this.addView(trustlyOAuthView)
-            val transport = resultMsg.obj as WebViewTransport
-            transport.webView = trustlyOAuthView.getWebView()
-            resultMsg.sendToTarget()
-            return true
-        } else {
-            val url = result.extra
-            if (onExternalUrl != null) {
-                val params = HashMap<String, String>()
-                params["url"] = url!!
-                onExternalUrl?.handle(this, params)
-            } else {
-                openCustomTabsIntent(view.context, url!!)
-            }
-            return false
-        }
-    }
+    private fun applyDimension(value: Float, displayMetrics: DisplayMetrics) =
+        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, displayMetrics)
 
     fun handleWebViewClientOnReceivedError(trustlyView: TrustlyView, failingUrl: String?) {
-        try {
-            val isAssetFile =
-                failingUrl!!.matches("([^\\\\s]+(\\\\.(?i)(jpg|jpeg|svg|png|css|gif|webp))$)".toRegex())
-            if (!isLocalEnvironment() && onCancel != null && !isAssetFile) {
-                onCancel!!.handle(trustlyView, HashMap())
-            }
-        } catch (e: Exception) {
-            onCancel?.handle(trustlyView, HashMap())
-            showErrorMessage(e)
+        val isAssetFile =
+            failingUrl?.matches("([^\\\\s]+(\\\\.(?i)(jpg|jpeg|svg|png|css|gif|webp))$)".toRegex())
+        if (!isLocalEnvironment() && !isAssetFile!!) {
+            this.onCancel?.handle(trustlyView, HashMap())
         }
     }
 
@@ -241,10 +201,10 @@ class TrustlyView @JvmOverloads constructor(
         webView.loadUrl("javascript:TrustlyNativeSDK.resize(document.body.scrollWidth, document.body.scrollHeight)")
 
         if (status == Status.PANEL_LOADING) {
-            status = Status.PANEL_LOADED
+            this.status = Status.PANEL_LOADED
         } else if (status == Status.WIDGET_LOADING) {
-            status = Status.WIDGET_LOADED
-            notifyWidgetLoaded()
+            this.notifyWidgetLoaded()
+            this.status = Status.WIDGET_LOADED
         }
 
         val title = view.title
@@ -253,8 +213,8 @@ class TrustlyView @JvmOverloads constructor(
             val m = p.matcher(title)
             while (m.find()) {
                 val n = m.group().toLong() / 100
-                if (onCancel != null && (n == 4L || n == 5L)) {
-                    onCancel!!.handle(trustlyView, HashMap())
+                if (n == 4L || n == 5L) {
+                    this.onCancel?.handle(trustlyView, HashMap())
                 }
             }
         }
@@ -265,21 +225,19 @@ class TrustlyView @JvmOverloads constructor(
         url: String
     ): Boolean {
         if (url.startsWith(returnURL) || url.startsWith(cancelURL)) {
-            val queryParametersFromUrl = getQueryParametersFromUrl(url)
-            if (url.startsWith(returnURL) && onReturn != null) {
-                onReturn?.handle(trustlyView, queryParametersFromUrl)
-            } else if (onCancel != null) {
-                onCancel?.handle(trustlyView, queryParametersFromUrl)
+            val queryParametersFromUrl = UrlUtils.getQueryParametersFromUrl(url)
+            if (url.startsWith(returnURL)) {
+                this.onReturn?.handle(trustlyView, queryParametersFromUrl)
+            } else {
+                this.onCancel?.handle(trustlyView, queryParametersFromUrl)
             }
-            notifyClose()
+            this.notifyClose()
             return true
         } else if (url.startsWith("msg://push?")) {
             val params = url.split("\\|".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             if (params[0].contains("PayWithMyBank.createTransaction")) {
                 data[PAYMENT_PROVIDER_ID] = if (params.size > 1) params[1] else ""
-                if (onWidgetBankSelected != null) {
-                    onWidgetBankSelected?.handle(trustlyView, data)
-                }
+                this.onWidgetBankSelected?.handle(trustlyView, data)
             }
             return true
         }
@@ -287,38 +245,29 @@ class TrustlyView @JvmOverloads constructor(
     }
 
     fun notifyListener(eventName: String, eventDetails: HashMap<String, String>) {
-        if (this.trustlyListener != null) {
-            this.trustlyListener?.onChange(
-                eventName,
-                eventDetails
-            )
-        }
+        this.trustlyListener?.onChange(eventName, eventDetails)
     }
 
     private fun notifyOpen() {
-        notifyListener("open", HashMap())
+        this.notifyListener("open", HashMap())
     }
 
     private fun notifyClose() {
-        notifyListener("close", HashMap())
+        this.notifyListener("close", HashMap())
     }
 
     private fun notifyWidgetLoading() {
-        val eventDetails = HashMap<String, String>()
-        eventDetails[EVENT_PAGE] = WIDGET
-        eventDetails[EVENT_TYPE] = "loading"
-        notifyListener(EVENT, eventDetails)
+        this.notifyListener(EVENT, hashMapOf(
+            EVENT_PAGE to WIDGET,
+            EVENT_TYPE to "loading"
+        ))
     }
 
     private fun notifyWidgetLoaded() {
-        val eventDetails = HashMap<String, String>()
-        eventDetails[EVENT_PAGE] = WIDGET
-        eventDetails[EVENT_TYPE] = "load"
-        notifyListener(EVENT, eventDetails)
-    }
-
-    private fun showErrorMessage(e: java.lang.Exception) {
-        Log.e(TAG, Objects.requireNonNull<String?>(e.message))
+        this.notifyListener(EVENT, hashMapOf(
+            EVENT_PAGE to WIDGET,
+            EVENT_TYPE to "load"
+        ))
     }
 
     companion object {
