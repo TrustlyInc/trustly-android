@@ -17,7 +17,7 @@ import retrofit2.Response
 class APIRequestTest {
 
     @Mock
-    private lateinit var api: APIMethod
+    private lateinit var mockApiMethod: APIMethod
 
     @Mock
     private lateinit var mockCall: Call<Settings>
@@ -28,12 +28,12 @@ class APIRequestTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
 
-        `when`(api.getSettings(anyString())).thenReturn(mockCall)
+        `when`(mockApiMethod.getSettings(anyString())).thenReturn(mockCall)
     }
 
     @After
     fun tearDown() {
-        api.getSettings(TOKEN).cancel()
+        mockApiMethod.getSettings(TOKEN).cancel()
         mockCall.cancel()
         settingsResult = null
     }
@@ -44,7 +44,7 @@ class APIRequestTest {
         val mockResponse = Response.success(settingsFake)
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
+        APIRequest(mockApiMethod, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
 
         assertEquals(settingsFake, settingsResult)
     }
@@ -55,7 +55,7 @@ class APIRequestTest {
         val mockResponse = Response.success(settingsFake)
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
+        APIRequest(mockApiMethod, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
 
         assertEquals(settingsFake, settingsResult)
     }
@@ -66,7 +66,7 @@ class APIRequestTest {
         val mockResponse = Response.success(settingsFake)
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
+        APIRequest(mockApiMethod, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
 
         assertEquals(settingsFake, settingsResult)
         assertEquals("webview", settingsResult!!.settings.integrationStrategy)
@@ -78,7 +78,7 @@ class APIRequestTest {
         val mockResponse = Response.success(settingsFake)
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
+        APIRequest(mockApiMethod, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
 
         assertEquals(settingsFake, settingsResult)
         assertNotEquals("inappbrowser", settingsResult!!.settings.integrationStrategy)
@@ -88,7 +88,7 @@ class APIRequestTest {
     fun testGetSettingDataValuesWhenReturnSuccessWithNullBody() {
         mockCallbackResponseWithNullBody()
 
-        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
+        APIRequest(mockApiMethod, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
 
         assertEquals(null, settingsResult)
     }
@@ -104,7 +104,7 @@ class APIRequestTest {
         val mockResponse = Throwable("Error 401")
         mockCallbackFailure(mockResponse)
 
-        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
+        APIRequest(mockApiMethod, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
 
         assertEquals(null, settingsResult)
     }

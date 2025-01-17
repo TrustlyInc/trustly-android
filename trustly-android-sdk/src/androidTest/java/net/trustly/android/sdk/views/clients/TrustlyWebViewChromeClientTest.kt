@@ -10,6 +10,7 @@ import net.trustly.android.sdk.TrustlyActivityTest
 import net.trustly.android.sdk.interfaces.Trustly
 import net.trustly.android.sdk.mock.MockActivity
 import net.trustly.android.sdk.views.TrustlyView
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -20,6 +21,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.any
 import org.mockito.Mockito.anyLong
+import org.mockito.Mockito.clearInvocations
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 
@@ -49,6 +51,13 @@ class TrustlyWebViewChromeClientTest : TrustlyActivityTest() {
 
         `when`(mockWebView.hitTestResult).thenReturn(mockHitTestResult)
         `when`(mockHandler.sendMessageDelayed(any(), anyLong())).thenReturn(true)
+    }
+
+    @After
+    override fun tearDown() {
+        super.tearDown()
+
+        clearInvocations(mockWebView, mockHitTestResult, mockWebViewTransport, mockHandler)
     }
 
     @Test

@@ -3,14 +3,49 @@ package net.trustly.android.sdk.views.components
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import net.trustly.android.sdk.TrustlyActivityTest
+import net.trustly.android.sdk.data.APIMethod
+import net.trustly.android.sdk.data.Settings
+import net.trustly.android.sdk.data.StrategySetting
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mock
+import org.mockito.Mockito.any
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.clearInvocations
+import org.mockito.Mockito.`when`
+import org.mockito.MockitoAnnotations
+import retrofit2.Call
+import retrofit2.Response
 
 @RunWith(AndroidJUnit4::class)
 @SmallTest
 class TrustlyComponentTest : TrustlyActivityTest() {
+
+    @Mock
+    private lateinit var mockAPIMethod: APIMethod
+
+    @Mock
+    private lateinit var mockCall: Call<Settings>
+
+    @Before
+    override fun setUp() {
+        super.setUp()
+
+        MockitoAnnotations.openMocks(this)
+
+        `when`(mockAPIMethod.getSettings(anyString())).thenReturn(mockCall)
+    }
+
+    @After
+    override fun tearDown() {
+        super.tearDown()
+
+        clearInvocations(mockAPIMethod)
+    }
 
     @Test
     fun shouldValidateTrustlyComponentInstance() {
@@ -35,6 +70,75 @@ class TrustlyComponentTest : TrustlyActivityTest() {
         }
     }
 
+    @Test
+    fun shouldValidateTrustlyComponentGetSettingsDataSuccess() {
+        scenario.onActivity {
+            val settingsFake = Settings(StrategySetting("webview"))
+            val mockResponse = Response.success(settingsFake)
+            mockCallbackResponse(mockResponse)
+
+            val trustlyComponent = MockTrustlyComponent()
+            trustlyComponent.getSettingsData(mockAPIMethod, TOKEN, {
+                assertEquals(settingsFake, it)
+            }, {
+                assertEquals(null, it)
+            })
+        }
+    }
+
+    @Test
+    fun shouldValidateTrustlyComponentGetSettingsDataSuccessNullBody() {
+        scenario.onActivity {
+            mockCallbackResponseWithNullBody()
+
+            val trustlyComponent = MockTrustlyComponent()
+            trustlyComponent.getSettingsData(mockAPIMethod, TOKEN, {
+                assertEquals(null, it)
+            }, {
+                assertEquals(null, it)
+            })
+        }
+    }
+
+    @Test
+    fun shouldValidateTrustlyComponentGetSettingsDataFailed() {
+        scenario.onActivity {
+            val mockResponse = Throwable("Error 401")
+            mockCallbackFailure(mockResponse)
+
+            val trustlyComponent = MockTrustlyComponent()
+            trustlyComponent.getSettingsData(mockAPIMethod, TOKEN, {
+                assertEquals(null, it)
+            }, {
+                assertEquals("Error 401", it)
+            })
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun mockCallbackResponse(mockResponse: Response<Settings>) {
+        `when`(mockCall.enqueue(any())).then {
+            val callback = it.arguments.first() as retrofit2.Callback<Settings>
+            callback.onResponse(mockCall, mockResponse)
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun mockCallbackResponseWithNullBody() {
+        `when`(mockCall.enqueue(any())).then {
+            val callback = it.arguments.first() as retrofit2.Callback<Settings>
+            callback.onResponse(mockCall, Response.success(null))
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun mockCallbackFailure(mockResponse: Throwable) {
+        `when`(mockCall.enqueue(any())).then {
+            val callback = it.arguments.first() as retrofit2.Callback<Settings>
+            callback.onFailure(mockCall, mockResponse)
+        }
+    }
+
     class MockTrustlyComponent : TrustlyComponent() {
 
         val establishData = mutableMapOf<String, String>()
@@ -42,6 +146,12 @@ class TrustlyComponentTest : TrustlyActivityTest() {
         override fun updateEstablishData(establishData: Map<String, String>, grp: Int) {
             this.establishData.putAll(establishData)
         }
+
+    }
+
+    companion object {
+
+        const val TOKEN = "RXN0YWJsaXNoRGF0YVN0cmluZw=="
 
     }
 

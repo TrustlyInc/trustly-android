@@ -12,13 +12,12 @@ abstract class TrustlyComponent {
     abstract fun updateEstablishData(establishData: Map<String, String>, grp: Int)
 
     fun getSettingsData(apiInterface: APIMethod, token: String, settingsCallback: (Settings) -> Unit, errorCallback: (String) -> Unit) {
-        val apiRequest = APIRequest(apiInterface, { settings: Settings ->
-            settingsCallback.invoke(settings)
-        }, { message: String ->
-            errorCallback.invoke(message)
-            Log.e(TAG, message)
-        })
-        apiRequest.getSettingsData(token)
+        APIRequest(apiInterface, {
+            settingsCallback.invoke(it)
+        }, {
+            errorCallback.invoke(it)
+            Log.e(TAG, it)
+        }).getSettingsData(token)
     }
 
 }

@@ -79,9 +79,9 @@ class TrustlyLightbox(
             openWebViewOrCustomTabs(settings, data)
         } else {
             val apiInterface = getInstance(UrlUtils.getDomain(FUNCTION_MOBILE, establishData)).create(APIMethod::class.java)
-            super.getSettingsData(apiInterface, getTokenByEncodedParameters(data), { settings ->
-                APIRequestManager.saveAPIRequestSettings(context, settings)
-                openWebViewOrCustomTabs(settings, data)
+            super.getSettingsData(apiInterface, getTokenByEncodedParameters(data), {
+                APIRequestManager.saveAPIRequestSettings(context, it)
+                openWebViewOrCustomTabs(it, data)
             }, {
                 openWebViewOrCustomTabs(Settings(StrategySetting(INTEGRATION_STRATEGY_DEFAULT)), data)
             })

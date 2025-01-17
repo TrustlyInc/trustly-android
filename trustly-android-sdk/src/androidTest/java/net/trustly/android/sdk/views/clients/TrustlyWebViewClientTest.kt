@@ -9,12 +9,14 @@ import net.trustly.android.sdk.TrustlyActivityTest
 import net.trustly.android.sdk.interfaces.Trustly
 import net.trustly.android.sdk.mock.MockActivity
 import net.trustly.android.sdk.views.TrustlyView
+import org.junit.After
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
+import org.mockito.Mockito.clearInvocations
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 
@@ -37,6 +39,13 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
         super.setUp()
 
         MockitoAnnotations.openMocks(this)
+    }
+
+    @After
+    override fun tearDown() {
+        super.tearDown()
+
+        clearInvocations(mockWebView)
     }
 
     @Test
