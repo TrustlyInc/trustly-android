@@ -13,6 +13,8 @@ class APIRequest(private val apiInterface: APIMethod, private val settings: (Set
                 if (response.body() != null) {
                     Log.d(TAG, response.body().toString())
                     settings.invoke(response.body() as Settings)
+                } else {
+                    onFailure(call, Throwable(response.errorBody().toString()))
                 }
             }
 

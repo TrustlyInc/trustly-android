@@ -51,7 +51,7 @@ class TrustlyWebViewClient(
     @Suppress("DEPRECATION")
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     override fun onReceivedError(
-        view: WebView?,
+        view: WebView,
         request: WebResourceRequest,
         error: WebResourceError?
     ) {
@@ -61,10 +61,10 @@ class TrustlyWebViewClient(
 
     @Deprecated("Deprecated in Java")
     override fun onReceivedError(
-        view: WebView?,
+        view: WebView,
         errorCode: Int,
-        description: String?,
-        failingUrl: String?
+        description: String,
+        failingUrl: String
     ) {
         handleWebViewClientOnReceivedError(trustlyView, failingUrl)
     }
@@ -96,10 +96,9 @@ class TrustlyWebViewClient(
         notifyStatus.invoke()
     }
 
-    private fun handleWebViewClientOnReceivedError(trustlyView: TrustlyView, failingUrl: String?) {
-        val isAssetFile =
-            failingUrl?.matches("([^\\\\s]+(\\\\.(?i)(jpg|jpeg|svg|png|css|gif|webp))$)".toRegex())
-        if (!TrustlyView.isLocalEnvironment() && !isAssetFile!!) {
+    private fun handleWebViewClientOnReceivedError(trustlyView: TrustlyView, failingUrl: String) {
+        val isAssetFile = failingUrl.matches(".*(svg|png|jpg|jpeg|css|gif|webp)$".toRegex())
+        if (!TrustlyView.isLocalEnvironment() && !isAssetFile) {
             onCancel?.handle(trustlyView, HashMap())
         }
     }

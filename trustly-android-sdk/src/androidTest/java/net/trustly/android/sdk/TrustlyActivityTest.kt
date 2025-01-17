@@ -26,8 +26,8 @@ abstract class TrustlyActivityTest {
         scenario.close()
     }
 
-    open fun waitToCloseCustomTabs() {
-        TimeUnit.SECONDS.sleep(1L)
+    open fun waitToCloseCustomTabs(timeout: Long = 1L) {
+        TimeUnit.SECONDS.sleep(timeout)
     }
 
 }

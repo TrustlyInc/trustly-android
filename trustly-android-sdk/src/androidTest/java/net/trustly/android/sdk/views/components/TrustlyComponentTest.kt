@@ -78,40 +78,36 @@ class TrustlyComponentTest : TrustlyActivityTest() {
             mockCallbackResponse(mockResponse)
 
             val trustlyComponent = MockTrustlyComponent()
-            trustlyComponent.getSettingsData(mockAPIMethod, TOKEN, {
+            trustlyComponent.getSettingsData(mockAPIMethod, TOKEN) {
                 assertEquals(settingsFake, it)
-            }, {
-                assertEquals(null, it)
-            })
+            }
         }
     }
 
     @Test
-    fun shouldValidateTrustlyComponentGetSettingsDataSuccessNullBody() {
+    fun shouldValidateTrustlyComponentGetSettingsDataFailedNullBody() {
         scenario.onActivity {
+            val settingsFake = Settings(StrategySetting("webview"))
             mockCallbackResponseWithNullBody()
 
             val trustlyComponent = MockTrustlyComponent()
-            trustlyComponent.getSettingsData(mockAPIMethod, TOKEN, {
-                assertEquals(null, it)
-            }, {
-                assertEquals(null, it)
-            })
+            trustlyComponent.getSettingsData(mockAPIMethod, TOKEN) {
+                assertEquals(settingsFake, it)
+            }
         }
     }
 
     @Test
     fun shouldValidateTrustlyComponentGetSettingsDataFailed() {
         scenario.onActivity {
+            val settingsFake = Settings(StrategySetting("webview"))
             val mockResponse = Throwable("Error 401")
             mockCallbackFailure(mockResponse)
 
             val trustlyComponent = MockTrustlyComponent()
-            trustlyComponent.getSettingsData(mockAPIMethod, TOKEN, {
-                assertEquals(null, it)
-            }, {
-                assertEquals("Error 401", it)
-            })
+            trustlyComponent.getSettingsData(mockAPIMethod, TOKEN) {
+                assertEquals(settingsFake, it)
+            }
         }
     }
 

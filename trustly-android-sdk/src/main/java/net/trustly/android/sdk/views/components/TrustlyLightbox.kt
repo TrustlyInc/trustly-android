@@ -6,7 +6,6 @@ import net.trustly.android.sdk.BuildConfig
 import net.trustly.android.sdk.data.APIMethod
 import net.trustly.android.sdk.data.RetrofitInstance.getInstance
 import net.trustly.android.sdk.data.Settings
-import net.trustly.android.sdk.data.StrategySetting
 import net.trustly.android.sdk.util.TrustlyConstants.CANCEL_URL
 import net.trustly.android.sdk.util.TrustlyConstants.DEVICE_TYPE
 import net.trustly.android.sdk.util.TrustlyConstants.ENV
@@ -79,12 +78,10 @@ class TrustlyLightbox(
             openWebViewOrCustomTabs(settings, data)
         } else {
             val apiInterface = getInstance(UrlUtils.getDomain(FUNCTION_MOBILE, establishData)).create(APIMethod::class.java)
-            super.getSettingsData(apiInterface, getTokenByEncodedParameters(data), {
+            super.getSettingsData(apiInterface, getTokenByEncodedParameters(data)) {
                 APIRequestManager.saveAPIRequestSettings(context, it)
                 openWebViewOrCustomTabs(it, data)
-            }, {
-                openWebViewOrCustomTabs(Settings(StrategySetting(INTEGRATION_STRATEGY_DEFAULT)), data)
-            })
+            }
         }
     }
 
