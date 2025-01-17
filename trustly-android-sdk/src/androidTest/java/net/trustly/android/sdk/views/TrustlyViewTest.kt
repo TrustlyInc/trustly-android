@@ -9,6 +9,7 @@ import net.trustly.android.sdk.interfaces.Trustly
 import net.trustly.android.sdk.interfaces.TrustlyJsInterface
 import net.trustly.android.sdk.mock.MockActivity
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
@@ -451,9 +452,114 @@ class TrustlyViewTest : TrustlyActivityTest() {
     }
 
     @Test
-    fun shouldValidateTrustlyViewWebViewChromeClientCallback() {
+    fun shouldValidateTrustlyViewEstablishMethodWithReturnUrl() {
         scenario.onActivity { activity: MockActivity ->
-            
+            trustlyView = TrustlyView(activity.applicationContext)
+            trustlyView.onReturn { _: Trustly, data: Map<String, String>? ->
+                assertNotNull(data)
+            }
+            val result = trustlyView.handleWebViewClientShouldOverrideUrlLoading("msg://return?param=1")
+            assertTrue(result)
+        }
+    }
+
+    @Test
+    fun shouldValidateTrustlyViewEstablishMethodWithCancelUrl() {
+        scenario.onActivity { activity: MockActivity ->
+            trustlyView = TrustlyView(activity.applicationContext)
+            trustlyView.onCancel { _: Trustly, data: Map<String, String>? ->
+                assertNotNull(data)
+            }
+            val result = trustlyView.handleWebViewClientShouldOverrideUrlLoading("msg://cancel?param=1")
+            assertTrue(result)
+        }
+    }
+
+    @Test
+    fun shouldValidateTrustlyViewEstablishMethodWithReturnUrlNullCallback() {
+        scenario.onActivity { activity: MockActivity ->
+            trustlyView = TrustlyView(activity.applicationContext)
+            trustlyView.onReturn(null)
+            val result = trustlyView.handleWebViewClientShouldOverrideUrlLoading("msg://return?param=1")
+            assertTrue(result)
+        }
+    }
+
+    @Test
+    fun shouldValidateTrustlyViewEstablishMethodWithCancelUrlNullCallback() {
+        scenario.onActivity { activity: MockActivity ->
+            trustlyView = TrustlyView(activity.applicationContext)
+            trustlyView.onCancel(null)
+            val result = trustlyView.handleWebViewClientShouldOverrideUrlLoading("msg://cancel?param=1")
+            assertTrue(result)
+        }
+    }
+
+    @Test
+    fun shouldValidateTrustlyViewEstablishMethodWithPushCreateTransactionOnlyMessage() {
+        scenario.onActivity { activity: MockActivity ->
+            trustlyView = TrustlyView(activity.applicationContext)
+            trustlyView.establish(mapOf())
+            trustlyView.onBankSelected { _: Trustly, data: Map<String, String>? ->
+                assertNotNull(data)
+            }
+            val result = trustlyView.handleWebViewClientShouldOverrideUrlLoading("msg://push?PayWithMyBank.createTransaction")
+            assertTrue(result)
+        }
+    }
+
+    @Test
+    fun shouldValidateTrustlyViewEstablishMethodWithPushCreateTransactionEmptyPaymentProviderId() {
+        scenario.onActivity { activity: MockActivity ->
+            trustlyView = TrustlyView(activity.applicationContext)
+            trustlyView.establish(mapOf())
+            trustlyView.onBankSelected { _: Trustly, data: Map<String, String>? ->
+                assertNotNull(data)
+            }
+            val result = trustlyView.handleWebViewClientShouldOverrideUrlLoading("msg://push?PayWithMyBank.createTransaction|")
+            assertTrue(result)
+        }
+    }
+
+    @Test
+    fun shouldValidateTrustlyViewEstablishMethodWithPushCreateTransactionWithPaymentProviderId() {
+        scenario.onActivity { activity: MockActivity ->
+            trustlyView = TrustlyView(activity.applicationContext)
+            trustlyView.establish(mapOf())
+            trustlyView.onBankSelected { _: Trustly, data: Map<String, String>? ->
+                assertNotNull(data)
+            }
+            val result = trustlyView.handleWebViewClientShouldOverrideUrlLoading("msg://push?PayWithMyBank.createTransaction|123456")
+            assertTrue(result)
+        }
+    }
+
+    @Test
+    fun shouldValidateTrustlyViewEstablishMethodWithPushCreateTransactionWithPaymentProviderIdNullCallback() {
+        scenario.onActivity { activity: MockActivity ->
+            trustlyView = TrustlyView(activity.applicationContext)
+            trustlyView.establish(mapOf())
+            trustlyView.onBankSelected(null)
+            val result = trustlyView.handleWebViewClientShouldOverrideUrlLoading("msg://push?PayWithMyBank.createTransaction|123456")
+            assertTrue(result)
+        }
+    }
+
+    @Test
+    fun shouldValidateTrustlyViewEstablishMethodWithPushWidgetLoaded() {
+        scenario.onActivity { activity: MockActivity ->
+            trustlyView = TrustlyView(activity.applicationContext)
+            val result = trustlyView.handleWebViewClientShouldOverrideUrlLoading("msg://push?PayWithMyBank.widgetLoaded")
+            assertTrue(result)
+        }
+    }
+
+    @Test
+    fun shouldValidateTrustlyViewEstablishMethodWithUnknownMessage() {
+        scenario.onActivity { activity: MockActivity ->
+            trustlyView = TrustlyView(activity.applicationContext)
+            val result = trustlyView.handleWebViewClientShouldOverrideUrlLoading("msg://example?")
+            assertFalse(result)
         }
     }
 

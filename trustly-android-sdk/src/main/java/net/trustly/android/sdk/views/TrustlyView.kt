@@ -27,7 +27,6 @@ import net.trustly.android.sdk.views.clients.TrustlyWebViewClient
 import net.trustly.android.sdk.views.components.TrustlyLightbox
 import net.trustly.android.sdk.views.components.TrustlyWidget
 import java.security.SecureRandom
-import java.util.regex.Pattern
 
 /**
  * TrustlyView is a view class that implements the Trustly SDK interface
@@ -104,7 +103,11 @@ class TrustlyView @JvmOverloads constructor(
     }
 
     private fun setWebViewClient() {
-        webView.webViewClient = TrustlyWebViewClient(this)
+        webView.webViewClient = TrustlyWebViewClient(this, returnURL, cancelURL, onCancel, {
+            notifyStatusChanged()
+        }, {
+            handleWebViewClientShouldOverrideUrlLoading(it)
+        })
     }
 
     override fun selectBankWidget(establishData: Map<String, String>): Trustly {
@@ -171,6 +174,15 @@ class TrustlyView @JvmOverloads constructor(
         webView.loadUrl("javascript:Paywithmybank.proceedToChooseAccount();")
     }
 
+    private fun notifyStatusChanged() {
+        if (status == Status.PANEL_LOADING) {
+            this.status = Status.PANEL_LOADED
+        } else if (status == Status.WIDGET_LOADING) {
+            this.notifyWidgetLoaded()
+            this.status = Status.WIDGET_LOADED
+        }
+    }
+
     fun resize(width: Float, height: Float) {
         Handler(Looper.getMainLooper()).post {
             val displayMetrics = context.resources.displayMetrics
@@ -189,55 +201,21 @@ class TrustlyView @JvmOverloads constructor(
     private fun applyDimension(value: Float, displayMetrics: DisplayMetrics) =
         TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, displayMetrics)
 
-    fun handleWebViewClientOnReceivedError(trustlyView: TrustlyView, failingUrl: String?) {
-        val isAssetFile =
-            failingUrl?.matches("([^\\\\s]+(\\\\.(?i)(jpg|jpeg|svg|png|css|gif|webp))$)".toRegex())
-        if (!isLocalEnvironment() && !isAssetFile!!) {
-            this.onCancel?.handle(trustlyView, HashMap())
-        }
-    }
-
-    fun handleWebViewClientOnPageFinished(view: WebView, trustlyView: TrustlyView) {
-        webView.loadUrl("javascript:TrustlyNativeSDK.resize(document.body.scrollWidth, document.body.scrollHeight)")
-
-        if (status == Status.PANEL_LOADING) {
-            this.status = Status.PANEL_LOADED
-        } else if (status == Status.WIDGET_LOADING) {
-            this.notifyWidgetLoaded()
-            this.status = Status.WIDGET_LOADED
-        }
-
-        val title = view.title
-        if (title != null) {
-            val p = Pattern.compile("\\d+")
-            val m = p.matcher(title)
-            while (m.find()) {
-                val n = m.group().toLong() / 100
-                if (n == 4L || n == 5L) {
-                    this.onCancel?.handle(trustlyView, HashMap())
-                }
-            }
-        }
-    }
-
-    fun handleWebViewClientShouldOverrideUrlLoading(
-        trustlyView: TrustlyView,
-        url: String
-    ): Boolean {
+    fun handleWebViewClientShouldOverrideUrlLoading(url: String): Boolean {
         if (url.startsWith(returnURL) || url.startsWith(cancelURL)) {
             val queryParametersFromUrl = UrlUtils.getQueryParametersFromUrl(url)
             if (url.startsWith(returnURL)) {
-                this.onReturn?.handle(trustlyView, queryParametersFromUrl)
+                this.onReturn?.handle(this, queryParametersFromUrl)
             } else {
-                this.onCancel?.handle(trustlyView, queryParametersFromUrl)
+                this.onCancel?.handle(this, queryParametersFromUrl)
             }
             this.notifyClose()
             return true
         } else if (url.startsWith("msg://push?")) {
-            val params = url.split("\\|".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            val params = url.split("\\|".toRegex()).toTypedArray()
             if (params[0].contains("PayWithMyBank.createTransaction")) {
                 data[PAYMENT_PROVIDER_ID] = if (params.size > 1) params[1] else ""
-                this.onWidgetBankSelected?.handle(trustlyView, data)
+                this.onWidgetBankSelected?.handle(this, data)
             }
             return true
         }
