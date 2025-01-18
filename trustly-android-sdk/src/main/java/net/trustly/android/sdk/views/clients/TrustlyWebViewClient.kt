@@ -6,9 +6,9 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
-import net.trustly.android.sdk.interfaces.Trustly
-import net.trustly.android.sdk.interfaces.TrustlyCallback
+import net.trustly.android.sdk.util.UrlUtils
 import net.trustly.android.sdk.views.TrustlyView
+import net.trustly.android.sdk.views.events.TrustlyEvents
 import java.util.regex.Pattern
 
 /**
@@ -18,9 +18,9 @@ class TrustlyWebViewClient(
     private val trustlyView: TrustlyView,
     private val returnURL: String,
     private val cancelURL: String,
-    private val onCancel: TrustlyCallback<Trustly, Map<String, String>>?,
-    private val notifyStatus: () -> Unit,
-    private val urlCallback: (String) -> Unit,
+    private val trustlyEvents: TrustlyEvents,
+    private val onWidgetBankSelected: (String) -> Unit,
+    private val notifyStatus: () -> Unit
 ) : WebViewClient() {
 
     /**
@@ -69,11 +69,22 @@ class TrustlyWebViewClient(
         handleWebViewClientOnReceivedError(trustlyView, failingUrl)
     }
 
-    private fun handleWebViewClientShouldOverrideUrlLoading(
-        url: String
-    ): Boolean {
-        if (url.startsWith(returnURL) || url.startsWith(cancelURL) || url.startsWith("msg://push?")) {
-            urlCallback.invoke(url)
+    private fun handleWebViewClientShouldOverrideUrlLoading(url: String): Boolean {
+        if (url.startsWith(returnURL) || url.startsWith(cancelURL)) {
+            val queryParametersFromUrl = UrlUtils.getQueryParametersFromUrl(url)
+            if (url.startsWith(returnURL)) {
+                trustlyEvents.handleOnReturn(trustlyView, queryParametersFromUrl)
+            } else {
+                trustlyEvents.handleOnCancel(trustlyView, queryParametersFromUrl)
+            }
+            trustlyEvents.notifyClose()
+            return true
+        } else if (url.startsWith("msg://push?")) {
+            val params = url.split("\\|".toRegex()).toTypedArray()
+            val bankSelected = if (params.size > 1 && params.first().contains("PayWithMyBank.createTransaction")) {
+                params[1]
+            } else ""
+            onWidgetBankSelected.invoke(bankSelected)
             return true
         }
         return false
@@ -89,7 +100,7 @@ class TrustlyWebViewClient(
             while (m.find()) {
                 val n = m.group().toLong() / 100
                 if (n == 4L || n == 5L) {
-                    onCancel?.handle(trustlyView, HashMap())
+                    trustlyEvents.handleOnCancel(trustlyView, HashMap())
                 }
             }
         }
@@ -99,7 +110,7 @@ class TrustlyWebViewClient(
     private fun handleWebViewClientOnReceivedError(trustlyView: TrustlyView, failingUrl: String) {
         val isAssetFile = failingUrl.matches(".*(svg|png|jpg|jpeg|css|gif|webp)$".toRegex())
         if (!TrustlyView.isLocalEnvironment() && !isAssetFile) {
-            onCancel?.handle(trustlyView, HashMap())
+            trustlyEvents.handleOnCancel(trustlyView, HashMap())
         }
     }
 

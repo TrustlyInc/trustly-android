@@ -5,10 +5,8 @@ import android.os.Message
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebView.WebViewTransport
-import net.trustly.android.sdk.interfaces.Trustly
-import net.trustly.android.sdk.interfaces.TrustlyCallback
-import net.trustly.android.sdk.views.TrustlyCustomTabsManager
 import net.trustly.android.sdk.views.TrustlyView
+import net.trustly.android.sdk.views.events.TrustlyEvents
 import net.trustly.android.sdk.views.oauth.TrustlyOAuthView
 
 /**
@@ -17,7 +15,7 @@ import net.trustly.android.sdk.views.oauth.TrustlyOAuthView
 class TrustlyWebViewChromeClient(
     private val context: Context,
     private val trustlyView: TrustlyView,
-    private val onExternalUrl: TrustlyCallback<Trustly, Map<String, String>>?
+    private val trustlyEvents: TrustlyEvents,
 ) : WebChromeClient() {
 
     override fun onCreateWindow(
@@ -39,13 +37,9 @@ class TrustlyWebViewChromeClient(
             return true
         } else {
             val url = result.extra
-            onExternalUrl?.let { onExternalUrl ->
-                url?.let {
-                    val params = mapOf("url" to it)
-                    onExternalUrl.handle(trustlyView, params)
-                }
-            } ?: url?.let {
-                TrustlyCustomTabsManager.openCustomTabsIntent(context, it)
+            url?.let {
+                val params = mapOf("url" to url)
+                trustlyEvents.handleOnExternalUrl(trustlyView, params)
             }
             return false
         }

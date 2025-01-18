@@ -2,8 +2,9 @@ package net.trustly.android.sdk.interfaces
 
 import android.webkit.JavascriptInterface
 import net.trustly.android.sdk.views.TrustlyView
+import net.trustly.android.sdk.views.events.TrustlyEvents
 
-open class TrustlyJsInterface(private val trustlyView: TrustlyView) {
+open class TrustlyJsInterface(private val trustlyView: TrustlyView, private val trustlyEvents: TrustlyEvents) {
 
     private val PAYWITHMYBANK_EVENT: String = "PayWithMyBank.event"
     private val EVENT: String = "event"
@@ -23,7 +24,7 @@ open class TrustlyJsInterface(private val trustlyView: TrustlyView) {
             for ((key, value) in getEventNames()) {
                 addToListenerDetails(params, key, value, eventDetails)
             }
-            trustlyView.notifyListener(EVENT, eventDetails)
+            trustlyEvents.notifyListener(EVENT, eventDetails)
         }
     }
 

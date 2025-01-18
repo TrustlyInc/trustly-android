@@ -22,7 +22,7 @@ class TrustlyCustomTabsManagerTest : TrustlyActivityTest() {
             openCustomTabsIntent(activity, URL)
             assertEquals(5, TrustlyCustomTabsManager::class.java.declaredMethods.size)
         }
-        waitToCloseCustomTabs()
+        waitToCloseCustomTabs(2L)
     }
 
 }

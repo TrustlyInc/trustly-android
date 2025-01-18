@@ -15,17 +15,13 @@ import net.trustly.android.sdk.interfaces.Trustly
 import net.trustly.android.sdk.interfaces.TrustlyCallback
 import net.trustly.android.sdk.interfaces.TrustlyJsInterface
 import net.trustly.android.sdk.interfaces.TrustlyListener
-import net.trustly.android.sdk.util.TrustlyConstants.EVENT
-import net.trustly.android.sdk.util.TrustlyConstants.EVENT_PAGE
-import net.trustly.android.sdk.util.TrustlyConstants.EVENT_TYPE
 import net.trustly.android.sdk.util.TrustlyConstants.PAYMENT_PROVIDER_ID
-import net.trustly.android.sdk.util.TrustlyConstants.WIDGET
-import net.trustly.android.sdk.util.UrlUtils
 import net.trustly.android.sdk.util.grp.GRPManager
 import net.trustly.android.sdk.views.clients.TrustlyWebViewChromeClient
 import net.trustly.android.sdk.views.clients.TrustlyWebViewClient
 import net.trustly.android.sdk.views.components.TrustlyLightbox
 import net.trustly.android.sdk.views.components.TrustlyWidget
+import net.trustly.android.sdk.views.events.TrustlyEvents
 import java.security.SecureRandom
 
 /**
@@ -44,22 +40,16 @@ class TrustlyView @JvmOverloads constructor(
     }
 
     private var status = Status.START
-
-    private lateinit var webView: WebView
-
     private var grp = -1
-
-    private lateinit var data: HashMap<String, String>
-    private var onReturn: TrustlyCallback<Trustly, Map<String, String>>? = null
-    private var onCancel: TrustlyCallback<Trustly, Map<String, String>>? = null
-    private var onWidgetBankSelected: TrustlyCallback<Trustly, Map<String, String>>? = null
-    private var onExternalUrl: TrustlyCallback<Trustly, Map<String, String>>? = null
-    private var trustlyListener: TrustlyListener? = null
-
     private var returnURL = "msg://return"
     private var cancelURL = "msg://cancel"
 
+    private lateinit var data: HashMap<String, String>
+    private lateinit var trustlyEvents: TrustlyEvents
+    private lateinit var webView: WebView
+
     init {
+        this.initEvents()
         this.initGrp(context)
         this.initWebView(context)
         this.setWebViewChromeClient()
@@ -94,20 +84,24 @@ class TrustlyView @JvmOverloads constructor(
                 domStorageEnabled = true
             }
 
-            addJavascriptInterface(TrustlyJsInterface(this@TrustlyView), "TrustlyNativeSDK")
+            addJavascriptInterface(TrustlyJsInterface(this@TrustlyView, trustlyEvents), "TrustlyNativeSDK")
         }
     }
 
+    private fun initEvents() {
+        trustlyEvents = TrustlyEvents()
+    }
+
     private fun setWebViewChromeClient() {
-        webView.webChromeClient = TrustlyWebViewChromeClient(context, this, onExternalUrl)
+        webView.webChromeClient = TrustlyWebViewChromeClient(context, this, trustlyEvents)
     }
 
     private fun setWebViewClient() {
-        webView.webViewClient = TrustlyWebViewClient(this, returnURL, cancelURL, onCancel, {
-            notifyStatusChanged()
-        }, {
-            handleWebViewClientShouldOverrideUrlLoading(it)
-        })
+        webView.webViewClient = TrustlyWebViewClient(this, returnURL, cancelURL, trustlyEvents,
+            {
+                data[PAYMENT_PROVIDER_ID] = it
+                trustlyEvents.getOnWidgetBankSelectedCallback()?.handle(this, data)
+            }, { this.notifyStatusChanged() })
     }
 
     override fun selectBankWidget(establishData: Map<String, String>): Trustly {
@@ -115,14 +109,14 @@ class TrustlyView @JvmOverloads constructor(
         val trustlyWidget = TrustlyWidget(context, webView, status, { statusChanged: Status ->
             this.status = statusChanged
         }, {
-            this.notifyWidgetLoading()
+            trustlyEvents.notifyWidgetLoading()
         })
         trustlyWidget.updateEstablishData(establishData, grp)
         return this
     }
 
     override fun onBankSelected(handler: TrustlyCallback<Trustly, Map<String, String>>?): Trustly {
-        this.onWidgetBankSelected = handler
+        this.trustlyEvents.setOnWidgetBankSelectedCallback(handler)
         return this
     }
 
@@ -132,7 +126,7 @@ class TrustlyView @JvmOverloads constructor(
             TrustlyLightbox(context, webView, returnURL, cancelURL, { statusChanged: Status ->
                 this.status = statusChanged
             }, {
-                this.notifyOpen()
+                trustlyEvents.notifyOpen()
             })
         trustlyLightbox.updateEstablishData(establishData, grp)
         return this
@@ -146,22 +140,22 @@ class TrustlyView @JvmOverloads constructor(
     }
 
     override fun onReturn(handler: TrustlyCallback<Trustly, Map<String, String>>?): Trustly {
-        this.onReturn = handler
+        this.trustlyEvents.setOnReturnCallback(handler)
         return this
     }
 
     override fun onCancel(handler: TrustlyCallback<Trustly, Map<String, String>>?): Trustly {
-        this.onCancel = handler
+        this.trustlyEvents.setOnCancelCallback(handler)
         return this
     }
 
     override fun onExternalUrl(handler: TrustlyCallback<Trustly, Map<String, String>>?): Trustly {
-        this.onExternalUrl = handler
+        this.trustlyEvents.setOnExternalUrlCallback(handler)
         return this
     }
 
     override fun setListener(trustlyListener: TrustlyListener?): Trustly {
-        this.trustlyListener = trustlyListener
+        this.trustlyEvents.setTrustlyListener(trustlyListener)
         return this
     }
 
@@ -178,7 +172,7 @@ class TrustlyView @JvmOverloads constructor(
         if (status == Status.PANEL_LOADING) {
             this.status = Status.PANEL_LOADED
         } else if (status == Status.WIDGET_LOADING) {
-            this.notifyWidgetLoaded()
+            trustlyEvents.notifyWidgetLoaded()
             this.status = Status.WIDGET_LOADED
         }
     }
@@ -201,60 +195,11 @@ class TrustlyView @JvmOverloads constructor(
     private fun applyDimension(value: Float, displayMetrics: DisplayMetrics) =
         TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, displayMetrics)
 
-    fun handleWebViewClientShouldOverrideUrlLoading(url: String): Boolean {
-        if (url.startsWith(returnURL) || url.startsWith(cancelURL)) {
-            val queryParametersFromUrl = UrlUtils.getQueryParametersFromUrl(url)
-            if (url.startsWith(returnURL)) {
-                this.onReturn?.handle(this, queryParametersFromUrl)
-            } else {
-                this.onCancel?.handle(this, queryParametersFromUrl)
-            }
-            this.notifyClose()
-            return true
-        } else if (url.startsWith("msg://push?")) {
-            val params = url.split("\\|".toRegex()).toTypedArray()
-            if (params[0].contains("PayWithMyBank.createTransaction")) {
-                data[PAYMENT_PROVIDER_ID] = if (params.size > 1) params[1] else ""
-                this.onWidgetBankSelected?.handle(this, data)
-            }
-            return true
-        }
-        return false
-    }
-
-    fun notifyListener(eventName: String, eventDetails: HashMap<String, String>) {
-        this.trustlyListener?.onChange(eventName, eventDetails)
-    }
-
-    private fun notifyOpen() {
-        this.notifyListener("open", HashMap())
-    }
-
-    private fun notifyClose() {
-        this.notifyListener("close", HashMap())
-    }
-
-    private fun notifyWidgetLoading() {
-        this.notifyListener(EVENT, hashMapOf(
-            EVENT_PAGE to WIDGET,
-            EVENT_TYPE to "loading"
-        ))
-    }
-
-    private fun notifyWidgetLoaded() {
-        this.notifyListener(EVENT, hashMapOf(
-            EVENT_PAGE to WIDGET,
-            EVENT_TYPE to "load"
-        ))
-    }
-
     companion object {
 
         private var isLocalEnvironment: Boolean = false
 
-        fun isLocalEnvironment(): Boolean {
-            return isLocalEnvironment
-        }
+        fun isLocalEnvironment() = isLocalEnvironment
 
         fun setIsLocalEnvironment(isLocal: Boolean) {
             isLocalEnvironment = isLocal
