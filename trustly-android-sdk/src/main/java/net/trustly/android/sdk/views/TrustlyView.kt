@@ -15,7 +15,6 @@ import net.trustly.android.sdk.interfaces.Trustly
 import net.trustly.android.sdk.interfaces.TrustlyCallback
 import net.trustly.android.sdk.interfaces.TrustlyJsInterface
 import net.trustly.android.sdk.interfaces.TrustlyListener
-import net.trustly.android.sdk.util.TrustlyConstants.PAYMENT_PROVIDER_ID
 import net.trustly.android.sdk.util.grp.GRPManager
 import net.trustly.android.sdk.views.clients.TrustlyWebViewChromeClient
 import net.trustly.android.sdk.views.clients.TrustlyWebViewClient
@@ -44,7 +43,6 @@ class TrustlyView @JvmOverloads constructor(
     private var returnURL = "msg://return"
     private var cancelURL = "msg://cancel"
 
-    private lateinit var data: HashMap<String, String>
     private lateinit var trustlyEvents: TrustlyEvents
     private lateinit var webView: WebView
 
@@ -97,15 +95,10 @@ class TrustlyView @JvmOverloads constructor(
     }
 
     private fun setWebViewClient() {
-        webView.webViewClient = TrustlyWebViewClient(this, returnURL, cancelURL, trustlyEvents,
-            {
-                data[PAYMENT_PROVIDER_ID] = it
-                trustlyEvents.getOnWidgetBankSelectedCallback()?.handle(this, data)
-            }, { this.notifyStatusChanged() })
+        webView.webViewClient = TrustlyWebViewClient(this, returnURL, cancelURL, trustlyEvents) { this.notifyStatusChanged() }
     }
 
     override fun selectBankWidget(establishData: Map<String, String>): Trustly {
-        data = HashMap(establishData)
         val trustlyWidget = TrustlyWidget(context, webView, status, { statusChanged: Status ->
             this.status = statusChanged
         }, {
@@ -121,7 +114,6 @@ class TrustlyView @JvmOverloads constructor(
     }
 
     override fun establish(establishData: Map<String, String>): Trustly {
-        data = HashMap(establishData)
         val trustlyLightbox =
             TrustlyLightbox(context, webView, returnURL, cancelURL, { statusChanged: Status ->
                 this.status = statusChanged

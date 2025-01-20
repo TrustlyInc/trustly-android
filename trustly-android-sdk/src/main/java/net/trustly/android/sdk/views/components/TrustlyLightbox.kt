@@ -4,6 +4,7 @@ import android.content.Context
 import android.webkit.WebView
 import net.trustly.android.sdk.BuildConfig
 import net.trustly.android.sdk.data.APIMethod
+import net.trustly.android.sdk.util.EstablishDataManager
 import net.trustly.android.sdk.data.RetrofitInstance.getInstance
 import net.trustly.android.sdk.data.Settings
 import net.trustly.android.sdk.util.TrustlyConstants.CANCEL_URL
@@ -47,6 +48,7 @@ class TrustlyLightbox(
         notifyStatusChanged.invoke(Status.PANEL_LOADING)
         CidManager.generateCid(context)
 
+        EstablishDataManager.updateEstablishData(establishData)
         val data = HashMap<String, String>(establishData)
 
         val lang = establishData[METADATA_LANG]

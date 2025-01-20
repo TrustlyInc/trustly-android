@@ -6,6 +6,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
+import net.trustly.android.sdk.util.EstablishDataManager
 import net.trustly.android.sdk.util.UrlUtils
 import net.trustly.android.sdk.views.TrustlyView
 import net.trustly.android.sdk.views.events.TrustlyEvents
@@ -19,7 +20,6 @@ class TrustlyWebViewClient(
     private val returnURL: String,
     private val cancelURL: String,
     private val trustlyEvents: TrustlyEvents,
-    private val onWidgetBankSelected: (String) -> Unit,
     private val notifyStatus: () -> Unit
 ) : WebViewClient() {
 
@@ -81,10 +81,10 @@ class TrustlyWebViewClient(
             return true
         } else if (url.startsWith("msg://push?")) {
             val params = url.split("\\|".toRegex()).toTypedArray()
-            val bankSelected = if (params.size > 1 && params.first().contains("PayWithMyBank.createTransaction")) {
-                params[1]
-            } else ""
-            onWidgetBankSelected.invoke(bankSelected)
+            if (params.first().contains("PayWithMyBank.createTransaction")) {
+                val establishData = EstablishDataManager.updatePaymentProviderId(if (params.size > 1) params[1] else "")
+                trustlyEvents.handleOnWidgetBankSelected(trustlyView, establishData)
+            }
             return true
         }
         return false

@@ -64,7 +64,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
 
             val trustlyLightbox = TrustlyLightbox(activity, webView, "returnUrl", "cancelUrl", {}, {})
             trustlyLightbox.updateEstablishData(EstablishDataMock.getEstablishDataValues(), 0)
-            waitToCloseCustomTabs(4L)
+            waitToCloseCustomTabs()
             assertNotNull(trustlyLightbox)
         }
     }
@@ -80,7 +80,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
             establishData["metadata.urlScheme"] = "urlscheme://"
 
             trustlyLightbox.updateEstablishData(establishData, 0)
-            waitToCloseCustomTabs(4L)
+            waitToCloseCustomTabs()
             assertNotNull(trustlyLightbox)
         }
     }
@@ -97,7 +97,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
             establishData["env"] = "error"
 
             trustlyLightbox.updateEstablishData(establishData, 0)
-            waitToCloseCustomTabs(4L)
+            waitToCloseCustomTabs()
             assertNotNull(trustlyLightbox)
         }
     }

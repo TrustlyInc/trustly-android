@@ -44,7 +44,9 @@ class TrustlyEvents {
         this.onWidgetBankSelected = onWidgetBankSelected
     }
 
-    fun getOnWidgetBankSelectedCallback() = this.onWidgetBankSelected
+    fun handleOnWidgetBankSelected(trustlyView: Trustly, params: Map<String, String>) {
+        this.onWidgetBankSelected?.handle(trustlyView, params)
+    }
 
     fun setTrustlyListener(trustlyListener: TrustlyListener?) {
         this.trustlyListener = trustlyListener

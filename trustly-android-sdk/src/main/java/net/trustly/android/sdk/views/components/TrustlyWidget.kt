@@ -3,6 +3,7 @@ package net.trustly.android.sdk.views.components
 import android.content.Context
 import android.graphics.Color
 import android.webkit.WebView
+import net.trustly.android.sdk.util.EstablishDataManager
 import net.trustly.android.sdk.util.TrustlyConstants.ACCESS_ID
 import net.trustly.android.sdk.util.TrustlyConstants.CID
 import net.trustly.android.sdk.util.TrustlyConstants.CUSTOMER_ADDRESS_COUNTRY
@@ -35,6 +36,8 @@ class TrustlyWidget(
     private val CUSTOMER_ADDRESS_COUNTRY_DEFAULT = "US"
 
     override fun updateEstablishData(establishData: Map<String, String>, grp: Int) {
+        EstablishDataManager.updateEstablishData(establishData)
+
         val data = HashMap<String?, String?>()
         data[ACCESS_ID] = establishData[ACCESS_ID]
         data[MERCHANT_ID] = establishData[MERCHANT_ID]

@@ -6,7 +6,6 @@ import net.trustly.android.sdk.interfaces.TrustlyCallback
 import net.trustly.android.sdk.interfaces.TrustlyListener
 import net.trustly.android.sdk.views.TrustlyView
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -102,11 +101,12 @@ class TrustlyEventsTest : TrustlyActivityTest() {
 
     @Test
     fun testTrustlyEventsGetOnWidgetBankSelectedCallback() {
-        scenario.onActivity {
+        scenario.onActivity { activity ->
+            val trustlyView = TrustlyView(activity)
             val trustlyEvents = TrustlyEvents()
             trustlyEvents.setOnWidgetBankSelectedCallback(mockTrustlyCallback)
-            val result = trustlyEvents.getOnWidgetBankSelectedCallback()
-            assertEquals(mockTrustlyCallback, result)
+            trustlyEvents.handleOnWidgetBankSelected(trustlyView, mapOf())
+            verify(mockTrustlyCallback, times(1)).handle(trustlyView, mapOf())
         }
     }
 
