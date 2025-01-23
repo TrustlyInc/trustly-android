@@ -29,7 +29,7 @@ import net.trustly.android.sdk.util.api.APIRequestManager
 import net.trustly.android.sdk.util.cid.CidManager
 import net.trustly.android.sdk.views.TrustlyCustomTabsManager
 import net.trustly.android.sdk.views.TrustlyView
-import net.trustly.android.sdk.views.TrustlyView.Status
+import net.trustly.android.sdk.views.events.TrustlyEvents
 import java.nio.charset.StandardCharsets
 
 class TrustlyLightbox(
@@ -37,14 +37,13 @@ class TrustlyLightbox(
     private val webView: WebView,
     private val returnURL: String,
     private val cancelURL: String,
-    private val notifyStatusChanged: (Status) -> Unit,
-    private val notifyOpen: () -> Unit
+    private val trustlyEvents: TrustlyEvents,
 ) : TrustlyComponent() {
 
     private val SDK_VERSION: String = BuildConfig.SDK_VERSION
     
     override fun updateEstablishData(establishData: Map<String, String>, grp: Int) {
-        notifyStatusChanged.invoke(Status.PANEL_LOADING)
+        trustlyEvents.notifyOpen()
         CidManager.generateCid(context)
 
         EstablishDataManager.updateEstablishData(establishData)
@@ -66,8 +65,6 @@ class TrustlyLightbox(
         val sessionCidValues = CidManager.getOrCreateSessionCid(context)
         data[SESSION_CID] = sessionCidValues[CidManager.SESSION_CID_PARAM]!!
         data[METADATA_CID] = sessionCidValues[CidManager.CID_PARAM]!!
-
-        notifyOpen.invoke()
 
         if (ENV_LOCAL == data[ENV]) {
             WebView.setWebContentsDebuggingEnabled(true)
@@ -103,7 +100,7 @@ class TrustlyLightbox(
                 ) + "?token=" + getTokenByEncodedParameters(establishData)
             )
         }
-        notifyStatusChanged.invoke(Status.PANEL_LOADED)
+        trustlyEvents.notifyClose()
     }
 
     private fun getTokenByEncodedParameters(data: Map<String, String>): String {

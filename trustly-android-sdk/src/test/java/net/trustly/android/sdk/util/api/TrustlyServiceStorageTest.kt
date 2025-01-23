@@ -9,10 +9,10 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.clearInvocations
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
+import org.mockito.MockitoAnnotations
 
 class TrustlyServiceStorageTest {
 
@@ -27,9 +27,7 @@ class TrustlyServiceStorageTest {
 
     @Before
     fun setUp() {
-        mockEdit = mock(SharedPreferences.Editor::class.java)
-        mockedPrefs = mock(SharedPreferences::class.java)
-        mockedContext = mock(Context::class.java)
+        MockitoAnnotations.openMocks(this)
     }
 
     @After

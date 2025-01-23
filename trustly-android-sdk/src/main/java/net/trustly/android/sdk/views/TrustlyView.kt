@@ -30,15 +30,6 @@ class TrustlyView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
 ) : LinearLayout(context, attrs), Trustly {
 
-    enum class Status {
-        START,
-        WIDGET_LOADING,
-        WIDGET_LOADED,
-        PANEL_LOADING,
-        PANEL_LOADED
-    }
-
-    private var status = Status.START
     private var grp = -1
     private var returnURL = "msg://return"
     private var cancelURL = "msg://cancel"
@@ -95,16 +86,11 @@ class TrustlyView @JvmOverloads constructor(
     }
 
     private fun setWebViewClient() {
-        webView.webViewClient = TrustlyWebViewClient(this, returnURL, cancelURL, trustlyEvents) { this.notifyStatusChanged() }
+        webView.webViewClient = TrustlyWebViewClient(this, returnURL, cancelURL, trustlyEvents)
     }
 
     override fun selectBankWidget(establishData: Map<String, String>): Trustly {
-        val trustlyWidget = TrustlyWidget(context, webView, status, { statusChanged: Status ->
-            this.status = statusChanged
-            this.notifyStatusChanged()
-        }, {
-            trustlyEvents.notifyWidgetLoading()
-        })
+        val trustlyWidget = TrustlyWidget(context, webView, trustlyEvents)
         trustlyWidget.updateEstablishData(establishData, grp)
         return this
     }
@@ -115,12 +101,7 @@ class TrustlyView @JvmOverloads constructor(
     }
 
     override fun establish(establishData: Map<String, String>): Trustly {
-        val trustlyLightbox =
-            TrustlyLightbox(context, webView, returnURL, cancelURL, { statusChanged: Status ->
-                this.status = statusChanged
-            }, {
-                trustlyEvents.notifyOpen()
-            })
+        val trustlyLightbox = TrustlyLightbox(context, webView, returnURL, cancelURL, trustlyEvents)
         trustlyLightbox.updateEstablishData(establishData, grp)
         return this
     }
@@ -159,15 +140,6 @@ class TrustlyView @JvmOverloads constructor(
 
     override fun proceedToChooseAccount() {
         webView.loadUrl("javascript:Paywithmybank.proceedToChooseAccount();")
-    }
-
-    private fun notifyStatusChanged() {
-        if (status == Status.PANEL_LOADING) {
-            this.status = Status.PANEL_LOADED
-        } else if (status == Status.WIDGET_LOADING) {
-            trustlyEvents.notifyWidgetLoaded()
-            this.status = Status.WIDGET_LOADED
-        }
     }
 
     fun resize(width: Float, height: Float) {

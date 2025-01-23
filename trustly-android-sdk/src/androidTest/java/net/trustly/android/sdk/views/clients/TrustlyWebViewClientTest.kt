@@ -40,11 +40,8 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
     @Mock
     private lateinit var mockOnCancelCallback: TrustlyCallback<Trustly, Map<String, String>>
 
-    @Mock
-    private lateinit var mockNotifyStatus: () -> Unit
-
-    private lateinit var trustlyView: TrustlyView
     private lateinit var trustlyEvents: TrustlyEvents
+    private lateinit var trustlyView: TrustlyView
 
     @Before
     override fun setUp() {
@@ -59,14 +56,14 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
     override fun tearDown() {
         super.tearDown()
 
-        clearInvocations(mockWebView)
+        clearInvocations(mockWebView, mockOnCancelCallback)
     }
 
     @Test
     fun shouldValidateTrustlyWebViewClientInstance() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, TrustlyEvents()) {}
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             assertNotNull(trustlyWebViewClient)
         }
     }
@@ -75,9 +72,8 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
     fun shouldValidateTrustlyWebViewClientShouldOverrideUrlLoadingWithUrlString() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
-            val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents) {}
-            val result = trustlyWebViewClient.shouldOverrideUrlLoading(webView, URL)
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
+            val result = trustlyWebViewClient.shouldOverrideUrlLoading(mockWebView, URL)
             assertNotNull(trustlyWebViewClient)
             assertFalse(result)
         }
@@ -88,7 +84,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
             val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, TrustlyEvents()) {}
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             val result = trustlyWebViewClient.shouldOverrideUrlLoading(webView, getWebResourceRequest())
             assertNotNull(trustlyWebViewClient)
             assertFalse(result)
@@ -100,10 +96,9 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
             val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, TrustlyEvents(), mockNotifyStatus)
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             trustlyWebViewClient.onPageFinished(webView, URL)
             assertNotNull(trustlyWebViewClient)
-            verify(mockNotifyStatus, times(1)).invoke()
         }
     }
 
@@ -112,10 +107,9 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             `when`(mockWebView.title).thenReturn(null)
             trustlyView = TrustlyView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, TrustlyEvents(), mockNotifyStatus)
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, TrustlyEvents())
             trustlyWebViewClient.onPageFinished(mockWebView, URL)
             assertNotNull(trustlyWebViewClient)
-            verify(mockNotifyStatus, times(1)).invoke()
         }
     }
 
@@ -124,10 +118,9 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             `when`(mockWebView.title).thenReturn("title1234567890")
             trustlyView = TrustlyView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, TrustlyEvents(), mockNotifyStatus)
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, TrustlyEvents())
             trustlyWebViewClient.onPageFinished(mockWebView, URL)
             assertNotNull(trustlyWebViewClient)
-            verify(mockNotifyStatus, times(1)).invoke()
         }
     }
 
@@ -136,10 +129,9 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             `when`(mockWebView.title).thenReturn("title400")
             trustlyView = TrustlyView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, TrustlyEvents(), mockNotifyStatus)
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, TrustlyEvents())
             trustlyWebViewClient.onPageFinished(mockWebView, URL)
             assertNotNull(trustlyWebViewClient)
-            verify(mockNotifyStatus, times(1)).invoke()
         }
     }
 
@@ -149,11 +141,10 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
             `when`(mockWebView.title).thenReturn("title400")
             trustlyEvents.setOnCancelCallback(mockOnCancelCallback)
             trustlyView = TrustlyView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents, mockNotifyStatus)
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             trustlyWebViewClient.onPageFinished(mockWebView, URL)
             assertNotNull(trustlyWebViewClient)
             verify(mockOnCancelCallback, times(1)).handle(trustlyView, HashMap())
-            verify(mockNotifyStatus, times(1)).invoke()
         }
     }
 
@@ -162,10 +153,9 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             `when`(mockWebView.title).thenReturn("title500")
             trustlyView = TrustlyView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, TrustlyEvents(), mockNotifyStatus)
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, TrustlyEvents())
             trustlyWebViewClient.onPageFinished(mockWebView, URL)
             assertNotNull(trustlyWebViewClient)
-            verify(mockNotifyStatus, times(1)).invoke()
         }
     }
 
@@ -175,11 +165,10 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
             `when`(mockWebView.title).thenReturn("title500")
             trustlyEvents.setOnCancelCallback(mockOnCancelCallback)
             trustlyView = TrustlyView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents, mockNotifyStatus)
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             trustlyWebViewClient.onPageFinished(mockWebView, URL)
             assertNotNull(trustlyWebViewClient)
             verify(mockOnCancelCallback, times(1)).handle(trustlyView, HashMap())
-            verify(mockNotifyStatus, times(1)).invoke()
         }
     }
 
@@ -189,7 +178,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
             trustlyEvents.setOnCancelCallback(mockOnCancelCallback)
             trustlyView = TrustlyView(activity.applicationContext)
             val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents) {}
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             trustlyWebViewClient.onReceivedError(webView, 0, "", URL)
             assertNotNull(trustlyWebViewClient)
             verify(mockOnCancelCallback, times(1)).handle(trustlyView, HashMap())
@@ -203,7 +192,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
             trustlyEvents.setOnCancelCallback(mockOnCancelCallback)
             TrustlyView.setIsLocalEnvironment(true)
             val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents) {}
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             trustlyWebViewClient.onReceivedError(webView, 0, "", "$URL/image.jpg")
             verify(mockOnCancelCallback, times(0)).handle(trustlyView, HashMap())
         }
@@ -215,7 +204,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
             trustlyView = TrustlyView(activity.applicationContext)
             trustlyEvents.setOnCancelCallback(mockOnCancelCallback)
             val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents) {}
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             trustlyWebViewClient.onReceivedError(webView, 0, "", "$URL/image.jpg")
             verify(mockOnCancelCallback, times(0)).handle(trustlyView, HashMap())
         }
@@ -227,7 +216,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
             trustlyView = TrustlyView(activity.applicationContext)
             trustlyEvents.setOnCancelCallback(mockOnCancelCallback)
             val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents) {}
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             trustlyWebViewClient.onReceivedError(webView, 0, "", "$URL/document.doc")
             verify(mockOnCancelCallback, times(1)).handle(trustlyView, HashMap())
         }
@@ -239,7 +228,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
             trustlyView = TrustlyView(activity.applicationContext)
             trustlyEvents.setOnCancelCallback(mockOnCancelCallback)
             val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents) {}
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             trustlyWebViewClient.onReceivedError(webView, 0, "", "$URL/document.doc")
             verify(mockOnCancelCallback, times(1)).handle(trustlyView, HashMap())
         }
@@ -252,7 +241,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
             trustlyEvents.setOnCancelCallback(mockOnCancelCallback)
             TrustlyView.setIsLocalEnvironment(true)
             val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents) {}
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             trustlyWebViewClient.onReceivedError(webView, 0, "", "$URL/document.doc")
             verify(mockOnCancelCallback, times(0)).handle(trustlyView, HashMap())
         }
@@ -265,7 +254,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
             trustlyEvents.setOnCancelCallback(mockOnCancelCallback)
             TrustlyView.setIsLocalEnvironment(true)
             val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents) {}
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             trustlyWebViewClient.onReceivedError(webView, 0, "", "$URL/image.jpg")
             verify(mockOnCancelCallback, times(0)).handle(trustlyView, HashMap())
         }
@@ -277,7 +266,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
             trustlyView = TrustlyView(activity.applicationContext)
             trustlyEvents.setOnCancelCallback(mockOnCancelCallback)
             val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents) {}
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             trustlyWebViewClient.onReceivedError(webView, 0, "", "$URL/image.doc")
             verify(mockOnCancelCallback, times(1)).handle(trustlyView, HashMap())
         }
@@ -288,7 +277,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
             val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents) {}
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             TrustlyView.setIsLocalEnvironment(false)
             val result = trustlyWebViewClient.shouldOverrideUrlLoading(webView, "msg://return?www.url.com")
             assertTrue(result)
@@ -301,7 +290,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
             val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents) {}
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             TrustlyView.setIsLocalEnvironment(false)
             val result = trustlyWebViewClient.shouldOverrideUrlLoading(webView, "msg://return?www.url.com")
             assertTrue(result)
@@ -314,7 +303,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
             val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents) {}
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             TrustlyView.setIsLocalEnvironment(false)
             val result = trustlyWebViewClient.shouldOverrideUrlLoading(webView, "msg://cancel?www.url.com")
             assertTrue(result)
@@ -328,7 +317,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
             trustlyView = TrustlyView(activity.applicationContext)
             trustlyView.onCancel(null)
             val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents) {}
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             TrustlyView.setIsLocalEnvironment(false)
             val result = trustlyWebViewClient.shouldOverrideUrlLoading(webView, "msg://cancel?www.url.com")
             assertTrue(result)
@@ -349,7 +338,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
             trustlyView.establish(values)
 
             val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents) {}
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             TrustlyView.setIsLocalEnvironment(false)
             val result = trustlyWebViewClient.shouldOverrideUrlLoading(webView, "msg://push?PayWithMyBank.createTransaction|123456")
             assertTrue(result)
@@ -370,7 +359,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
             trustlyView.establish(values)
 
             val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents) {}
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             TrustlyView.setIsLocalEnvironment(false)
             val result = trustlyWebViewClient.shouldOverrideUrlLoading(webView, "msg://push?PayWithMyBank.createTransaction")
             assertTrue(result)
@@ -391,7 +380,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
             trustlyView.establish(values)
 
             val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents) {}
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             TrustlyView.setIsLocalEnvironment(false)
             val result = trustlyWebViewClient.shouldOverrideUrlLoading(webView, "msg://push?PayWithMyBank.createTransaction!")
             assertTrue(result)
@@ -413,7 +402,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
             trustlyView.establish(values)
 
             val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents) {}
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             TrustlyView.setIsLocalEnvironment(false)
             val result = trustlyWebViewClient.shouldOverrideUrlLoading(webView, "msg://push?PayWithMyBank.createTransaction|123456")
             assertTrue(result)
@@ -426,7 +415,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
             val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents) {}
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             TrustlyView.setIsLocalEnvironment(false)
             val result = trustlyWebViewClient.shouldOverrideUrlLoading(webView, "msg://push?PayWithMyBank.widgetLoaded|123456")
             assertTrue(result)
@@ -449,6 +438,5 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
             override fun getRequestHeaders(): Map<String, String> = emptyMap()
         }
     }
-
 
 }

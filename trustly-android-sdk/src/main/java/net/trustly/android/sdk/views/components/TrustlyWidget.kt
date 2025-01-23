@@ -21,14 +21,12 @@ import net.trustly.android.sdk.util.TrustlyConstants.SESSION_CID
 import net.trustly.android.sdk.util.TrustlyConstants.WIDGET
 import net.trustly.android.sdk.util.UrlUtils
 import net.trustly.android.sdk.util.cid.CidManager
-import net.trustly.android.sdk.views.TrustlyView.Status
+import net.trustly.android.sdk.views.events.TrustlyEvents
 
 class TrustlyWidget(
     private val context: Context,
     private val webView: WebView,
-    private var status: Status,
-    private val notifyStatusChanged: (Status) -> Unit,
-    private val notifyWidgetLoading: () -> Unit
+    private val trustlyEvents: TrustlyEvents
 ) : TrustlyComponent() {
 
     private val AMPERSAND_CHAR: String = "&"
@@ -36,6 +34,7 @@ class TrustlyWidget(
     private val CUSTOMER_ADDRESS_COUNTRY_DEFAULT = "US"
 
     override fun updateEstablishData(establishData: Map<String, String>, grp: Int) {
+        trustlyEvents.notifyWidgetLoading()
         EstablishDataManager.updateEstablishData(establishData)
 
         val data = HashMap<String?, String?>()
@@ -64,21 +63,17 @@ class TrustlyWidget(
         hash[MERCHANT_REFERENCE] = establishData[MERCHANT_REFERENCE]
         hash[CUSTOMER_EXTERNAL_ID] = establishData[CUSTOMER_EXTERNAL_ID]
 
-        if (status != Status.WIDGET_LOADED) {
-            notifyStatusChanged.invoke(Status.WIDGET_LOADING)
-            notifyWidgetLoading.invoke()
+        val dataParameters = UrlUtils.getParameterString(data)
+        val hashParameters = UrlUtils.getParameterString(hash)
+        val url: String = UrlUtils.getEndpointUrl(
+            WIDGET,
+            establishData
+        ) + AMPERSAND_CHAR + dataParameters + HASHTAG_SIGN + hashParameters
 
-            val dataParameters = UrlUtils.getParameterString(data)
-            val hashParameters = UrlUtils.getParameterString(hash)
-            val url: String = UrlUtils.getEndpointUrl(
-                WIDGET,
-                establishData
-            ) + AMPERSAND_CHAR + dataParameters + HASHTAG_SIGN + hashParameters
-
-            with(webView) {
-                loadUrl(url)
-                setBackgroundColor(Color.TRANSPARENT)
-            }
+        with(webView) {
+            loadUrl(url)
+            setBackgroundColor(Color.TRANSPARENT)
         }
+        trustlyEvents.notifyWidgetLoaded()
     }
 }

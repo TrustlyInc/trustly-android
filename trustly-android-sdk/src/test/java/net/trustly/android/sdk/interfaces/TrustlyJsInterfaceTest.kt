@@ -35,7 +35,7 @@ class TrustlyJsInterfaceTest {
 
     @After
     fun tearDown() {
-        clearInvocations(mockTrustlyView)
+        clearInvocations(mockTrustlyView, mockTrustlyEvents)
     }
 
     @Test

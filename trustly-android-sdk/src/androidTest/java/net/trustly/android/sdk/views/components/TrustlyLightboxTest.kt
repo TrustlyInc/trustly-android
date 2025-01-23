@@ -8,6 +8,7 @@ import net.trustly.android.sdk.data.Settings
 import net.trustly.android.sdk.data.StrategySetting
 import net.trustly.android.sdk.util.api.APIRequestManager
 import net.trustly.android.sdk.util.api.APIRequestStorage
+import net.trustly.android.sdk.views.events.TrustlyEvents
 import org.junit.After
 import org.junit.Assert.assertNotNull
 import org.junit.Before
@@ -23,26 +24,30 @@ import java.util.Calendar
 class TrustlyLightboxTest : TrustlyActivityTest() {
 
     @Mock
-    lateinit var webView: WebView
+    lateinit var mockWebView: WebView
+
+    private lateinit var trustlyEvents: TrustlyEvents
 
     @Before
     override fun setUp() {
         super.setUp()
 
         MockitoAnnotations.openMocks(this)
+
+        trustlyEvents = TrustlyEvents()
     }
 
     @After
     override fun tearDown() {
         super.tearDown()
 
-        clearInvocations(webView)
+        clearInvocations(mockWebView)
     }
 
     @Test
     fun shouldValidateTrustlyLightboxInstance() {
         scenario.onActivity { activity ->
-            val trustlyLightbox = TrustlyLightbox(activity, webView, "returnUrl", "cancelUrl", {}, {})
+            val trustlyLightbox = TrustlyLightbox(activity, mockWebView, "returnUrl", "cancelUrl", trustlyEvents)
             assertNotNull(trustlyLightbox)
         }
     }
@@ -50,7 +55,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
     @Test
     fun shouldValidateTrustlyLightboxInstanceEmptyEstablishData() {
         scenario.onActivity { activity ->
-            val trustlyLightbox = TrustlyLightbox(activity, webView, "returnUrl", "cancelUrl", {}, {})
+            val trustlyLightbox = TrustlyLightbox(activity, mockWebView, "returnUrl", "cancelUrl", trustlyEvents)
             trustlyLightbox.updateEstablishData(mapOf(), 0)
             assertNotNull(trustlyLightbox)
         }
@@ -62,7 +67,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
         scenario.onActivity { activity ->
             APIRequestManager.saveAPIRequestSettings(activity, Settings(StrategySetting("in-app-browser")))
 
-            val trustlyLightbox = TrustlyLightbox(activity, webView, "returnUrl", "cancelUrl", {}, {})
+            val trustlyLightbox = TrustlyLightbox(activity, mockWebView, "returnUrl", "cancelUrl", trustlyEvents)
             trustlyLightbox.updateEstablishData(EstablishDataMock.getEstablishDataValues(), 0)
             waitToCloseCustomTabs()
             assertNotNull(trustlyLightbox)
@@ -74,7 +79,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
         scenario.onActivity { activity ->
             APIRequestManager.saveAPIRequestSettings(activity, Settings(StrategySetting("in-app-browser")))
 
-            val trustlyLightbox = TrustlyLightbox(activity, webView, "returnUrl", "cancelUrl", {}, {})
+            val trustlyLightbox = TrustlyLightbox(activity, mockWebView, "returnUrl", "cancelUrl", trustlyEvents)
 
             val establishData = EstablishDataMock.getEstablishDataValues()
             establishData["metadata.urlScheme"] = "urlscheme://"
@@ -90,7 +95,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
         scenario.onActivity { activity ->
             APIRequestManager.saveAPIRequestSettings(activity, Settings(StrategySetting("in-app-browser")))
 
-            val trustlyLightbox = TrustlyLightbox(activity, webView, "returnUrl", "cancelUrl", {}, {})
+            val trustlyLightbox = TrustlyLightbox(activity, mockWebView, "returnUrl", "cancelUrl", trustlyEvents)
 
             val establishData = EstablishDataMock.getEstablishDataValues()
             establishData["metadata.urlScheme"] = "urlscheme://"
@@ -109,7 +114,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
 
             APIRequestManager.saveAPIRequestSettings(activity, Settings(StrategySetting("webview")))
 
-            val trustlyLightbox = TrustlyLightbox(activity, webView, "returnUrl", "cancelUrl", {}, {})
+            val trustlyLightbox = TrustlyLightbox(activity, mockWebView, "returnUrl", "cancelUrl", trustlyEvents)
             trustlyLightbox.updateEstablishData(EstablishDataMock.getEstablishDataValues(), 0)
             assertNotNull(trustlyLightbox)
         }

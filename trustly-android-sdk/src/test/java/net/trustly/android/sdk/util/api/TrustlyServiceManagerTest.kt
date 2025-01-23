@@ -14,11 +14,11 @@ import org.mockito.Mock
 import org.mockito.Mockito.CALLS_REAL_METHODS
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.clearInvocations
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.mockStatic
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
+import org.mockito.MockitoAnnotations
 import java.util.Calendar
 
 class TrustlyServiceManagerTest {
@@ -37,10 +37,7 @@ class TrustlyServiceManagerTest {
 
     @Before
     fun setUp() {
-        mockedEdit = mock(SharedPreferences.Editor::class.java)
-        mockedPrefs = mock(SharedPreferences::class.java)
-        mockedContext = mock(Context::class.java)
-        mockedCalendar = mock(Calendar::class.java)
+        MockitoAnnotations.openMocks(this)
     }
 
     @After

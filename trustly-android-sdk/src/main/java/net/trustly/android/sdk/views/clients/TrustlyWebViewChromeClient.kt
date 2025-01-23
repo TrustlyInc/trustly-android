@@ -27,21 +27,21 @@ class TrustlyWebViewChromeClient(
 
     private fun handleWebChromeClientOnCreateWindow(view: WebView, resultMsg: Message): Boolean {
         val result = view.hitTestResult
-        if (result.type == 0) {
+        return if (result.type == 0) {
             //window.open
             val trustlyOAuthView = TrustlyOAuthView(context)
             trustlyView.addView(trustlyOAuthView)
             val transport = resultMsg.obj as WebViewTransport
             transport.webView = trustlyOAuthView.getWebView()
             resultMsg.sendToTarget()
-            return true
+            true
         } else {
             val url = result.extra
             url?.let {
                 val params = mapOf("url" to url)
                 trustlyEvents.handleOnExternalUrl(trustlyView, params)
             }
-            return false
+            false
         }
     }
 

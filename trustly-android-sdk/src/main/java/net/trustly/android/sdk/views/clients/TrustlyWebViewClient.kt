@@ -19,8 +19,7 @@ class TrustlyWebViewClient(
     private val trustlyView: TrustlyView,
     private val returnURL: String,
     private val cancelURL: String,
-    private val trustlyEvents: TrustlyEvents,
-    private val notifyStatus: () -> Unit
+    private val trustlyEvents: TrustlyEvents
 ) : WebViewClient() {
 
     /**
@@ -104,7 +103,7 @@ class TrustlyWebViewClient(
                 }
             }
         }
-        notifyStatus.invoke()
+        trustlyEvents.notifyWidgetLoaded()
     }
 
     private fun handleWebViewClientOnReceivedError(trustlyView: TrustlyView, failingUrl: String) {
