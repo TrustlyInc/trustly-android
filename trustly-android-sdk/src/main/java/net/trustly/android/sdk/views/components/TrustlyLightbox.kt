@@ -3,10 +3,9 @@ package net.trustly.android.sdk.views.components
 import android.content.Context
 import android.webkit.WebView
 import net.trustly.android.sdk.BuildConfig
-import net.trustly.android.sdk.data.APIMethod
-import net.trustly.android.sdk.util.EstablishDataManager
-import net.trustly.android.sdk.data.RetrofitInstance.getInstance
 import net.trustly.android.sdk.data.Settings
+import net.trustly.android.sdk.data.TrustlyUrlFetcher
+import net.trustly.android.sdk.util.EstablishDataManager
 import net.trustly.android.sdk.util.TrustlyConstants.CANCEL_URL
 import net.trustly.android.sdk.util.TrustlyConstants.DEVICE_TYPE
 import net.trustly.android.sdk.util.TrustlyConstants.ENV
@@ -79,8 +78,7 @@ class TrustlyLightbox(
             val settings = APIRequestManager.getAPIRequestSettings(context)
             openWebViewOrCustomTabs(settings, data)
         } else {
-            val apiInterface = getInstance(UrlUtils.getDomain(FUNCTION_MOBILE, establishData)).create(APIMethod::class.java)
-            super.getSettingsData(apiInterface, getTokenByEncodedParameters(data)) {
+            super.getSettingsData(TrustlyUrlFetcher(), UrlUtils.getDomain(FUNCTION_MOBILE, establishData), getTokenByEncodedParameters(data)) {
                 APIRequestManager.saveAPIRequestSettings(context, it)
                 openWebViewOrCustomTabs(it, data)
             }
@@ -91,7 +89,7 @@ class TrustlyLightbox(
         if (settings.settings.integrationStrategy == INTEGRATION_STRATEGY_DEFAULT) {
             establishData[METADATA_INTEGRATION_CONTEXT] = "InAppBrowser"
             val encodedParameters = UrlUtils.getParameterString(establishData.toMap()).toByteArray(StandardCharsets.UTF_8)
-            webView.postUrl(UrlUtils.getEndpointUrl(FUNCTION_INDEX, establishData), encodedParameters)
+            webView.post { webView.postUrl(UrlUtils.getEndpointUrl(FUNCTION_INDEX, establishData), encodedParameters) }
         } else {
             establishData[METADATA_URL_SCHEME]?.let {
                 establishData[RETURN_URL] = it
@@ -105,6 +103,7 @@ class TrustlyLightbox(
                 ) + "?token=" + getTokenByEncodedParameters(establishData)
             )
         }
+        notifyStatusChanged.invoke(Status.PANEL_LOADED)
     }
 
     private fun getTokenByEncodedParameters(data: Map<String, String>): String {

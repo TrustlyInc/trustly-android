@@ -101,6 +101,7 @@ class TrustlyView @JvmOverloads constructor(
     override fun selectBankWidget(establishData: Map<String, String>): Trustly {
         val trustlyWidget = TrustlyWidget(context, webView, status, { statusChanged: Status ->
             this.status = statusChanged
+            this.notifyStatusChanged()
         }, {
             trustlyEvents.notifyWidgetLoading()
         })

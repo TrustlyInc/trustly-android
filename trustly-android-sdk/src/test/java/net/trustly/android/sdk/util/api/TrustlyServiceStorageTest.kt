@@ -14,7 +14,7 @@ import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 
-class APIRequestStorageTest {
+class TrustlyServiceStorageTest {
 
     @Mock
     lateinit var mockEdit: SharedPreferences.Editor

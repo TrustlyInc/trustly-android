@@ -21,7 +21,7 @@ import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import java.util.Calendar
 
-class APIRequestManagerTest {
+class TrustlyServiceManagerTest {
 
     @Mock
     lateinit var mockedEdit: SharedPreferences.Editor

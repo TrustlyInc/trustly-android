@@ -1,50 +1,35 @@
 package net.trustly.android.sdk.views.components
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.SmallTest
+import androidx.test.filters.LargeTest
 import net.trustly.android.sdk.TrustlyActivityTest
-import net.trustly.android.sdk.data.APIMethod
 import net.trustly.android.sdk.data.Settings
 import net.trustly.android.sdk.data.StrategySetting
+import net.trustly.android.sdk.data.TrustlyUrlFetcher
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.Mockito.any
-import org.mockito.Mockito.anyString
-import org.mockito.Mockito.clearInvocations
-import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
-import retrofit2.Call
-import retrofit2.Response
 
 @RunWith(AndroidJUnit4::class)
-@SmallTest
+@LargeTest
 class TrustlyComponentTest : TrustlyActivityTest() {
 
-    @Mock
-    private lateinit var mockAPIMethod: APIMethod
-
-    @Mock
-    private lateinit var mockCall: Call<Settings>
+    private val URL = "http://www.trustly.com"
 
     @Before
     override fun setUp() {
         super.setUp()
 
         MockitoAnnotations.openMocks(this)
-
-        `when`(mockAPIMethod.getSettings(anyString())).thenReturn(mockCall)
     }
 
     @After
     override fun tearDown() {
         super.tearDown()
-
-        clearInvocations(mockAPIMethod)
     }
 
     @Test
@@ -74,11 +59,9 @@ class TrustlyComponentTest : TrustlyActivityTest() {
     fun shouldValidateTrustlyComponentGetSettingsDataSuccess() {
         scenario.onActivity {
             val settingsFake = Settings(StrategySetting("webview"))
-            val mockResponse = Response.success(settingsFake)
-            mockCallbackResponse(mockResponse)
-
+            val trustlyUrlFetcher = TrustlyUrlFetcher()
             val trustlyComponent = MockTrustlyComponent()
-            trustlyComponent.getSettingsData(mockAPIMethod, TOKEN) {
+            trustlyComponent.getSettingsData(trustlyUrlFetcher, URL, TOKEN) {
                 assertEquals(settingsFake, it)
             }
         }
@@ -88,10 +71,9 @@ class TrustlyComponentTest : TrustlyActivityTest() {
     fun shouldValidateTrustlyComponentGetSettingsDataFailedNullBody() {
         scenario.onActivity {
             val settingsFake = Settings(StrategySetting("webview"))
-            mockCallbackResponseWithNullBody()
-
+            val trustlyUrlFetcher = TrustlyUrlFetcher()
             val trustlyComponent = MockTrustlyComponent()
-            trustlyComponent.getSettingsData(mockAPIMethod, TOKEN) {
+            trustlyComponent.getSettingsData(trustlyUrlFetcher, URL, TOKEN) {
                 assertEquals(settingsFake, it)
             }
         }
@@ -101,37 +83,11 @@ class TrustlyComponentTest : TrustlyActivityTest() {
     fun shouldValidateTrustlyComponentGetSettingsDataFailed() {
         scenario.onActivity {
             val settingsFake = Settings(StrategySetting("webview"))
-            val mockResponse = Throwable("Error 401")
-            mockCallbackFailure(mockResponse)
-
+            val trustlyUrlFetcher = TrustlyUrlFetcher()
             val trustlyComponent = MockTrustlyComponent()
-            trustlyComponent.getSettingsData(mockAPIMethod, TOKEN) {
+            trustlyComponent.getSettingsData(trustlyUrlFetcher, URL, TOKEN) {
                 assertEquals(settingsFake, it)
             }
-        }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun mockCallbackResponse(mockResponse: Response<Settings>) {
-        `when`(mockCall.enqueue(any())).then {
-            val callback = it.arguments.first() as retrofit2.Callback<Settings>
-            callback.onResponse(mockCall, mockResponse)
-        }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun mockCallbackResponseWithNullBody() {
-        `when`(mockCall.enqueue(any())).then {
-            val callback = it.arguments.first() as retrofit2.Callback<Settings>
-            callback.onResponse(mockCall, Response.success(null))
-        }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun mockCallbackFailure(mockResponse: Throwable) {
-        `when`(mockCall.enqueue(any())).then {
-            val callback = it.arguments.first() as retrofit2.Callback<Settings>
-            callback.onFailure(mockCall, mockResponse)
         }
     }
 
