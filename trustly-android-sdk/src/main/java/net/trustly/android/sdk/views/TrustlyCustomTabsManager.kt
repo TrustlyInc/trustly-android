@@ -4,12 +4,9 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
 
 object TrustlyCustomTabsManager {
-
-    private const val TAG = "CustomTabsManager"
 
     fun openCustomTabsIntent(context: Context, url: String) {
         try {
@@ -19,7 +16,6 @@ object TrustlyCustomTabsManager {
             customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             customTabsIntent.launchUrl(context, Uri.parse(url))
         } catch (e: Exception) {
-            Log.e(TAG, e.toString())
             showDisabledBrowserMessage(context)
         }
     }
