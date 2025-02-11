@@ -15,6 +15,7 @@ import net.trustly.android.sdk.interfaces.Trustly
 import net.trustly.android.sdk.interfaces.TrustlyCallback
 import net.trustly.android.sdk.interfaces.TrustlyJsInterface
 import net.trustly.android.sdk.interfaces.TrustlyListener
+import net.trustly.android.sdk.util.error.TrustlyExceptionHandler
 import net.trustly.android.sdk.util.grp.GRPManager
 import net.trustly.android.sdk.views.clients.TrustlyWebViewChromeClient
 import net.trustly.android.sdk.views.clients.TrustlyWebViewClient
@@ -38,6 +39,8 @@ class TrustlyView @JvmOverloads constructor(
     private lateinit var webView: WebView
 
     init {
+        Thread.setDefaultUncaughtExceptionHandler(TrustlyExceptionHandler())
+
         this.initEvents()
         this.initGrp(context)
         this.initWebView(context)
