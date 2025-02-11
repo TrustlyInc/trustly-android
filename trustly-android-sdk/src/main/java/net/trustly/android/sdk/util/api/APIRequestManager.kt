@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.gson.Gson
 import net.trustly.android.sdk.data.Settings
 import net.trustly.android.sdk.data.StrategySetting
+import net.trustly.android.sdk.util.TrustlyConstants.INTEGRATION_STRATEGY_DEFAULT
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
@@ -34,7 +35,7 @@ object APIRequestManager {
             APIRequestStorage.readDataFrom(context, API_REQUEST_SETTINGS),
             Settings::class.java
         )
-        return settings ?: Settings(StrategySetting("webview"))
+        return settings ?: Settings(StrategySetting(INTEGRATION_STRATEGY_DEFAULT))
     }
 
     private fun getTimestamp() = Calendar.getInstance().timeInMillis.toString()

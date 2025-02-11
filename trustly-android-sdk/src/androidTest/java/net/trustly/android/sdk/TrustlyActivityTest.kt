@@ -6,6 +6,7 @@ import net.trustly.android.sdk.mock.MockActivity
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
+import java.util.concurrent.TimeUnit
 
 abstract class TrustlyActivityTest {
 
@@ -16,13 +17,17 @@ abstract class TrustlyActivityTest {
     protected lateinit var scenario: ActivityScenario<MockActivity>
 
     @Before
-    fun setUp() {
+    open fun setUp() {
         scenario = activityRule.scenario
     }
 
     @After
     open fun tearDown() {
         scenario.close()
+    }
+
+    open fun waitToCloseCustomTabs() {
+        TimeUnit.SECONDS.sleep(2L)
     }
 
 }
