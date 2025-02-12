@@ -67,8 +67,8 @@ class TrustlyLightbox(
         data[METADATA_CID] = sessionCidValues[CidManager.CID_PARAM]!!
 
         if (ENV_LOCAL == data[ENV]) {
-            WebView.setWebContentsDebuggingEnabled(true)
             TrustlyView.setIsLocalEnvironment(true)
+            if (BuildConfig.DEBUG) WebView.setWebContentsDebuggingEnabled(true)
         }
 
         if (APIRequestManager.validateAPIRequest(context)) {
