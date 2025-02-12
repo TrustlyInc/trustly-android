@@ -68,7 +68,7 @@ class TrustlyLightbox(
 
         if (ENV_LOCAL == data[ENV]) {
             TrustlyView.setIsLocalEnvironment(true)
-            if (BuildConfig.DEBUG) WebView.setWebContentsDebuggingEnabled(true)
+            WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
         }
 
         if (APIRequestManager.validateAPIRequest(context)) {
