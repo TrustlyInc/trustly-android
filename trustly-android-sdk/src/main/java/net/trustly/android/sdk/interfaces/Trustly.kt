@@ -36,6 +36,7 @@ interface Trustly {
     fun establish(establishData: Map<String, String>): Trustly
 
     /**
+     * @Deprecated This method will not be available in the next versions
      * Opens a hybrid application page
      *
      * @param url Url that open a hybrid application page
