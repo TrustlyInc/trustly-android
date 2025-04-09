@@ -421,13 +421,15 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 deviceType = "mobile:android:hybrid";
             }
 
-            String lang = establishData.get("metadata.lang");
-
+            //TODO Create validtion for each required field based on the documentation:
+            //https://amer.developers.trustly.com/payments/docs/establish-data#base-properties
             HashMap<String, String> d = new HashMap<>();
             d.put(ACCESS_ID, establishData.get(ACCESS_ID));
             d.put(MERCHANT_ID, establishData.get(MERCHANT_ID));
             d.put(PAYMENT_TYPE, establishData.get(PAYMENT_TYPE));
             d.put(DEVICE_TYPE, deviceType);
+
+            String lang = establishData.get("metadata.lang");
             if (lang != null) d.put("lang", lang);
             d.put(TrustlyConstants.GRP, Integer.toString(grp));
             d.put("dynamicWidget", "true");
@@ -447,7 +449,6 @@ public class TrustlyView extends LinearLayout implements Trustly {
             d.put(CID, sessionCidValues.get(CidManager.CID_PARAM));
 
             Map<String, String> hash = new HashMap<>();
-
             hash.put("merchantReference", establishData.get("merchantReference"));
             hash.put("customer.externalId", establishData.get("customer.externalId"));
 
