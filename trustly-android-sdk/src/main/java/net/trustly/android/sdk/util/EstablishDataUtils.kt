@@ -8,24 +8,28 @@ import net.trustly.android.sdk.views.TrustlyConstants.MERCHANT_REFERENCE
 import net.trustly.android.sdk.views.TrustlyConstants.REQUEST_SIGNATURE
 import net.trustly.android.sdk.views.TrustlyConstants.RETURN_URL
 
-object AttributeUtils {
+object EstablishDataUtils {
 
     private val REQUIRED_FIELDS = listOf(
         ACCESS_ID, MERCHANT_ID, MERCHANT_REFERENCE, RETURN_URL, CANCEL_URL, REQUEST_SIGNATURE
     )
 
-    fun validateEstablishDataRequiredFields(establishData: Map<String, String>): String? {
+    fun validateEstablishDataRequiredFields(establishData: Map<String, String>): String {
+        var attributesMissing = ""
         for (field in REQUIRED_FIELDS) {
             if (!establishData.containsKey(field)) {
-                showErrorMessage(field)
-                return field
+                attributesMissing += "$field "
             }
         }
-        return null
+        if (attributesMissing.isNotEmpty()) {
+            showErrorMessage(attributesMissing)
+        }
+        return attributesMissing
     }
 
-    private fun showErrorMessage(attribute: String) {
-        Log.e("AttributeUtils", "Required attribute missing: $attribute")
+    private fun showErrorMessage(attributes: String) {
+        Log.w("EstablishDataUtils", "Required attributes missing: $attributes\n" +
+                "Learn more at Trustly Docs: https://amer.developers.trustly.com/payments/docs/establish-data#base-properties")
     }
 
 }

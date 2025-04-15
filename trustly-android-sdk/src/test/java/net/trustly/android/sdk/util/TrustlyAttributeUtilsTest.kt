@@ -1,9 +1,10 @@
 package net.trustly.android.sdk.util
 
-import junit.framework.Assert.assertEquals
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class AttributeUtilsTest {
+class TrustlyAttributeUtilsTest {
 
     @Test
     fun shouldReturnMerchantReferenceForValidAttributes() {
@@ -15,8 +16,8 @@ class AttributeUtilsTest {
             "requestSignature" to "validRequestSignature"
         )
 
-        val result = AttributeUtils.validateEstablishDataRequiredFields(validAttributes)
-        assertEquals("merchantReference", result)
+        val result = EstablishDataUtils.validateEstablishDataRequiredFields(validAttributes)
+        assertTrue(result.contains("merchantReference"))
     }
 
     @Test
@@ -30,8 +31,8 @@ class AttributeUtilsTest {
             "requestSignature" to "validRequestSignature"
         )
 
-        val result = AttributeUtils.validateEstablishDataRequiredFields(validAttributes)
-        assertEquals(null, result)
+        val result = EstablishDataUtils.validateEstablishDataRequiredFields(validAttributes)
+        assertEquals("", result)
     }
 
 }
