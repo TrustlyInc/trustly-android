@@ -331,7 +331,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     @Override
     public Trustly establish(Map<String, String> establishData) {
         try {
-            EstablishDataUtils.INSTANCE.validateEstablishDataRequiredFields(establishData);
+            validateEstablishData(establishData);
 
             status = Status.PANEL_LOADING;
             CidManager.generateCid(getContext());
@@ -413,7 +413,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     @Override
     public Trustly selectBankWidget(Map<String, String> establishData) {
         try {
-            EstablishDataUtils.INSTANCE.validateEstablishDataRequiredFields(establishData);
+            validateEstablishData(establishData);
 
             data = new HashMap<>(establishData);
             String deviceType = establishData.get(DEVICE_TYPE);
@@ -527,6 +527,10 @@ public class TrustlyView extends LinearLayout implements Trustly {
         if (this.trustlyListener != null) {
             this.trustlyListener.onChange(eventName, new HashMap<>(eventDetails));
         }
+    }
+
+    private void validateEstablishData(Map<String, String> establishData) {
+        EstablishDataUtils.INSTANCE.validateEstablishDataRequiredFields(establishData);
     }
 
     private String getDomain(String function, Map<String, String> establishData) {
