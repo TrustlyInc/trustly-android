@@ -331,23 +331,10 @@ public class TrustlyView extends LinearLayout implements Trustly {
     @Override
     public Trustly establish(Map<String, String> establishData) {
         try {
-            validateEstablishData(establishData);
+            buildBaseEstablishData(establishData);
 
             status = Status.PANEL_LOADING;
             CidManager.generateCid(getContext());
-
-            data = new HashMap<>(establishData);
-
-            String deviceType = establishData.get(DEVICE_TYPE);
-            if (deviceType != null) {
-                deviceType = deviceType + ":android:native";
-            } else {
-                deviceType = "mobile:android:native";
-            }
-            data.put(DEVICE_TYPE, deviceType);
-
-            String lang = establishData.get("metadata.lang");
-            if (lang != null) data.put("lang", lang);
 
             data.put("metadata.sdkAndroidVersion", SDK_VERSION);
             data.put(RETURN_URL, returnURL);
@@ -413,19 +400,8 @@ public class TrustlyView extends LinearLayout implements Trustly {
     @Override
     public Trustly selectBankWidget(Map<String, String> establishData) {
         try {
-            validateEstablishData(establishData);
+            buildBaseEstablishData(establishData);
 
-            data = new HashMap<>(establishData);
-            String deviceType = establishData.get(DEVICE_TYPE);
-            if (deviceType != null) {
-                deviceType = deviceType + ":android:hybrid";
-            } else {
-                deviceType = "mobile:android:hybrid";
-            }
-            data.put(DEVICE_TYPE, deviceType);
-
-            String lang = establishData.get("metadata.lang");
-            if (lang != null) data.put("lang", lang);
             data.put(TrustlyConstants.GRP, Integer.toString(grp));
             data.put("dynamicWidget", "true");
 
@@ -531,6 +507,22 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
     private void validateEstablishData(Map<String, String> establishData) {
         EstablishDataUtils.INSTANCE.validateEstablishDataRequiredFields(establishData);
+    }
+
+    private void buildBaseEstablishData(Map<String, String> establishData) {
+        validateEstablishData(establishData);
+
+        data = new HashMap<>(establishData);
+        String deviceType = establishData.get(DEVICE_TYPE);
+        if (deviceType != null) {
+            deviceType = deviceType + ":android:native";
+        } else {
+            deviceType = "mobile:android:native";
+        }
+        data.put(DEVICE_TYPE, deviceType);
+
+        String lang = establishData.get("metadata.lang");
+        if (lang != null) data.put("lang", lang);
     }
 
     private String getDomain(String function, Map<String, String> establishData) {
