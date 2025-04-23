@@ -47,7 +47,7 @@ class TrustlyServiceTest {
         `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenReturn(true)
         `when`(mockTrustlyUrlFetcher.getResponse()).thenReturn("{'settings': {'integrationStrategy': 'in-app-browser'}}")
 
-        TrustlyService(mockTrustlyUrlFetcher) { assertEquals(settingsFake, it) }.getSettingsData(URL, TOKEN)
+        TrustlyService(mockTrustlyUrlFetcher).getSettingsData(URL, TOKEN) { assertEquals(settingsFake, it) }
     }
 
     @Test
@@ -58,7 +58,7 @@ class TrustlyServiceTest {
         `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenReturn(false)
         `when`(mockTrustlyUrlFetcher.getErrorResponse()).thenReturn("Forbidden")
 
-        TrustlyService(mockTrustlyUrlFetcher) { assertEquals(settingsFake, it) }.getSettingsData(URL, TOKEN)
+        TrustlyService(mockTrustlyUrlFetcher).getSettingsData(URL, TOKEN) { assertEquals(settingsFake, it) }
     }
 
     @Test
@@ -69,7 +69,7 @@ class TrustlyServiceTest {
         `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenThrow(NullPointerException("Null pointer exception"))
         `when`(mockTrustlyUrlFetcher.getResponse()).thenReturn(null)
 
-        TrustlyService(mockTrustlyUrlFetcher) { assertEquals(settingsFake, it) }.getSettingsData(URL, TOKEN)
+        TrustlyService(mockTrustlyUrlFetcher).getSettingsData(URL, TOKEN) { assertEquals(settingsFake, it) }
     }
 
     companion object {

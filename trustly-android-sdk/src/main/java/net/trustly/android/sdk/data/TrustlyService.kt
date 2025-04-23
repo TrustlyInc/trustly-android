@@ -4,9 +4,10 @@ import com.google.gson.Gson
 import net.trustly.android.sdk.util.TrustlyConstants.INTEGRATION_STRATEGY_DEFAULT
 import java.net.URL
 
-class TrustlyService(private val urlFetcher: TrustlyUrlFetcher, private val settings: (Settings) -> Unit) {
+class TrustlyService(private val urlFetcher: TrustlyUrlFetcher) {
 
-    fun getSettingsData(baseUrl: String, token: String) {
+    fun getSettingsData(baseUrl: String, token: String, settings: (Settings) -> Unit) {
+        val defaultResponse = Settings(StrategySetting(INTEGRATION_STRATEGY_DEFAULT))
         Thread {
             urlFetcher.let {
                 val url = URL("$baseUrl/frontend/mobile/setup?token=$token")
@@ -16,25 +17,17 @@ class TrustlyService(private val urlFetcher: TrustlyUrlFetcher, private val sett
                 try {
                     if (it.isUrlAvailable()) {
                         val apiResponse = Gson().fromJson(it.getResponse(), Settings::class.java)
-                        handleSuccessResponse(apiResponse)
+                        settings.invoke(apiResponse)
                     } else {
-                        handleErrorResponse()
+                        settings.invoke(defaultResponse)
                     }
-                } catch (e: Exception) {
-                    handleErrorResponse()
+                } catch (_: Exception) {
+                    settings.invoke(defaultResponse)
                 } finally {
                     it.disconnect()
                 }
             }
         }.start()
-    }
-
-    private fun handleSuccessResponse(response: Settings) {
-        settings.invoke(response)
-    }
-
-    private fun handleErrorResponse() {
-        settings.invoke(Settings(StrategySetting(INTEGRATION_STRATEGY_DEFAULT)))
     }
 
 }
