@@ -37,11 +37,11 @@ class TrustlyWidget(
         trustlyEvents.notifyWidgetLoading()
         EstablishDataManager.updateEstablishData(establishData)
 
-        val data = HashMap<String?, String?>()
+        val data = HashMap<String?, String?>(establishData)
         data[ACCESS_ID] = establishData[ACCESS_ID]
         data[MERCHANT_ID] = establishData[MERCHANT_ID]
         data[PAYMENT_TYPE] = establishData[PAYMENT_TYPE]
-        data[DEVICE_TYPE] = "${establishData[DEVICE_TYPE] ?: "mobile"}:android:hybrid"
+        data[DEVICE_TYPE] = "${establishData[DEVICE_TYPE] ?: "mobile"}:android:native"
 
         val lang = establishData[METADATA_LANG]
         if (lang != null) data[LANG] = lang
