@@ -21,6 +21,10 @@ class TrustlyUrlFetcher {
         connection.requestMethod = method
     }
 
+    fun setRequestProperty(key: String, value: String) {
+        connection.setRequestProperty(key, value)
+    }
+
     fun setTimeOut(timeout: Int) {
         connection.connectTimeout = timeout
         connection.readTimeout = timeout

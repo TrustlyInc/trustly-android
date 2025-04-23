@@ -10,6 +10,6 @@ data class Tracking(
     val message: String,
 )
 
-enum class TrackingType(type: String) {
-    ERROR("error")
+enum class TrackingType {
+    ERROR
 }

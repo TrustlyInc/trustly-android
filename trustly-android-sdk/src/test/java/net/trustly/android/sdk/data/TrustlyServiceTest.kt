@@ -1,7 +1,10 @@
 package net.trustly.android.sdk.data
 
+import net.trustly.android.sdk.BuildConfig
 import net.trustly.android.sdk.data.model.Settings
 import net.trustly.android.sdk.data.model.StrategySetting
+import net.trustly.android.sdk.data.model.Tracking
+import net.trustly.android.sdk.data.model.TrackingType
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -15,8 +18,9 @@ import java.net.URL
 
 class TrustlyServiceTest {
 
-    private val URL = "https://www.trustly.com"
     private var settingsResult: Settings? = null
+    private val trackingFake = Tracking(BuildConfig.SDK_VERSION, "Android", "19", "Galaxy S25", "2025-04-23 14:37:12.701",
+        TrackingType.ERROR, "Caused by: java.lang.NullPointerException at TrustlyWidget.updateEstablishData(establishData)")
 
     @Mock
     private lateinit var mockURL: URL
@@ -74,8 +78,27 @@ class TrustlyServiceTest {
         TrustlyService(mockTrustlyUrlFetcher).getSettingsData(URL, TOKEN) { assertEquals(settingsFake, it) }
     }
 
+    @Test
+    fun testPostTrackingDataErrorWhenReturnSuccess() {
+        `when`(mockTrustlyUrlFetcher.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK)
+        `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenReturn(true)
+        `when`(mockTrustlyUrlFetcher.getResponse()).thenReturn("")
+
+        TrustlyService(mockTrustlyUrlFetcher).postTrackingData(URL, trackingFake) { assertEquals(trackingFake, it) }
+    }
+
+    @Test
+    fun testPostTrackingDataErrorWhenReturnSuccessForbidden() {
+        `when`(mockTrustlyUrlFetcher.getResponseCode()).thenReturn(HttpURLConnection.HTTP_FORBIDDEN)
+        `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenReturn(false)
+        `when`(mockTrustlyUrlFetcher.getResponse()).thenReturn("Forbidden")
+
+        TrustlyService(mockTrustlyUrlFetcher).postTrackingData(URL, trackingFake) { assertEquals(trackingFake, it) }
+    }
+
     companion object {
 
+        const val URL = "https://www.trustly.com"
         const val TOKEN = "RXN0YWJsaXNoRGF0YVN0cmluZw=="
 
     }
