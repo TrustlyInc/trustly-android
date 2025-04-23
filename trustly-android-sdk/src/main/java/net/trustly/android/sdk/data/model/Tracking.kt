@@ -6,10 +6,6 @@ data class Tracking(
     val deviceVersion: String,
     val deviceModel: String,
     val createdAt: String,
-    val type: TrackingType,
+    val type: String,
     val message: String,
 )
-
-enum class TrackingType {
-    ERROR
-}
