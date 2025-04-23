@@ -1,6 +1,6 @@
 package net.trustly.android.sdk.views.components
 
-import net.trustly.android.sdk.data.Settings
+import net.trustly.android.sdk.data.model.Settings
 import net.trustly.android.sdk.data.TrustlyService
 import net.trustly.android.sdk.data.TrustlyUrlFetcher
 

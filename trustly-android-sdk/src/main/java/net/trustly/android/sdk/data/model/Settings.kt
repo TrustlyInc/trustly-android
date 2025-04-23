@@ -1,4 +1,4 @@
-package net.trustly.android.sdk.data
+package net.trustly.android.sdk.data.model
 
 data class Settings(
     val settings: StrategySetting

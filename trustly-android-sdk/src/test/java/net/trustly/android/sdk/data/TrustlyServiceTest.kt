@@ -1,5 +1,7 @@
 package net.trustly.android.sdk.data
 
+import net.trustly.android.sdk.data.model.Settings
+import net.trustly.android.sdk.data.model.StrategySetting
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
