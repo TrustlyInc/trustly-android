@@ -3,6 +3,9 @@ package net.trustly.android.sdk.util.error
 import android.os.Build
 import android.util.Log
 import net.trustly.android.sdk.BuildConfig
+import net.trustly.android.sdk.data.TrustlyService
+import net.trustly.android.sdk.data.TrustlyUrlFetcher
+import net.trustly.android.sdk.data.model.Tracking
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.util.Calendar
@@ -10,30 +13,50 @@ import java.util.Calendar
 class TrustlyExceptionHandler : Thread.UncaughtExceptionHandler {
 
     override fun uncaughtException(thread: Thread, exception: Throwable) {
+        val stackTrace = StringWriter()
+        exception.printStackTrace(PrintWriter(stackTrace))
+        val tracking = Tracking(
+            BuildConfig.SDK_VERSION,
+            "Android",
+            Build.VERSION.SDK_INT.toString(),
+            Build.MODEL,
+            Calendar.getInstance().time.toString(),
+            "error",
+            stackTrace.toString()
+        )
+        logErrorTracking(tracking)
+        sendErrorTrackingData(tracking)
+    }
+
+    private fun logErrorTracking(tracking: Tracking) {
         val errorMessage = StringBuilder()
         errorMessage.apply {
             append(NEW_LINE)
             append("Trustly SDK Version: ")
-            append(BuildConfig.SDK_VERSION)
+            append(tracking.trustlySdkVersion)
             append(NEW_LINE)
             append("Android SDK Version: ")
-            append(Build.VERSION.SDK_INT)
+            append(tracking.deviceVersion)
             append(NEW_LINE)
             append("Android Version Release: ")
             append(Build.VERSION.RELEASE)
             append(NEW_LINE)
             append("Device Model: ")
-            append(Build.MODEL)
+            append(tracking.deviceModel)
             append(NEW_LINE)
             append("Date: ")
-            append(Calendar.getInstance().time)
+            append(tracking.createdAt)
             append(NEW_LINE)
-            val stackTrace = StringWriter()
-            exception.printStackTrace(PrintWriter(stackTrace))
-            append(stackTrace.toString())
+            append(tracking.message)
         }
 
         Log.e(TAG, errorMessage.toString())
+    }
+
+    private fun sendErrorTrackingData(tracking: Tracking) {
+        TrustlyService(TrustlyUrlFetcher()).postTrackingData("url", tracking) {
+            Log.e(TAG, it.toString())
+        }
     }
 
     companion object {
