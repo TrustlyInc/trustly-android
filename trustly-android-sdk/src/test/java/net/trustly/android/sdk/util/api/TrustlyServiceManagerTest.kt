@@ -42,7 +42,7 @@ class TrustlyServiceManagerTest {
 
     @After
     fun tearDown() {
-        clearInvocations(mockedEdit, mockedContext, mockedPrefs)
+        clearInvocations(mockedEdit, mockedContext, mockedPrefs, mockedCalendar)
     }
 
     @Test

@@ -18,7 +18,7 @@ import java.net.URL
 class TrustlyServiceTest {
 
     private var settingsResult: Settings? = null
-    private val trackingFake = Tracking(BuildConfig.SDK_VERSION, "Android", "19", "Galaxy S25", "2025-04-23 14:37:12.701",
+    private val trackingFake = Tracking(BuildConfig.SDK_VERSION, "Android", "19", "Galaxy S25",
         "error", "Caused by: java.lang.NullPointerException at TrustlyWidget.updateEstablishData(establishData)")
 
     @Mock
@@ -81,7 +81,7 @@ class TrustlyServiceTest {
     fun testPostTrackingDataErrorWhenReturnSuccess() {
         `when`(mockTrustlyUrlFetcher.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK)
         `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenReturn(true)
-        `when`(mockTrustlyUrlFetcher.getResponse()).thenReturn("{'trustlySdkVersion': '${BuildConfig.SDK_VERSION}', 'deviceSystem': 'Android', 'deviceVersion': '19', 'deviceModel': 'Galaxy S25', 'createdAt': '2025-04-23 14:37:12.701', 'type': 'error', 'message': 'Caused by: java.lang.NullPointerException at TrustlyWidget.updateEstablishData(establishData)'}")
+        `when`(mockTrustlyUrlFetcher.getResponse()).thenReturn("{'trustlySdkVersion': '${BuildConfig.SDK_VERSION}', 'deviceSystem': 'Android', 'deviceVersion': '19', 'deviceModel': 'Galaxy S25', 'type': 'error', 'message': 'Caused by: java.lang.NullPointerException at TrustlyWidget.updateEstablishData(establishData)'}")
 
         TrustlyService(mockTrustlyUrlFetcher).postTrackingData(URL, trackingFake) { assertEquals(trackingFake, it) }
     }

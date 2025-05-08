@@ -8,7 +8,6 @@ import net.trustly.android.sdk.data.TrustlyUrlFetcher
 import net.trustly.android.sdk.data.model.Tracking
 import java.io.PrintWriter
 import java.io.StringWriter
-import java.util.Calendar
 
 class TrustlyExceptionHandler : Thread.UncaughtExceptionHandler {
 
@@ -20,7 +19,6 @@ class TrustlyExceptionHandler : Thread.UncaughtExceptionHandler {
             "Android",
             Build.VERSION.SDK_INT.toString(),
             Build.MODEL,
-            Calendar.getInstance().time.toString(),
             "error",
             stackTrace.toString()
         )
@@ -43,9 +41,6 @@ class TrustlyExceptionHandler : Thread.UncaughtExceptionHandler {
             append(NEW_LINE)
             append("Device Model: ")
             append(tracking.deviceModel)
-            append(NEW_LINE)
-            append("Date: ")
-            append(tracking.createdAt)
             append(NEW_LINE)
             append(tracking.message)
         }
