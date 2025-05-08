@@ -1,6 +1,5 @@
 package net.trustly.android.sdk.views;
 
-import static net.trustly.android.sdk.views.TrustlyConstants.ACCESS_ID;
 import static net.trustly.android.sdk.views.TrustlyConstants.CANCEL_URL;
 import static net.trustly.android.sdk.views.TrustlyConstants.CID;
 import static net.trustly.android.sdk.views.TrustlyConstants.CUSTOMER_ADDRESS_COUNTRY;
@@ -16,7 +15,6 @@ import static net.trustly.android.sdk.views.TrustlyConstants.EVENT_PAGE;
 import static net.trustly.android.sdk.views.TrustlyConstants.EVENT_TYPE;
 import static net.trustly.android.sdk.views.TrustlyConstants.FUNCTION_INDEX;
 import static net.trustly.android.sdk.views.TrustlyConstants.FUNCTION_MOBILE;
-import static net.trustly.android.sdk.views.TrustlyConstants.MERCHANT_ID;
 import static net.trustly.android.sdk.views.TrustlyConstants.METADATA_CID;
 import static net.trustly.android.sdk.views.TrustlyConstants.PAYMENT_PROVIDER_ID;
 import static net.trustly.android.sdk.views.TrustlyConstants.PAYMENT_TYPE;
@@ -50,6 +48,7 @@ import net.trustly.android.sdk.data.StrategySetting;
 import net.trustly.android.sdk.interfaces.Trustly;
 import net.trustly.android.sdk.interfaces.TrustlyCallback;
 import net.trustly.android.sdk.interfaces.TrustlyListener;
+import net.trustly.android.sdk.util.EstablishDataUtils;
 import net.trustly.android.sdk.util.CustomTabsManager;
 import net.trustly.android.sdk.util.UrlUtils;
 import net.trustly.android.sdk.util.api.APIRequestManager;
@@ -332,23 +331,12 @@ public class TrustlyView extends LinearLayout implements Trustly {
     @Override
     public Trustly establish(Map<String, String> establishData) {
         try {
+            buildBaseEstablishData(establishData);
+
             status = Status.PANEL_LOADING;
             CidManager.generateCid(getContext());
 
-            data = new HashMap<>(establishData);
-
-            String deviceType = establishData.get(DEVICE_TYPE);
-            if (deviceType != null) {
-                deviceType = deviceType + ":android:native";
-            } else {
-                deviceType = "mobile:android:native";
-            }
-
-            String lang = establishData.get("metadata.lang");
-            if (lang != null) data.put("lang", lang);
-
             data.put("metadata.sdkAndroidVersion", SDK_VERSION);
-            data.put(DEVICE_TYPE, deviceType);
             data.put(RETURN_URL, returnURL);
             data.put(CANCEL_URL, cancelURL);
             data.put(TrustlyConstants.GRP, Integer.toString(grp));
@@ -412,50 +400,31 @@ public class TrustlyView extends LinearLayout implements Trustly {
     @Override
     public Trustly selectBankWidget(Map<String, String> establishData) {
         try {
-            data = new HashMap<>(establishData);
-            String deviceType = establishData.get(DEVICE_TYPE);
+            buildBaseEstablishData(establishData);
 
-            if (deviceType != null) {
-                deviceType = deviceType + ":android:hybrid";
-            } else {
-                deviceType = "mobile:android:hybrid";
-            }
-
-            String lang = establishData.get("metadata.lang");
-
-            HashMap<String, String> d = new HashMap<>();
-            d.put(ACCESS_ID, establishData.get(ACCESS_ID));
-            d.put(MERCHANT_ID, establishData.get(MERCHANT_ID));
-            d.put(PAYMENT_TYPE, establishData.get(PAYMENT_TYPE));
-            d.put(DEVICE_TYPE, deviceType);
-            if (lang != null) d.put("lang", lang);
-            d.put(TrustlyConstants.GRP, Integer.toString(grp));
-            d.put("dynamicWidget", "true");
+            data.put(TrustlyConstants.GRP, Integer.toString(grp));
+            data.put("dynamicWidget", "true");
 
             if (establishData.get(CUSTOMER_ADDRESS_COUNTRY) != null) {
-                d.put(CUSTOMER_ADDRESS_COUNTRY, establishData.get(CUSTOMER_ADDRESS_COUNTRY));
+                data.put(CUSTOMER_ADDRESS_COUNTRY, establishData.get(CUSTOMER_ADDRESS_COUNTRY));
             } else {
-                d.put(CUSTOMER_ADDRESS_COUNTRY, "US");
+                data.put(CUSTOMER_ADDRESS_COUNTRY, "US");
             }
 
             if (establishData.get(CUSTOMER_ADDRESS_COUNTRY) == null || "us".equalsIgnoreCase(establishData.get(CUSTOMER_ADDRESS_COUNTRY))) {
-                d.put(CUSTOMER_ADDRESS_STATE, establishData.get(CUSTOMER_ADDRESS_STATE));
+                data.put(CUSTOMER_ADDRESS_STATE, establishData.get(CUSTOMER_ADDRESS_STATE));
             }
 
             Map<String, String> sessionCidValues = CidManager.getOrCreateSessionCid(getContext());
-            d.put(SESSION_CID, sessionCidValues.get(CidManager.SESSION_CID_PARAM));
-            d.put(CID, sessionCidValues.get(CidManager.CID_PARAM));
-
-            Map<String, String> hash = new HashMap<>();
-
-            hash.put("merchantReference", establishData.get("merchantReference"));
-            hash.put("customer.externalId", establishData.get("customer.externalId"));
+            data.put(SESSION_CID, sessionCidValues.get(CidManager.SESSION_CID_PARAM));
+            data.put(CID, sessionCidValues.get(CidManager.CID_PARAM));
 
             if (status != Status.WIDGET_LOADED) {
                 status = Status.WIDGET_LOADING;
                 notifyWidgetLoading();
 
-                String url = getEndpointUrl(WIDGET, establishData) + "&" + UrlUtils.getParameterString(d) + "#" + UrlUtils.getParameterString(hash);
+                String parameterString = UrlUtils.getParameterString(data);
+                String url = getEndpointUrl(WIDGET, establishData) + "&" + parameterString + "#" + UrlUtils.encodeStringToBase64(parameterString);
                 webView.loadUrl(url);
                 webView.setBackgroundColor(Color.TRANSPARENT);
             }
@@ -534,6 +503,26 @@ public class TrustlyView extends LinearLayout implements Trustly {
         if (this.trustlyListener != null) {
             this.trustlyListener.onChange(eventName, new HashMap<>(eventDetails));
         }
+    }
+
+    private void validateEstablishData(Map<String, String> establishData) {
+        EstablishDataUtils.INSTANCE.validateEstablishDataRequiredFields(establishData);
+    }
+
+    private void buildBaseEstablishData(Map<String, String> establishData) {
+        validateEstablishData(establishData);
+
+        data = new HashMap<>(establishData);
+        String deviceType = establishData.get(DEVICE_TYPE);
+        if (deviceType != null) {
+            deviceType = deviceType + ":android:native";
+        } else {
+            deviceType = "mobile:android:native";
+        }
+        data.put(DEVICE_TYPE, deviceType);
+
+        String lang = establishData.get("metadata.lang");
+        if (lang != null) data.put("lang", lang);
     }
 
     private String getDomain(String function, Map<String, String> establishData) {
