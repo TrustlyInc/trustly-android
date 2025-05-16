@@ -81,7 +81,7 @@ class TrustlyWebViewClient(
         } else if (url.startsWith("msg://push?")) {
             val params = url.split("\\|".toRegex()).toTypedArray()
             if (params.first().contains("PayWithMyBank.createTransaction")) {
-                val establishData = EstablishDataManager.updatePaymentProviderId(if (params.size > 1) params[1] else "")
+                val establishData = EstablishDataManager.updatePaymentProviderId(if (params.size > 1) params[1] else "").toMap()
                 trustlyEvents.handleOnWidgetBankSelected(trustlyView, establishData)
             }
             return true
