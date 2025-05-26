@@ -5,7 +5,7 @@ plugins {
     id 'org.jetbrains.kotlin.android' version '2.0.0'
 }
 
-def sdkVersion = "3.4.0"
+def sdkVersion = "3.5.0"
 def localIP = "10.0.2.2"
 
 android {
@@ -67,6 +67,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.11.0'
 
     testImplementation 'junit:junit:4.13.2'
+    testImplementation 'com.google.code.gson:gson:2.11.0'
     testImplementation 'org.mockito:mockito-core:5.15.2'
     testImplementation 'org.mockito:mockito-inline:5.2.0'
 

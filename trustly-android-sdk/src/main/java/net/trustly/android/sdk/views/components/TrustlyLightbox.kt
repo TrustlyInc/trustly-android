@@ -63,8 +63,8 @@ class TrustlyLightbox(
         }
 
         val sessionCidValues = CidManager.getOrCreateSessionCid(context)
-        data[SESSION_CID] = sessionCidValues[CidManager.SESSION_CID_PARAM]!!
-        data[METADATA_CID] = sessionCidValues[CidManager.CID_PARAM]!!
+        sessionCidValues[CidManager.SESSION_CID_PARAM]?.let { data[SESSION_CID] = it }
+        sessionCidValues[CidManager.CID_PARAM]?.let { data[METADATA_CID] = it }
 
         if (ENV_LOCAL == data[ENV]) {
             TrustlyView.setIsLocalEnvironment(true)
