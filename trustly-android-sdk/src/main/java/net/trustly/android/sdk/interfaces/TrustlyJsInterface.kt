@@ -6,11 +6,6 @@ import net.trustly.android.sdk.views.events.TrustlyEvents
 
 open class TrustlyJsInterface(private val trustlyView: TrustlyView, private val trustlyEvents: TrustlyEvents) {
 
-    private val PAYWITHMYBANK_EVENT: String = "PayWithMyBank.event"
-    private val EVENT: String = "event"
-    private val NULL_VALUE: String = "null"
-    private val PARAMS_DIVIDER: String = "\\|"
-
     @JavascriptInterface
     fun postMessage(message: String?) {
         if (message == null || message.trim().isEmpty()) return
@@ -54,6 +49,15 @@ open class TrustlyJsInterface(private val trustlyView: TrustlyView, private val 
             6 to "data",
             7 to "transfer",
         )
+    }
+
+    companion object {
+
+        const val PAYWITHMYBANK_EVENT: String = "PayWithMyBank.event"
+        const val EVENT: String = "event"
+        const val NULL_VALUE: String = "null"
+        const val PARAMS_DIVIDER: String = "\\|"
+
     }
 
 }

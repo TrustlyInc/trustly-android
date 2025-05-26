@@ -3,8 +3,8 @@ package net.trustly.android.sdk.views
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.net.toUri
 
 object TrustlyCustomTabsManager {
 
@@ -14,7 +14,7 @@ object TrustlyCustomTabsManager {
             val customTabsIntent = builder.build()
             customTabsIntent.intent.setPackage("com.android.chrome")
             customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            customTabsIntent.launchUrl(context, Uri.parse(url))
+            customTabsIntent.launchUrl(context, url.toUri())
         } catch (e: Exception) {
             showDisabledBrowserMessage(context)
         }

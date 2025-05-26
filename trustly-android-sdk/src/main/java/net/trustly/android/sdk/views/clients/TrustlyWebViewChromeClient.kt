@@ -32,7 +32,7 @@ class TrustlyWebViewChromeClient(
             val trustlyOAuthView = TrustlyOAuthView(context)
             trustlyView.addView(trustlyOAuthView)
             val transport = resultMsg.obj as WebViewTransport
-            transport.webView = trustlyOAuthView.getWebView()
+            transport.webView = trustlyOAuthView.webView
             resultMsg.sendToTarget()
             true
         } else {

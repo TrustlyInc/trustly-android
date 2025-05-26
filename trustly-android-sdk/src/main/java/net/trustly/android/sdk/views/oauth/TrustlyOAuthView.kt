@@ -17,26 +17,23 @@ import android.widget.RelativeLayout
 class TrustlyOAuthView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
     LinearLayout(context, attrs) {
 
-    private var webView: WebView = WebView(context)
+    var webView: WebView = WebView(context)
 
     init {
-        webView.settings.apply {
-            setSupportMultipleWindows(true)
-            javaScriptEnabled = true
-            domStorageEnabled = true
-            javaScriptCanOpenWindowsAutomatically = true
+        with(webView) {
+            settings.apply {
+                setSupportMultipleWindows(true)
+                javaScriptEnabled = true
+                domStorageEnabled = true
+                javaScriptCanOpenWindowsAutomatically = true
+            }
+            layoutParams =
+                RelativeLayout.LayoutParams(
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.MATCH_PARENT
+                )
+            webViewClient = TrustlyOAuthClient()
         }
-        webView.layoutParams =
-            RelativeLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT,
-                LayoutParams.MATCH_PARENT
-            )
-        webView.webViewClient = TrustlyOAuthClient()
     }
-
-    /**
-     * @return The WebView which contains the OAuth login page.
-     */
-    fun getWebView() = webView
 
 }

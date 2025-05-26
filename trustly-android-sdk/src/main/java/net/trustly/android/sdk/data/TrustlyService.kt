@@ -20,7 +20,7 @@ class TrustlyService(private val urlFetcher: TrustlyUrlFetcher, private val sett
                     } else {
                         handleErrorResponse()
                     }
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     handleErrorResponse()
                 } finally {
                     it.disconnect()

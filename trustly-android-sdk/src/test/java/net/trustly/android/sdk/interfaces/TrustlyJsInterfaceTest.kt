@@ -16,7 +16,11 @@ import org.mockito.MockitoAnnotations
 
 class TrustlyJsInterfaceTest {
 
-    private val EVENT_NAME: String = "event"
+    companion object {
+
+        const val EVENT_NAME: String = "event"
+
+    }
 
     @Mock
     private lateinit var mockTrustlyView: TrustlyView

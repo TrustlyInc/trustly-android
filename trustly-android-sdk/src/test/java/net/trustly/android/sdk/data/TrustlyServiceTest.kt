@@ -13,7 +13,6 @@ import java.net.URL
 
 class TrustlyServiceTest {
 
-    private val URL = "https://www.trustly.com"
     private var settingsResult: Settings? = null
 
     @Mock
@@ -75,6 +74,7 @@ class TrustlyServiceTest {
     companion object {
 
         const val TOKEN = "RXN0YWJsaXNoRGF0YVN0cmluZw=="
+        const val URL = "https://www.trustly.com"
 
     }
 

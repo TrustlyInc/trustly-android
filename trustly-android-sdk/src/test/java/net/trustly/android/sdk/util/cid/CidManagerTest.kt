@@ -24,16 +24,20 @@ import java.util.UUID
 
 class CidManagerTest {
 
-    private val CID_PARAM: String = "CID"
-    private val CID_STORAGE: String = "CID_STORAGE"
-    private val SESSION_CID: String = "SESSION_CID"
-    private val ANDROID_ID: String = "android_id"
-    private val ANDROID_ID_VALUE: String = "1234-4CD5-0"
-    private val CID_VALUE: String = "1234-4A94-0"
-    private val SESSION_CID_LESS_VALUE: String = "1234-4A94"
-    private val SESSION_CID_VALUE: String = "1234-4A94-0"
-    private val SESSION_CID_VALUE_1: String = "1234-4A94-"
-    private val SESSION_CID_VALUE_2: String = "1234-4A93-"
+    companion object {
+
+        const val CID_PARAM: String = "CID"
+        const val CID_STORAGE: String = "CID_STORAGE"
+        const val SESSION_CID: String = "SESSION_CID"
+        const val ANDROID_ID: String = "android_id"
+        const val ANDROID_ID_VALUE: String = "1234-4CD5-0"
+        const val CID_VALUE: String = "1234-4A94-0"
+        const val SESSION_CID_LESS_VALUE: String = "1234-4A94"
+        const val SESSION_CID_VALUE: String = "1234-4A94-0"
+        const val SESSION_CID_VALUE_1: String = "1234-4A94-"
+        const val SESSION_CID_VALUE_2: String = "1234-4A93-"
+
+    }
 
     @Mock
     private lateinit var mockSharedPreferencesEditor: SharedPreferences.Editor
