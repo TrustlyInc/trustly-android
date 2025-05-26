@@ -7,7 +7,7 @@ import org.junit.Test
 class EstablishDataManagerTest {
 
     @Test
-    fun testEstablishDataManagerUpdateEstablishData() {
+    fun shouldValidateEstablishDataManagerUpdateEstablishData() {
         val establishData = mapOf("key1" to "value1", "key2" to "value2")
         EstablishDataManager.updateEstablishData(establishData)
         val result = EstablishDataManager.getEstablishData()
@@ -15,7 +15,7 @@ class EstablishDataManagerTest {
     }
 
     @Test
-    fun testEstablishDataManagerUpdatePaymentProviderId() {
+    fun shouldValidateEstablishDataManagerUpdatePaymentProviderId() {
         val paymentProviderId = "provider123"
         EstablishDataManager.updatePaymentProviderId(paymentProviderId)
         val result = EstablishDataManager.getEstablishData()

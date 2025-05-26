@@ -6,7 +6,6 @@ import android.webkit.WebView
 import net.trustly.android.sdk.util.EstablishDataManager
 import net.trustly.android.sdk.util.TrustlyConstants.CID
 import net.trustly.android.sdk.util.TrustlyConstants.CUSTOMER_ADDRESS_COUNTRY
-import net.trustly.android.sdk.util.TrustlyConstants.CUSTOMER_ADDRESS_STATE
 import net.trustly.android.sdk.util.TrustlyConstants.DEVICE_TYPE
 import net.trustly.android.sdk.util.TrustlyConstants.DYNAMIC_WIDGET
 import net.trustly.android.sdk.util.TrustlyConstants.GRP
@@ -36,11 +35,8 @@ class TrustlyWidget(
         data[GRP] = grp.toString()
         data[DYNAMIC_WIDGET] = "true"
 
-        if (establishData[CUSTOMER_ADDRESS_COUNTRY] != null) {
-            establishData[CUSTOMER_ADDRESS_COUNTRY]?.let { data[CUSTOMER_ADDRESS_COUNTRY] = it }
-        } else {
+        if (establishData[CUSTOMER_ADDRESS_COUNTRY] == null) {
             data[CUSTOMER_ADDRESS_COUNTRY] = CUSTOMER_ADDRESS_COUNTRY_DEFAULT
-            establishData[CUSTOMER_ADDRESS_STATE]?.let { data[CUSTOMER_ADDRESS_STATE] = it }
         }
 
         val sessionCidValues = CidManager.getOrCreateSessionCid(context)

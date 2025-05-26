@@ -57,7 +57,7 @@ class GRPManagerTest {
     }
 
     @Test
-    fun shouldValidateCidManagerGetOrCreateSessionCidMethod() {
+    fun shouldValidateGRPManagerGetOrCreateSessionCidMethod() {
         `when`(mockSharedPreferences.getInt(anyString(), anyInt())).thenReturn(23)
 
         val result = GRPManager.getGRP(mockContext)

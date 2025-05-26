@@ -14,7 +14,7 @@ import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 
-class TrustlyServiceStorageTest {
+class APIRequestStorageTest {
 
     @Mock
     lateinit var mockEdit: SharedPreferences.Editor
@@ -36,7 +36,7 @@ class TrustlyServiceStorageTest {
     }
 
     @Test
-    fun testSavingDataAPIRequest() {
+    fun shouldValidateApiRequestStorageSavingDataAPIRequest() {
         `when`(mockEdit.putString(anyString(), anyString())).thenReturn(mockEdit)
         `when`(mockedPrefs.edit()).thenReturn(mockEdit)
         `when`(mockedContext.getSharedPreferences("API_STORAGE", Context.MODE_PRIVATE)).thenReturn(mockedPrefs)
@@ -48,7 +48,7 @@ class TrustlyServiceStorageTest {
     }
 
     @Test
-    fun testReadingDataNullAPIRequest() {
+    fun shouldValidateApiRequestStorageReadingDataNullAPIRequest() {
         `when`(mockedPrefs.getString(anyString(), anyString())).thenReturn("1724258668")
         `when`(mockedContext.getSharedPreferences("API_STORAGE", Context.MODE_PRIVATE)).thenReturn(mockedPrefs)
 
