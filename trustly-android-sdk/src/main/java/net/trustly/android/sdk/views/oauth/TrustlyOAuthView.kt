@@ -3,7 +3,6 @@ package net.trustly.android.sdk.views.oauth
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
-import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
@@ -29,8 +28,8 @@ class TrustlyOAuthView @JvmOverloads constructor(context: Context, attrs: Attrib
         }
         webView.layoutParams =
             RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT
             )
         webView.webViewClient = TrustlyOAuthClient()
     }

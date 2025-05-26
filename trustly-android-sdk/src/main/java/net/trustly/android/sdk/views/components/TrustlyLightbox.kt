@@ -39,8 +39,6 @@ class TrustlyLightbox(
     private val cancelURL: String,
     private val trustlyEvents: TrustlyEvents,
 ) : TrustlyComponent() {
-
-    private val SDK_VERSION: String = BuildConfig.SDK_VERSION
     
     override fun updateEstablishData(establishData: Map<String, String>, grp: Int) {
         trustlyEvents.notifyOpen()
@@ -106,6 +104,12 @@ class TrustlyLightbox(
     private fun getTokenByEncodedParameters(data: Map<String, String>): String {
         val jsonFromParameters = UrlUtils.getJsonFromParameters(data)
         return UrlUtils.encodeStringToBase64(jsonFromParameters).replace("\n", "")
+    }
+
+    companion object {
+
+        const val SDK_VERSION: String = BuildConfig.SDK_VERSION
+
     }
     
 }

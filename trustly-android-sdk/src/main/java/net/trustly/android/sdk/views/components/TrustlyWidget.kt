@@ -24,15 +24,11 @@ class TrustlyWidget(
     private val trustlyEvents: TrustlyEvents
 ) : TrustlyComponent() {
 
-    private val AMPERSAND_CHAR: String = "&"
-    private val HASHTAG_SIGN: String = "#"
-    private val CUSTOMER_ADDRESS_COUNTRY_DEFAULT = "US"
-
     override fun updateEstablishData(establishData: Map<String, String>, grp: Int) {
         trustlyEvents.notifyWidgetLoading()
         EstablishDataManager.updateEstablishData(establishData)
 
-        val data = HashMap<String?, String?>(establishData)
+        val data = HashMap<String, String>(establishData)
         data[DEVICE_TYPE] = "${establishData[DEVICE_TYPE] ?: "mobile"}:android:hybrid"
 
         val lang = establishData[METADATA_LANG]
@@ -41,15 +37,15 @@ class TrustlyWidget(
         data[DYNAMIC_WIDGET] = "true"
 
         if (establishData[CUSTOMER_ADDRESS_COUNTRY] != null) {
-            data[CUSTOMER_ADDRESS_COUNTRY] = establishData[CUSTOMER_ADDRESS_COUNTRY]
+            establishData[CUSTOMER_ADDRESS_COUNTRY]?.let { data[CUSTOMER_ADDRESS_COUNTRY] = it }
         } else {
             data[CUSTOMER_ADDRESS_COUNTRY] = CUSTOMER_ADDRESS_COUNTRY_DEFAULT
-            data[CUSTOMER_ADDRESS_STATE] = establishData[CUSTOMER_ADDRESS_STATE]
+            establishData[CUSTOMER_ADDRESS_STATE]?.let { data[CUSTOMER_ADDRESS_STATE] = it }
         }
 
         val sessionCidValues = CidManager.getOrCreateSessionCid(context)
-        data[SESSION_CID] = sessionCidValues[CidManager.SESSION_CID_PARAM]
-        data[CID] = sessionCidValues[CidManager.CID_PARAM]
+        sessionCidValues[CidManager.SESSION_CID_PARAM]?.let { data[SESSION_CID] = it }
+        sessionCidValues[CidManager.CID_PARAM]?.let { data[CID] = it }
 
         val dataParameters = UrlUtils.getParameterString(data)
         val hashParameters = UrlUtils.encodeStringToBase64(dataParameters)
@@ -64,4 +60,13 @@ class TrustlyWidget(
         }
         trustlyEvents.notifyWidgetLoaded()
     }
+
+    companion object {
+
+        const val AMPERSAND_CHAR: String = "&"
+        const val HASHTAG_SIGN: String = "#"
+        const val CUSTOMER_ADDRESS_COUNTRY_DEFAULT = "US"
+
+    }
+
 }

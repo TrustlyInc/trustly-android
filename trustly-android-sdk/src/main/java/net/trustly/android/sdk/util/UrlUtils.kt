@@ -63,7 +63,7 @@ object UrlUtils {
         return queryParameters
     }
 
-    fun getParameterString(parameters: Map<String?, String?>): String {
+    fun getParameterString(parameters: Map<String, String>): String {
         val sb = StringBuilder()
         for ((key, value) in parameters) {
             if (sb.isNotEmpty()) sb.append(AMPERSAND_CHAR)

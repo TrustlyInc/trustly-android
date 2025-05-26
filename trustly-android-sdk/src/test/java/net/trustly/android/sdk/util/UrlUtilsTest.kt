@@ -67,7 +67,7 @@ class UrlUtilsTest {
 
     @Test
     fun shouldInvalidateReturnedValueWhenGetParameterString() {
-        val values = mapOf<String?, String?>(
+        val values = mapOf<String, String>(
             KEY_1 to VALUE_1,
             KEY_2 to VALUE_2,
             KEY_3 to VALUE_3
@@ -78,7 +78,7 @@ class UrlUtilsTest {
 
     @Test
     fun shouldValidateReturnedValueWhenGetParameterString() {
-        val values = mapOf<String?, String?>(
+        val values = mapOf<String, String>(
             KEY_1 to VALUE_1,
             KEY_2 to VALUE_2,
             KEY_3 to VALUE_3
@@ -88,9 +88,9 @@ class UrlUtilsTest {
     }
 
     @Test
-    fun shouldValidateReturnedValueWhenGetParameterStringWithNullKey() {
-        val values = mapOf<String?, String?>(
-            null to VALUE_1,
+    fun shouldValidateReturnedValueWhenGetParameterStringWithEmptyKey() {
+        val values = mapOf<String, String>(
+            "" to VALUE_1,
             KEY_2 to VALUE_2,
             KEY_3 to VALUE_3
         )
@@ -99,10 +99,10 @@ class UrlUtilsTest {
     }
 
     @Test
-    fun shouldValidateReturnedValueWhenGetParameterStringWithNullValue() {
-        val values = mapOf<String?, String?>(
+    fun shouldValidateReturnedValueWhenGetParameterStringWithEmptyValue() {
+        val values = mapOf<String, String>(
             KEY_1 to VALUE_1,
-            KEY_2 to null,
+            KEY_2 to "",
             KEY_3 to VALUE_3
         )
         val parameter = getParameterString(values)
@@ -113,7 +113,7 @@ class UrlUtilsTest {
     fun shouldValidateReturnedValueWhenGetParameterStringWithURLEncodeException() {
         mockedStaticURLEncoder.`when`<Any> { URLEncoder.encode(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()) }.thenThrow(UnsupportedEncodingException(""))
 
-        val values = mapOf<String?, String?>(
+        val values = mapOf<String, String>(
             KEY_1 to VALUE_1,
             KEY_2 to VALUE_2,
             KEY_3 to VALUE_3
