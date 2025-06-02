@@ -3,8 +3,8 @@ package net.trustly.android.sdk.views.components
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import net.trustly.android.sdk.TrustlyActivityTest
-import net.trustly.android.sdk.data.Settings
-import net.trustly.android.sdk.data.StrategySetting
+import net.trustly.android.sdk.data.model.Settings
+import net.trustly.android.sdk.data.model.StrategySetting
 import net.trustly.android.sdk.data.TrustlyUrlFetcher
 import org.junit.After
 import org.junit.Assert.assertEquals

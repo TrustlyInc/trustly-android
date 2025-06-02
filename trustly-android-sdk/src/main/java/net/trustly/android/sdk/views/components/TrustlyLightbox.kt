@@ -3,7 +3,7 @@ package net.trustly.android.sdk.views.components
 import android.content.Context
 import android.webkit.WebView
 import net.trustly.android.sdk.BuildConfig
-import net.trustly.android.sdk.data.Settings
+import net.trustly.android.sdk.data.model.Settings
 import net.trustly.android.sdk.data.TrustlyUrlFetcher
 import net.trustly.android.sdk.util.EstablishDataManager
 import net.trustly.android.sdk.util.TrustlyConstants.CANCEL_URL

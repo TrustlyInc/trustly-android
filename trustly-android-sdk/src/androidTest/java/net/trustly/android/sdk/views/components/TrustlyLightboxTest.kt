@@ -4,8 +4,8 @@ import android.webkit.WebView
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import net.trustly.android.sdk.TrustlyActivityTest
-import net.trustly.android.sdk.data.Settings
-import net.trustly.android.sdk.data.StrategySetting
+import net.trustly.android.sdk.data.model.Settings
+import net.trustly.android.sdk.data.model.StrategySetting
 import net.trustly.android.sdk.util.api.APIRequestManager
 import net.trustly.android.sdk.util.api.APIRequestStorage
 import net.trustly.android.sdk.views.events.TrustlyEvents
