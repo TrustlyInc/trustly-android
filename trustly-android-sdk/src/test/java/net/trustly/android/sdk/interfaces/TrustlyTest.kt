@@ -18,9 +18,13 @@ import org.mockito.MockitoAnnotations
 
 class TrustlyTest {
 
-    private val URL: String = "http://www.url.com"
-    private val RETURN_URL: String = "http://www.url.com/return"
-    private val CANCEL_URL: String = "http://www.url.com/cancel"
+    companion object {
+
+        const val URL: String = "http://www.url.com"
+        const val RETURN_URL: String = "http://www.url.com/return"
+        const val CANCEL_URL: String = "http://www.url.com/cancel"
+
+    }
 
     @Mock
     private lateinit var mockTrustly: Trustly

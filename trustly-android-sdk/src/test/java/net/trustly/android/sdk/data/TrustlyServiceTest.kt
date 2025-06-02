@@ -45,7 +45,7 @@ class TrustlyServiceTest {
     }
 
     @Test
-    fun testGetSettingDataWhenReturnSuccess() {
+    fun shouldValidateTrustlyServiceGetSettingDataWhenReturnSuccess() {
         val settingsFake = Settings(StrategySetting("in-app-browser"))
 
         `when`(mockTrustlyUrlFetcher.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK)
@@ -56,7 +56,7 @@ class TrustlyServiceTest {
     }
 
     @Test
-    fun testGetSettingDataWhenReturnSuccessForbidden() {
+    fun shouldValidateTrustlyServiceGetSettingDataWhenReturnSuccessForbidden() {
         val settingsFake = Settings(StrategySetting("webview"))
 
         `when`(mockTrustlyUrlFetcher.getResponseCode()).thenReturn(HttpURLConnection.HTTP_FORBIDDEN)
@@ -67,7 +67,7 @@ class TrustlyServiceTest {
     }
 
     @Test
-    fun testGetSettingDataWhenReturnSuccessWithNullResponse() {
+    fun shouldValidateTrustlyServiceGetSettingDataWhenReturnSuccessWithNullResponse() {
         val settingsFake = Settings(StrategySetting("webview"))
 
         `when`(mockTrustlyUrlFetcher.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK)

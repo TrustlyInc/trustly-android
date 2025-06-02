@@ -4,10 +4,10 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class TrustlyAttributeUtilsTest {
+class EstablishDataUtilsTest {
 
     @Test
-    fun shouldReturnMerchantReferenceForValidAttributes() {
+    fun shouldValidateEstablishDataUtilsReturnMerchantReferenceForValidAttributes() {
         val validAttributes = mapOf(
             "accessId" to "validAccessId",
             "merchantId" to "validMerchantId",
@@ -21,7 +21,7 @@ class TrustlyAttributeUtilsTest {
     }
 
     @Test
-    fun shouldReturnNullForValidAttributes() {
+    fun shouldValidateEstablishDataUtilsReturnNullForValidAttributes() {
         val validAttributes = mapOf(
             "accessId" to "validAccessId",
             "merchantId" to "validMerchantId",

@@ -20,19 +20,23 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class TrustlyViewTest : TrustlyActivityTest() {
-    
-    private val SHARED_PREFERENCES_FILE_NAME: String = "PayWithMyBank"
-    private val GRP_KEY: String = "grp"
-    private val ENV: String = "env"
-    private val ENV_LOCAL: String = "local"
-    private val ENV_HOST: String = "envHost"
-    private val DEVICE_TYPE: String = "deviceType"
-    private val ANDROID: String = "android"
-    private val PT_BR: String = "pt_BR"
-    private val METADATA_LANG: String = "metadata.lang"
-    private val METADATA_INTEGRATION_CONTEXT: String = "metadata.integrationContext"
-    private val EVENT: String = "event"
-    private val CUSTOMER_ADDRESS_COUNTRY: String = "customer.address.country"
+
+    companion object {
+
+        const val SHARED_PREFERENCES_FILE_NAME: String = "PayWithMyBank"
+        const val GRP_KEY: String = "grp"
+        const val ENV: String = "env"
+        const val ENV_LOCAL: String = "local"
+        const val ENV_HOST: String = "envHost"
+        const val DEVICE_TYPE: String = "deviceType"
+        const val ANDROID: String = "android"
+        const val PT_BR: String = "pt_BR"
+        const val METADATA_LANG: String = "metadata.lang"
+        const val METADATA_INTEGRATION_CONTEXT: String = "metadata.integrationContext"
+        const val EVENT: String = "event"
+        const val CUSTOMER_ADDRESS_COUNTRY: String = "customer.address.country"
+
+    }
 
     private lateinit var trustlyView: TrustlyView
 

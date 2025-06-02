@@ -21,7 +21,7 @@ object CidManager {
         saveData(context, CidStorage.CID, generateNewSession(context))
     }
 
-    fun getOrCreateSessionCid(context: Context): Map<String, String?> {
+    fun getOrCreateSessionCid(context: Context): HashMap<String, String?> {
         val cid = readDataFrom(context, CidStorage.CID)
         var sessionCid = readDataFrom(context, CidStorage.SESSION_CID)
         if (sessionCid == null) sessionCid = cid

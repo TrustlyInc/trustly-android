@@ -14,12 +14,10 @@ import org.junit.runner.RunWith
 @LargeTest
 class TrustlyCustomTabsManagerTest : TrustlyActivityTest() {
 
-    private val URL: String = "http://www.trustly.com"
-
     @Test
     fun shouldValidateCustomTabsManagerOpenCustomTabsIntentMethod() {
         scenario.onActivity { activity: MockActivity ->
-            openCustomTabsIntent(activity, URL)
+            openCustomTabsIntent(activity, "http://www.trustly.com")
             assertEquals(5, TrustlyCustomTabsManager::class.java.declaredMethods.size)
         }
         waitToCloseCustomTabs()

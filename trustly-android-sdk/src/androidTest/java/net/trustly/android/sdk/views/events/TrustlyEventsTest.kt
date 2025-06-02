@@ -37,7 +37,7 @@ class TrustlyEventsTest : TrustlyActivityTest() {
     }
 
     @Test
-    fun testTrustlyEventsHandleOnExternalUrl() {
+    fun shouldValidateTrustlyEventsHandleOnExternalUrl() {
         scenario.onActivity { activity ->
             val trustlyView = TrustlyView(activity)
             val trustlyEvents = TrustlyEvents()
@@ -48,7 +48,7 @@ class TrustlyEventsTest : TrustlyActivityTest() {
     }
 
     @Test
-    fun testTrustlyEventsHandleOnExternalUrlNull() {
+    fun shouldValidateTrustlyEventsHandleOnExternalUrlNull() {
         scenario.onActivity { activity ->
             val trustlyView = TrustlyView(activity)
             val trustlyEvents = TrustlyEvents()
@@ -58,7 +58,7 @@ class TrustlyEventsTest : TrustlyActivityTest() {
     }
 
     @Test
-    fun testTrustlyEventsHandleOnReturn() {
+    fun shouldValidateTrustlyEventsHandleOnReturn() {
         scenario.onActivity { activity ->
             val trustlyView = TrustlyView(activity)
             val trustlyEvents = TrustlyEvents()
@@ -69,7 +69,7 @@ class TrustlyEventsTest : TrustlyActivityTest() {
     }
 
     @Test
-    fun testTrustlyEventsHandleOnReturnNull() {
+    fun shouldValidateTrustlyEventsHandleOnReturnNull() {
         scenario.onActivity { activity ->
             val trustlyView = TrustlyView(activity)
             val trustlyEvents = TrustlyEvents()
@@ -79,7 +79,7 @@ class TrustlyEventsTest : TrustlyActivityTest() {
     }
 
     @Test
-    fun testTrustlyEventsHandleOnCancel() {
+    fun shouldValidateTrustlyEventsHandleOnCancel() {
         scenario.onActivity { activity ->
             val trustlyView = TrustlyView(activity)
             val trustlyEvents = TrustlyEvents()
@@ -90,7 +90,7 @@ class TrustlyEventsTest : TrustlyActivityTest() {
     }
 
     @Test
-    fun testTrustlyEventsHandleOnCancelNull() {
+    fun shouldValidateTrustlyEventsHandleOnCancelNull() {
         scenario.onActivity { activity ->
             val trustlyView = TrustlyView(activity)
             val trustlyEvents = TrustlyEvents()
@@ -100,7 +100,7 @@ class TrustlyEventsTest : TrustlyActivityTest() {
     }
 
     @Test
-    fun testTrustlyEventsGetOnWidgetBankSelectedCallback() {
+    fun shouldValidateTrustlyEventsGetOnWidgetBankSelectedCallback() {
         scenario.onActivity { activity ->
             val trustlyView = TrustlyView(activity)
             val trustlyEvents = TrustlyEvents()
@@ -111,7 +111,7 @@ class TrustlyEventsTest : TrustlyActivityTest() {
     }
 
     @Test
-    fun testTrustlyEventsNotifyListener() {
+    fun shouldValidateTrustlyEventsNotifyListener() {
         scenario.onActivity {
             val trustlyEvents = TrustlyEvents()
             trustlyEvents.setTrustlyListener(mockTrustlyListener)
@@ -122,7 +122,7 @@ class TrustlyEventsTest : TrustlyActivityTest() {
     }
 
     @Test
-    fun testTrustlyEventsNotifyListenerNull() {
+    fun shouldValidateTrustlyEventsNotifyListenerNull() {
         scenario.onActivity {
             val trustlyEvents = TrustlyEvents()
             trustlyEvents.notifyListener("event", hashMapOf())
@@ -131,7 +131,7 @@ class TrustlyEventsTest : TrustlyActivityTest() {
     }
 
     @Test
-    fun testTrustlyEventsNotifyOpen() {
+    fun shouldValidateTrustlyEventsNotifyOpen() {
         scenario.onActivity {
             val trustlyEvents = TrustlyEvents()
             trustlyEvents.setTrustlyListener(mockTrustlyListener)
@@ -141,7 +141,7 @@ class TrustlyEventsTest : TrustlyActivityTest() {
     }
 
     @Test
-    fun testTrustlyEventsNotifyClose() {
+    fun shouldValidateTrustlyEventsNotifyClose() {
         scenario.onActivity {
             val trustlyEvents = TrustlyEvents()
             trustlyEvents.setTrustlyListener(mockTrustlyListener)
@@ -151,7 +151,7 @@ class TrustlyEventsTest : TrustlyActivityTest() {
     }
 
     @Test
-    fun testTrustlyEventsNotifyWidgetLoading() {
+    fun shouldValidateTrustlyEventsNotifyWidgetLoading() {
         scenario.onActivity {
             val trustlyEvents = TrustlyEvents()
             trustlyEvents.setTrustlyListener(mockTrustlyListener)
@@ -164,7 +164,7 @@ class TrustlyEventsTest : TrustlyActivityTest() {
     }
 
     @Test
-    fun testTrustlyEventsNotifyWidgetLoaded() {
+    fun shouldValidateTrustlyEventsNotifyWidgetLoaded() {
         scenario.onActivity {
             val trustlyEvents = TrustlyEvents()
             trustlyEvents.setTrustlyListener(mockTrustlyListener)

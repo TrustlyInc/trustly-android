@@ -20,6 +20,7 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.Locale
 import java.util.Objects
+import androidx.core.net.toUri
 
 object UrlUtils {
 
@@ -56,14 +57,14 @@ object UrlUtils {
     }
 
     fun getQueryParametersFromUrl(url: String): Map<String, String> {
-        val uri = Uri.parse(url)
+        val uri = url.toUri()
         val queryParameters: HashMap<String, String> = HashMap()
         queryParameters[URL] = url.replace(REQUEST_SIGNATURE.toRegex(), EMPTY)
         queryParameters.putAll(getQueryParameterNames(uri))
         return queryParameters
     }
 
-    fun getParameterString(parameters: Map<String?, String?>): String {
+    fun getParameterString(parameters: Map<String, String>): String {
         val sb = StringBuilder()
         for ((key, value) in parameters) {
             if (sb.isNotEmpty()) sb.append(AMPERSAND_CHAR)
@@ -74,10 +75,8 @@ object UrlUtils {
         return sb.toString()
     }
 
-    private fun urlEncode(str: String?): String {
-        if (str == null) return EMPTY
-        return URLEncoder.encode(str, StandardCharsets.UTF_8.name())
-    }
+    private fun urlEncode(str: String) =
+        URLEncoder.encode(str, StandardCharsets.UTF_8.name())
 
     fun getJsonFromParameters(parameters: Map<String, String>) =
         buildJsonObjectSecond(parameters).toString()

@@ -26,7 +26,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun useAppContextTest() {
+    fun shouldValidateAppContextTest() {
         assertEquals("net.trustly.android.sdk.test", appContext?.packageName)
     }
 

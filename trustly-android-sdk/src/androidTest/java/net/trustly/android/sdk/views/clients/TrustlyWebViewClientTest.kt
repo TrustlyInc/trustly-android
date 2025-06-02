@@ -30,9 +30,13 @@ import org.mockito.MockitoAnnotations
 @LargeTest
 class TrustlyWebViewClientTest : TrustlyActivityTest() {
 
-    private val URL: String = "www.trustly.com"
-    private val RETURN_URL = "msg://return"
-    private val CANCEL_URL = "msg://cancel"
+    companion object {
+
+        const val URL: String = "www.trustly.com"
+        const val RETURN_URL = "msg://return"
+        const val CANCEL_URL = "msg://cancel"
+
+    }
 
     @Mock
     private lateinit var mockWebView: WebView

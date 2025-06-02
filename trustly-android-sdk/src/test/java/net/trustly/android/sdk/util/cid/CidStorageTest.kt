@@ -19,9 +19,13 @@ import org.mockito.MockitoAnnotations
 
 class CidStorageTest {
 
-    private val SESSION_CID: String = "SESSION_CID"
-    private val CID_STORAGE: String = "CID_STORAGE"
-    private val SESSION_CID_VALUE: String = "1724258668"
+    companion object {
+
+        const val SESSION_CID: String = "SESSION_CID"
+        const val CID_STORAGE: String = "CID_STORAGE"
+        const val SESSION_CID_VALUE: String = "1724258668"
+
+    }
 
     @Mock
     private lateinit var mockSharedPreferencesEditor: SharedPreferences.Editor

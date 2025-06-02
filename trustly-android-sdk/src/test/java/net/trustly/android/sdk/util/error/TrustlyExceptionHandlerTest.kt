@@ -6,7 +6,7 @@ import org.junit.Test
 class TrustlyExceptionHandlerTest {
 
     @Test
-    fun shouldHandleUncaughtException() {
+    fun shouldValidateTrustlyExceptionHandleUncaughtException() {
         val exceptionHandler = TrustlyExceptionHandler()
         val exception = NullPointerException()
         exceptionHandler.uncaughtException(Thread.currentThread(), exception)

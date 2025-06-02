@@ -39,7 +39,7 @@ class GRPStorageTest {
     }
 
     @Test
-    fun testSavingDataGRP() {
+    fun shouldValidateGRPStorageSavingDataGRP() {
         `when`(mockSharedPreferencesEditor.putInt(anyString(), anyInt())).thenReturn(mockSharedPreferencesEditor)
         `when`(mockSharedPreferences.edit()).thenReturn(mockSharedPreferencesEditor)
         `when`(mockContext.getSharedPreferences("PayWithMyBank", Context.MODE_PRIVATE)).thenReturn(mockSharedPreferences)
@@ -51,7 +51,7 @@ class GRPStorageTest {
     }
 
     @Test
-    fun testReadingDataGRP() {
+    fun shouldValidateGRPStorageReadingDataGRP() {
         `when`(mockSharedPreferences.getInt(anyString(), anyInt())).thenReturn(54)
         `when`(mockContext.getSharedPreferences("PayWithMyBank", Context.MODE_PRIVATE)).thenReturn(mockSharedPreferences)
 
@@ -63,7 +63,7 @@ class GRPStorageTest {
     }
 
     @Test
-    fun testReadingDataMinusOneGRP() {
+    fun shouldValidateGRPStorageReadingDataMinusOneGRP() {
         `when`(mockSharedPreferences.getInt(anyString(), anyInt())).thenReturn(-1)
         `when`(mockContext.getSharedPreferences("PayWithMyBank", Context.MODE_PRIVATE)).thenReturn(mockSharedPreferences)
 

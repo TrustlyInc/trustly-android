@@ -6,7 +6,6 @@ import android.webkit.WebView
 import net.trustly.android.sdk.util.EstablishDataManager
 import net.trustly.android.sdk.util.TrustlyConstants.CID
 import net.trustly.android.sdk.util.TrustlyConstants.CUSTOMER_ADDRESS_COUNTRY
-import net.trustly.android.sdk.util.TrustlyConstants.CUSTOMER_ADDRESS_STATE
 import net.trustly.android.sdk.util.TrustlyConstants.DEVICE_TYPE
 import net.trustly.android.sdk.util.TrustlyConstants.DYNAMIC_WIDGET
 import net.trustly.android.sdk.util.TrustlyConstants.GRP
@@ -24,32 +23,25 @@ class TrustlyWidget(
     private val trustlyEvents: TrustlyEvents
 ) : TrustlyComponent() {
 
-    private val AMPERSAND_CHAR: String = "&"
-    private val HASHTAG_SIGN: String = "#"
-    private val CUSTOMER_ADDRESS_COUNTRY_DEFAULT = "US"
-
     override fun updateEstablishData(establishData: Map<String, String>, grp: Int) {
         trustlyEvents.notifyWidgetLoading()
         EstablishDataManager.updateEstablishData(establishData)
 
-        val data = HashMap<String?, String?>(establishData)
-        data[DEVICE_TYPE] = "${establishData[DEVICE_TYPE] ?: "mobile"}:android:native"
+        val data = HashMap<String, String>(establishData)
+        data[DEVICE_TYPE] = "${establishData[DEVICE_TYPE] ?: "mobile"}:android:hybrid"
 
         val lang = establishData[METADATA_LANG]
         if (lang != null) data[LANG] = lang
         data[GRP] = grp.toString()
         data[DYNAMIC_WIDGET] = "true"
 
-        if (establishData[CUSTOMER_ADDRESS_COUNTRY] != null) {
-            data[CUSTOMER_ADDRESS_COUNTRY] = establishData[CUSTOMER_ADDRESS_COUNTRY]
-        } else {
+        if (establishData[CUSTOMER_ADDRESS_COUNTRY] == null) {
             data[CUSTOMER_ADDRESS_COUNTRY] = CUSTOMER_ADDRESS_COUNTRY_DEFAULT
-            data[CUSTOMER_ADDRESS_STATE] = establishData[CUSTOMER_ADDRESS_STATE]
         }
 
         val sessionCidValues = CidManager.getOrCreateSessionCid(context)
-        data[SESSION_CID] = sessionCidValues[CidManager.SESSION_CID_PARAM]
-        data[CID] = sessionCidValues[CidManager.CID_PARAM]
+        sessionCidValues[CidManager.SESSION_CID_PARAM]?.let { data[SESSION_CID] = it }
+        sessionCidValues[CidManager.CID_PARAM]?.let { data[CID] = it }
 
         val dataParameters = UrlUtils.getParameterString(data)
         val hashParameters = UrlUtils.encodeStringToBase64(dataParameters)
@@ -64,4 +56,13 @@ class TrustlyWidget(
         }
         trustlyEvents.notifyWidgetLoaded()
     }
+
+    companion object {
+
+        const val AMPERSAND_CHAR: String = "&"
+        const val HASHTAG_SIGN: String = "#"
+        const val CUSTOMER_ADDRESS_COUNTRY_DEFAULT = "US"
+
+    }
+
 }

@@ -24,7 +24,7 @@ class TrustlyOAuthViewTest : TrustlyActivityTest() {
     fun shouldValidateTrustlyOAuthViewGetWebViewMethod() {
         scenario.onActivity { activity: MockActivity ->
             val trustlyOAuthView = TrustlyOAuthView(activity.applicationContext)
-            assertNotNull(trustlyOAuthView.getWebView())
+            assertNotNull(trustlyOAuthView.webView)
         }
     }
 

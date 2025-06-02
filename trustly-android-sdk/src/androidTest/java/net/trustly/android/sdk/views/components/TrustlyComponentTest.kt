@@ -18,8 +18,6 @@ import org.mockito.MockitoAnnotations
 @LargeTest
 class TrustlyComponentTest : TrustlyActivityTest() {
 
-    private val URL = "http://www.trustly.com"
-
     @Before
     override fun setUp() {
         super.setUp()
@@ -104,6 +102,7 @@ class TrustlyComponentTest : TrustlyActivityTest() {
     companion object {
 
         const val TOKEN = "RXN0YWJsaXNoRGF0YVN0cmluZw=="
+        const val URL = "http://www.trustly.com"
 
     }
 

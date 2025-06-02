@@ -7,7 +7,6 @@ import android.os.Looper
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.util.TypedValue
-import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
@@ -64,7 +63,7 @@ class TrustlyView @JvmOverloads constructor(
         with(webView) {
             isScrollContainer = false
             val params = RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT
             )
             params.addRule(RelativeLayout.ALIGN_PARENT_TOP)
             layoutParams = params

@@ -17,8 +17,12 @@ import org.mockito.MockitoAnnotations
 
 class GRPManagerTest {
 
-    private val GRP_STORAGE: String = "PayWithMyBank"
-    private val GRP: String = "grp"
+    companion object {
+
+        const val GRP_STORAGE: String = "PayWithMyBank"
+        const val GRP: String = "grp"
+
+    }
 
     @Mock
     private lateinit var mockSharedPreferencesEditor: SharedPreferences.Editor
@@ -53,7 +57,7 @@ class GRPManagerTest {
     }
 
     @Test
-    fun shouldValidateCidManagerGetOrCreateSessionCidMethod() {
+    fun shouldValidateGRPManagerGetOrCreateSessionCidMethod() {
         `when`(mockSharedPreferences.getInt(anyString(), anyInt())).thenReturn(23)
 
         val result = GRPManager.getGRP(mockContext)

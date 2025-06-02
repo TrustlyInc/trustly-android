@@ -1,6 +1,7 @@
 package net.trustly.android.sdk.util.cid
 
 import android.content.Context
+import androidx.core.content.edit
 
 object CidStorage {
 
@@ -9,7 +10,7 @@ object CidStorage {
     const val CID: String = "CID"
 
     fun saveData(context: Context, preferenceId: String?, preferenceValue: String?) {
-        getSharedPreferences(context).edit().putString(preferenceId, preferenceValue).apply()
+        getSharedPreferences(context).edit { putString(preferenceId, preferenceValue) }
     }
 
     fun readDataFrom(context: Context, preferenceId: String?) =

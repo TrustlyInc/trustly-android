@@ -47,13 +47,13 @@ class TrustlyUrlFetcherTest {
     }
 
     @Test
-    fun testTrustlyUrlFetcher() {
+    fun shouldValidateTrustlyUrlFetcher() {
         trustlyUrlFetcher.openConnection(mockURL)
         assertNotNull(trustlyUrlFetcher)
     }
 
     @Test
-    fun testTrustlyUrlFetcherResponseCodeForbidden() {
+    fun shouldValidateTrustlyUrlFetcherResponseCodeForbidden() {
         `when`(mockConnection.responseCode).thenReturn(HttpURLConnection.HTTP_FORBIDDEN)
 
         trustlyUrlFetcher.openConnection(mockURL)
@@ -61,7 +61,7 @@ class TrustlyUrlFetcherTest {
     }
 
     @Test
-    fun testTrustlyUrlFetcherResponseCodeSuccess() {
+    fun shouldValidateTrustlyUrlFetcherResponseCodeSuccess() {
         `when`(mockConnection.responseCode).thenReturn(HttpURLConnection.HTTP_OK)
 
         trustlyUrlFetcher.openConnection(mockURL)
@@ -69,7 +69,7 @@ class TrustlyUrlFetcherTest {
     }
 
     @Test
-    fun testTrustlyUrlFetcherIsUrlAvailable() {
+    fun shouldValidateTrustlyUrlFetcherIsUrlAvailable() {
         `when`(mockConnection.responseCode).thenReturn(HttpURLConnection.HTTP_OK)
 
         trustlyUrlFetcher.openConnection(mockURL)
@@ -77,7 +77,7 @@ class TrustlyUrlFetcherTest {
     }
 
     @Test
-    fun testTrustlyUrlFetcherIsUrlNotAvailable() {
+    fun shouldValidateTrustlyUrlFetcherIsUrlNotAvailable() {
         `when`(mockConnection.responseCode).thenReturn(HttpURLConnection.HTTP_FORBIDDEN)
 
         trustlyUrlFetcher.openConnection(mockURL)
@@ -85,7 +85,7 @@ class TrustlyUrlFetcherTest {
     }
 
     @Test
-    fun testTrustlyUrlFetcherSetRequestMethodGET() {
+    fun shouldValidateTrustlyUrlFetcherSetRequestMethodGET() {
         `when`(mockConnection.responseCode).thenReturn(HttpURLConnection.HTTP_FORBIDDEN)
 
         trustlyUrlFetcher.openConnection(mockURL)
@@ -94,7 +94,7 @@ class TrustlyUrlFetcherTest {
     }
 
     @Test
-    fun testTrustlyUrlFetcherSetRequestMethodPOST() {
+    fun shouldValidateTrustlyUrlFetcherSetRequestMethodPOST() {
         `when`(mockConnection.responseCode).thenReturn(HttpURLConnection.HTTP_FORBIDDEN)
 
         trustlyUrlFetcher.openConnection(mockURL)
@@ -103,14 +103,14 @@ class TrustlyUrlFetcherTest {
     }
 
     @Test
-    fun testTrustlyUrlFetcherSetRequestProperty() {
+    fun shouldValidateTrustlyUrlFetcherSetRequestProperty() {
         trustlyUrlFetcher.openConnection(mockURL)
         trustlyUrlFetcher.setRequestProperty("Content-type", "application/json")
         verify(mockConnection, times(1)).setRequestProperty("Content-type", "application/json")
     }
 
     @Test
-    fun testTrustlyUrlFetcherSetTimeout() {
+    fun shouldValidateTrustlyUrlFetcherSetTimeout() {
         `when`(mockConnection.responseCode).thenReturn(HttpURLConnection.HTTP_FORBIDDEN)
 
         trustlyUrlFetcher.openConnection(mockURL)
@@ -120,7 +120,7 @@ class TrustlyUrlFetcherTest {
     }
 
     @Test
-    fun testTrustlyUrlFetcherGetResponse() {
+    fun shouldValidateTrustlyUrlFetcherGetResponse() {
         `when`(mockConnection.inputStream).thenReturn(ByteArrayInputStream(byteArrayOf("111".toByte())))
 
         trustlyUrlFetcher.openConnection(mockURL)
@@ -128,7 +128,7 @@ class TrustlyUrlFetcherTest {
     }
 
     @Test
-    fun testTrustlyUrlFetcherGetErrorResponse() {
+    fun shouldValidateTrustlyUrlFetcherGetErrorResponse() {
         `when`(mockConnection.responseMessage).thenReturn("Error response message")
 
         trustlyUrlFetcher.openConnection(mockURL)
@@ -136,7 +136,7 @@ class TrustlyUrlFetcherTest {
     }
 
     @Test
-    fun testTrustlyUrlFetcherDisconnect() {
+    fun shouldValidateTrustlyUrlFetcherDisconnect() {
         trustlyUrlFetcher.disconnect()
         verify(mockConnection, times(1)).disconnect()
     }
