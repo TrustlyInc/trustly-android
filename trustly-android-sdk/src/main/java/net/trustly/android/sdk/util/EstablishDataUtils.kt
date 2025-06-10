@@ -1,12 +1,12 @@
 package net.trustly.android.sdk.util
 
 import android.util.Log
-import net.trustly.android.sdk.views.TrustlyConstants.ACCESS_ID
-import net.trustly.android.sdk.views.TrustlyConstants.CANCEL_URL
-import net.trustly.android.sdk.views.TrustlyConstants.MERCHANT_ID
-import net.trustly.android.sdk.views.TrustlyConstants.MERCHANT_REFERENCE
-import net.trustly.android.sdk.views.TrustlyConstants.REQUEST_SIGNATURE
-import net.trustly.android.sdk.views.TrustlyConstants.RETURN_URL
+import net.trustly.android.sdk.util.TrustlyConstants.ACCESS_ID
+import net.trustly.android.sdk.util.TrustlyConstants.CANCEL_URL
+import net.trustly.android.sdk.util.TrustlyConstants.MERCHANT_ID
+import net.trustly.android.sdk.util.TrustlyConstants.MERCHANT_REFERENCE
+import net.trustly.android.sdk.util.TrustlyConstants.REQUEST_SIGNATURE
+import net.trustly.android.sdk.util.TrustlyConstants.RETURN_URL
 
 object EstablishDataUtils {
 
