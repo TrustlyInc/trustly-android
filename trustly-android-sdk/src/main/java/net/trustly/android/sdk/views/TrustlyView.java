@@ -63,8 +63,6 @@ import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -383,8 +381,6 @@ public class TrustlyView extends LinearLayout implements Trustly {
         return this;
     }
 
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
-
     private void openWebViewOrCustomTabs(Settings settings, Map<String, String> establishData) {
         boolean useWebView = settings.getSettings().getIntegrationStrategy().equals("webview");
         if (useWebView) {
@@ -395,22 +391,18 @@ public class TrustlyView extends LinearLayout implements Trustly {
         }
         data.put("storage", "supported");
 
-        executor.execute(() -> {
-            String userAgent = useWebView ? webView.getSettings().getUserAgentString() : getInAppBrowserUserAgent();
-            String lightboxUrl = getLightboxUrl(establishData, userAgent);
-            if (lightboxUrl == null) {
-                Log.e(TAG, "lightboxUrl is null");
-                return;
-            }
+        String userAgent = useWebView ? webView.getSettings().getUserAgentString() : getInAppBrowserUserAgent();
+        String lightboxUrl = getLightboxUrl(establishData, userAgent);
+        if (lightboxUrl == null) {
+            Log.e(TAG, "lightboxUrl is null");
+            return;
+        }
 
-            new Handler(Looper.getMainLooper()).post(() -> {
-                if (useWebView) {
-                    webView.loadUrl(lightboxUrl);
-                } else {
-                    CustomTabsManager.openCustomTabsIntent(getContext(), lightboxUrl);
-                }
-            });
-        });
+        if (useWebView) {
+            webView.loadUrl(lightboxUrl);
+        } else {
+            CustomTabsManager.openCustomTabsIntent(getContext(), lightboxUrl);
+        }
     }
 
     private static String getInAppBrowserUserAgent() {
