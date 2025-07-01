@@ -365,7 +365,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 openWebViewOrCustomTabs(settings, data);
             } else {
                 APIMethod apiInterface = RetrofitInstance.INSTANCE.getInstance(getDomain(FUNCTION_MOBILE, establishData)).create(APIMethod.class);
-                APIRequest apiRequest = new APIRequest(apiInterface, settings -> {
+                new APIRequest(apiInterface).getSettingsData(getTokenByEncodedParameters(data), settings -> {
                     APIRequestManager.INSTANCE.saveAPIRequestSettings(getContext(), settings);
                     openWebViewOrCustomTabs(settings, data);
                     return Unit.INSTANCE;
@@ -373,7 +373,6 @@ public class TrustlyView extends LinearLayout implements Trustly {
                     openWebViewOrCustomTabs(new Settings(new StrategySetting("webview")), data);
                     return Unit.INSTANCE;
                 });
-                apiRequest.getSettingsData(getTokenByEncodedParameters(data));
             }
         } catch (Exception e) {
             showErrorMessage(e);
@@ -420,14 +419,13 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 MediaType.parse("application/x-www-form-urlencoded")
         );
         APIMethod apiInterface = RetrofitInstance.INSTANCE.getInstance(getEndpointUrl(FUNCTION_INDEX, establishData)).create(APIMethod.class);
-        APIRequest apiRequest = new APIRequest(apiInterface, url -> {
-            ref.lightboxUrl = url.getSettings().getIntegrationStrategy();
+        new APIRequest(apiInterface).postLightboxUrl(userAgent, body, url -> {
+            ref.lightboxUrl = url;
             return Unit.INSTANCE;
         }, error -> {
             Log.e(TAG, "getLightboxUrl error: " + error);
             return Unit.INSTANCE;
         });
-        apiRequest.postLightboxUrl(userAgent, body);
         return ref.lightboxUrl;
     }
 

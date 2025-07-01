@@ -6,13 +6,13 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class APIRequest(private val apiInterface: APIMethod, private val settings: (Settings) -> Unit, private val error: (String) -> Unit) {
+class APIRequest(private val apiInterface: APIMethod) {
 
     companion object {
         const val TAG = "APIRequest"
     }
 
-    fun getSettingsData(token: String) {
+    fun getSettingsData(token: String, settings: (Settings) -> Unit, error: (String) -> Unit) {
         apiInterface.getSettings(token).enqueue(object : Callback<Settings> {
             override fun onResponse(call: Call<Settings>, response: Response<Settings>) {
                 if (response.body() != null) {
@@ -28,12 +28,12 @@ class APIRequest(private val apiInterface: APIMethod, private val settings: (Set
         })
     }
 
-    fun postLightboxUrl(userAgent: String, body: RequestBody) {
+    fun postLightboxUrl(userAgent: String, body: RequestBody, lightboxUrl: (String) -> Unit, error: (String) -> Unit) {
         apiInterface.postLightboxUrl(userAgent, body).enqueue(object : Callback<String>{
             override fun onResponse(call: Call<String?>, response: Response<String?>) {
                 if (response.body() != null) {
                     Log.d(TAG, response.body().toString())
-                    //TODO invoke url string return
+                    lightboxUrl.invoke(response.body() as String)
                 }
             }
 
