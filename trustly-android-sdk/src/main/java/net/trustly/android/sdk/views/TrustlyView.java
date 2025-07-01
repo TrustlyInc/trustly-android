@@ -80,6 +80,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     private static final String LOCAL_PROTOCOL = "http://";
     private static final String DOMAIN = "paywithmybank.com";
     private static final String SDK_VERSION = BuildConfig.SDK_VERSION;
+    private static final String TAG = "TrustlyView";
 
     private static boolean isLocalEnvironment = false;
 
@@ -388,20 +389,18 @@ public class TrustlyView extends LinearLayout implements Trustly {
         if (useWebView) {
             data.put("metadata.integrationContext", "InAppBrowser");
         } else {
-            data.put("returnUrl", establishData.get("metadata.urlScheme"));
-            data.put("cancelUrl", establishData.get("metadata.urlScheme"));
+            data.put(RETURN_URL, establishData.get("metadata.urlScheme"));
+            data.put(CANCEL_URL, establishData.get("metadata.urlScheme"));
         }
 
         data.put("storage", "supported");
 
-        String WebViewUserAgent = webView.getSettings().getUserAgentString();
-
         executor.execute(() -> {
-            String userAgent = useWebView ? WebViewUserAgent : getInAppBrowserUserAgent();
+            String userAgent = useWebView ? webView.getSettings().getUserAgentString() : getInAppBrowserUserAgent();
             String lightboxUrl = getLightboxUrl(establishData, userAgent);
 
             if (lightboxUrl == null) {
-                Log.e("TrustlyView", "lightboxUrl is null");
+                Log.e(TAG, "lightboxUrl is null");
                 return;
             }
 
@@ -438,7 +437,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
             response.close();
             return redirectUrl;
         } catch (Exception e) {
-            Log.e("TrustlyView", "getLightboxUrl error: " + e.getMessage());
+            Log.e(TAG, "getLightboxUrl error: " + e.getMessage());
             return null;
         }
     }
@@ -655,7 +654,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     }
 
     private void showErrorMessage(Exception e) {
-        Log.e("TrustlyView", Objects.requireNonNull(e.getMessage()));
+        Log.e(TAG, Objects.requireNonNull(e.getMessage()));
     }
 
     public static boolean isLocalEnvironment() {
