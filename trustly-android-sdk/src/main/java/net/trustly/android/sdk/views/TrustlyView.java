@@ -63,12 +63,17 @@ import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import kotlin.Unit;
 import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * TrustlyView is a view class that implements the Trustly SDK interface
@@ -109,6 +114,8 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
     private String returnURL = "msg://return";
     private String cancelURL = "msg://cancel";
+
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     /**
      * {@inheritDoc}
@@ -391,42 +398,59 @@ public class TrustlyView extends LinearLayout implements Trustly {
         data.put("storage", "supported");
 
         String userAgent = useWebView ? webView.getSettings().getUserAgentString() : getInAppBrowserUserAgent();
-        String lightboxUrl = getLightboxUrl(establishData, userAgent);
-        if (lightboxUrl == null) {
-            Log.e(TAG, "lightboxUrl is null");
-            return;
-        }
 
-        if (useWebView) {
-            webView.loadUrl(lightboxUrl);
-        } else {
-            CustomTabsManager.openCustomTabsIntent(getContext(), lightboxUrl);
+        executor.execute(() -> {
+            String lightboxUrl = getLightboxUrl(establishData, userAgent);
+
+            if (lightboxUrl == null) {
+                Log.e(TAG, "lightboxUrl is null");
+                return;
+            }
+
+            new Handler(Looper.getMainLooper()).post(() -> {
+                if (useWebView) {
+                    webView.loadUrl(lightboxUrl);
+                } else {
+                    CustomTabsManager.openCustomTabsIntent(getContext(), lightboxUrl);
+                }
+            });
+        });
+    }
+
+    private String getLightboxUrl(Map<String, String> establishData, String userAgent) {
+        try {
+            byte[] encodedParameters = UrlUtils.getParameterString(data).getBytes(StandardCharsets.UTF_8);
+
+            OkHttpClient client = new OkHttpClient();
+            RequestBody body = RequestBody.create(
+                    encodedParameters,
+                    MediaType.parse("application/x-www-form-urlencoded")
+            );
+            Request request = new Request.Builder()
+                    .url(getEndpointUrl(FUNCTION_INDEX, establishData))
+                    .addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+                    .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                    .addHeader("User-Agent", userAgent)
+                    .post(body)
+                    .build();
+
+            Response response = client.newCall(request).execute();
+            String redirectUrl = response.request().url().toString();
+
+            response.close();
+            return redirectUrl;
+        } catch (Exception e) {
+            Log.e(TAG, "getLightboxUrl error: " + e.getMessage());
+            return null;
         }
     }
 
     private static String getInAppBrowserUserAgent() {
-        return "Mozilla/5.0 (Linux; Android " + Build.VERSION.RELEASE + "; " + Build.MODEL + ") " +
-                "AppleWebKit/537.36 (KHTML, like Gecko) InAppBrowser/1.0 Mobile Safari/537.36";
-    }
+        String osVersion = Build.VERSION.RELEASE;
+        String deviceModel = Build.MODEL;
 
-    private String getLightboxUrl(Map<String, String> establishData, String userAgent) {
-        var ref = new Object() {
-            String lightboxUrl = null;
-        };
-        byte[] encodedParameters = UrlUtils.getParameterString(data).getBytes(StandardCharsets.UTF_8);
-        RequestBody body = RequestBody.create(
-                encodedParameters,
-                MediaType.parse("application/x-www-form-urlencoded")
-        );
-        APIMethod apiInterface = RetrofitInstance.INSTANCE.getInstance(getEndpointUrl(FUNCTION_INDEX, establishData)).create(APIMethod.class);
-        new APIRequest(apiInterface).postLightboxUrl(userAgent, body, url -> {
-            ref.lightboxUrl = url;
-            return Unit.INSTANCE;
-        }, error -> {
-            Log.e(TAG, "getLightboxUrl error: " + error);
-            return Unit.INSTANCE;
-        });
-        return ref.lightboxUrl;
+        return "Mozilla/5.0 (Linux; Android " + osVersion + "; " + deviceModel + ") " +
+                "AppleWebKit/537.36 (KHTML, like Gecko) InAppBrowser/1.0 Mobile Safari/537.36";
     }
 
     private String getTokenByEncodedParameters(Map<String, String> data) {
