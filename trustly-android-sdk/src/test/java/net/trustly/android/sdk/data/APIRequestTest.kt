@@ -44,7 +44,7 @@ class APIRequestTest {
         val mockResponse = Response.success(settingsFake)
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
+        APIRequest(api).getSettingsData(TOKEN, { settingsResult = it }, { settingsResult = null })
 
         assertEquals(settingsFake, settingsResult)
     }
@@ -55,7 +55,7 @@ class APIRequestTest {
         val mockResponse = Response.success(settingsFake)
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
+        APIRequest(api).getSettingsData(TOKEN, { settingsResult = it }, { settingsResult = null })
 
         assertEquals(settingsFake, settingsResult)
     }
@@ -66,7 +66,7 @@ class APIRequestTest {
         val mockResponse = Response.success(settingsFake)
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
+        APIRequest(api).getSettingsData(TOKEN, { settingsResult = it }, { settingsResult = null })
 
         assertEquals(settingsFake, settingsResult)
         assertEquals("webview", settingsResult!!.settings.integrationStrategy)
@@ -78,7 +78,7 @@ class APIRequestTest {
         val mockResponse = Response.success(settingsFake)
         mockCallbackResponse(mockResponse)
 
-        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
+        APIRequest(api).getSettingsData(TOKEN, { settingsResult = it }, { settingsResult = null })
 
         assertEquals(settingsFake, settingsResult)
         assertNotEquals("inappbrowser", settingsResult!!.settings.integrationStrategy)
@@ -88,7 +88,7 @@ class APIRequestTest {
     fun testGetSettingDataValuesWhenReturnSuccessWithNullBody() {
         mockCallbackResponseWithNullBody()
 
-        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
+        APIRequest(api).getSettingsData(TOKEN, { settingsResult = it }, { settingsResult = null })
 
         assertEquals(null, settingsResult)
     }
@@ -104,7 +104,7 @@ class APIRequestTest {
         val mockResponse = Throwable("Error 401")
         mockCallbackFailure(mockResponse)
 
-        APIRequest(api, { settingsResult = it }, { settingsResult = null }).getSettingsData(TOKEN)
+        APIRequest(api).getSettingsData(TOKEN, { settingsResult = it }, { settingsResult = null })
 
         assertEquals(null, settingsResult)
     }

@@ -26,6 +26,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -48,8 +49,8 @@ import net.trustly.android.sdk.data.StrategySetting;
 import net.trustly.android.sdk.interfaces.Trustly;
 import net.trustly.android.sdk.interfaces.TrustlyCallback;
 import net.trustly.android.sdk.interfaces.TrustlyListener;
-import net.trustly.android.sdk.util.EstablishDataUtils;
 import net.trustly.android.sdk.util.CustomTabsManager;
+import net.trustly.android.sdk.util.EstablishDataUtils;
 import net.trustly.android.sdk.util.UrlUtils;
 import net.trustly.android.sdk.util.api.APIRequestManager;
 import net.trustly.android.sdk.util.cid.CidManager;
@@ -62,10 +63,17 @@ import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import kotlin.Unit;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * TrustlyView is a view class that implements the Trustly SDK interface
@@ -76,6 +84,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     private static final String LOCAL_PROTOCOL = "http://";
     private static final String DOMAIN = "paywithmybank.com";
     private static final String SDK_VERSION = BuildConfig.SDK_VERSION;
+    private static final String TAG = "TrustlyView";
 
     private static boolean isLocalEnvironment = false;
 
@@ -105,6 +114,8 @@ public class TrustlyView extends LinearLayout implements Trustly {
 
     private String returnURL = "msg://return";
     private String cancelURL = "msg://cancel";
+
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     /**
      * {@inheritDoc}
@@ -361,7 +372,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
                 openWebViewOrCustomTabs(settings, data);
             } else {
                 APIMethod apiInterface = RetrofitInstance.INSTANCE.getInstance(getDomain(FUNCTION_MOBILE, establishData)).create(APIMethod.class);
-                APIRequest apiRequest = new APIRequest(apiInterface, settings -> {
+                new APIRequest(apiInterface).getSettingsData(getTokenByEncodedParameters(data), settings -> {
                     APIRequestManager.INSTANCE.saveAPIRequestSettings(getContext(), settings);
                     openWebViewOrCustomTabs(settings, data);
                     return Unit.INSTANCE;
@@ -369,7 +380,6 @@ public class TrustlyView extends LinearLayout implements Trustly {
                     openWebViewOrCustomTabs(new Settings(new StrategySetting("webview")), data);
                     return Unit.INSTANCE;
                 });
-                apiRequest.getSettingsData(getTokenByEncodedParameters(data));
             }
         } catch (Exception e) {
             showErrorMessage(e);
@@ -378,15 +388,69 @@ public class TrustlyView extends LinearLayout implements Trustly {
     }
 
     private void openWebViewOrCustomTabs(Settings settings, Map<String, String> establishData) {
-        if (settings.getSettings().getIntegrationStrategy().equals("webview")) {
+        boolean useWebView = settings.getSettings().getIntegrationStrategy().equals("webview");
+        if (useWebView) {
             data.put("metadata.integrationContext", "InAppBrowser");
-            byte[] encodedParameters = UrlUtils.getParameterString(data).getBytes(StandardCharsets.UTF_8);
-            webView.postUrl(getEndpointUrl(FUNCTION_INDEX, establishData), encodedParameters);
         } else {
             data.put(RETURN_URL, establishData.get("metadata.urlScheme"));
             data.put(CANCEL_URL, establishData.get("metadata.urlScheme"));
-            CustomTabsManager.openCustomTabsIntent(getContext(), getEndpointUrl(FUNCTION_MOBILE, establishData) + "?token=" + getTokenByEncodedParameters(data));
         }
+        data.put("storage", "supported");
+
+        String userAgent = useWebView ? webView.getSettings().getUserAgentString() : getInAppBrowserUserAgent();
+
+        executor.execute(() -> {
+            String lightboxUrl = getLightboxUrl(establishData, userAgent);
+
+            if (lightboxUrl == null) {
+                Log.e(TAG, "lightboxUrl is null");
+                return;
+            }
+
+            new Handler(Looper.getMainLooper()).post(() -> {
+                if (useWebView) {
+                    webView.loadUrl(lightboxUrl);
+                } else {
+                    CustomTabsManager.openCustomTabsIntent(getContext(), lightboxUrl);
+                }
+            });
+        });
+    }
+
+    private String getLightboxUrl(Map<String, String> establishData, String userAgent) {
+        try {
+            byte[] encodedParameters = UrlUtils.getParameterString(data).getBytes(StandardCharsets.UTF_8);
+
+            OkHttpClient client = new OkHttpClient();
+            RequestBody body = RequestBody.create(
+                    encodedParameters,
+                    MediaType.parse("application/x-www-form-urlencoded")
+            );
+            Request request = new Request.Builder()
+                    .url(getEndpointUrl(FUNCTION_INDEX, establishData))
+                    .addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+                    .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                    .addHeader("User-Agent", userAgent)
+                    .post(body)
+                    .build();
+
+            Response response = client.newCall(request).execute();
+            String redirectUrl = response.request().url().toString();
+
+            response.close();
+            return redirectUrl;
+        } catch (Exception e) {
+            Log.e(TAG, "getLightboxUrl error: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private static String getInAppBrowserUserAgent() {
+        String osVersion = Build.VERSION.RELEASE;
+        String deviceModel = Build.MODEL;
+
+        return "Mozilla/5.0 (Linux; Android " + osVersion + "; " + deviceModel + ") " +
+                "AppleWebKit/537.36 (KHTML, like Gecko) InAppBrowser/1.0 Mobile Safari/537.36";
     }
 
     private String getTokenByEncodedParameters(Map<String, String> data) {
@@ -562,9 +626,6 @@ public class TrustlyView extends LinearLayout implements Trustly {
      */
     protected String getEndpointUrl(String function, Map<String, String> establishData) {
         String domain = getDomain(function, establishData);
-        if (FUNCTION_MOBILE.equals(function)) {
-             return domain + "/frontend/mobile/establish";
-        }
         if (FUNCTION_INDEX.equals(function) &&
                 !"Verification".equals(establishData.get(PAYMENT_TYPE)) &&
                 establishData.get(PAYMENT_PROVIDER_ID) != null) {
@@ -596,7 +657,7 @@ public class TrustlyView extends LinearLayout implements Trustly {
     }
 
     private void showErrorMessage(Exception e) {
-        Log.e("TrustlyView", Objects.requireNonNull(e.getMessage()));
+        Log.e(TAG, Objects.requireNonNull(e.getMessage()));
     }
 
     public static boolean isLocalEnvironment() {
