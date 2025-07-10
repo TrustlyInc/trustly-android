@@ -3,7 +3,7 @@ package net.trustly.android.sdk.util.api
 import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
-import net.trustly.android.sdk.data.Settings
+import net.trustly.android.sdk.data.model.Settings
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -42,7 +42,7 @@ class APIRequestManagerTest {
 
     @After
     fun tearDown() {
-        clearInvocations(mockedEdit, mockedContext, mockedPrefs)
+        clearInvocations(mockedEdit, mockedContext, mockedPrefs, mockedCalendar)
     }
 
     @Test

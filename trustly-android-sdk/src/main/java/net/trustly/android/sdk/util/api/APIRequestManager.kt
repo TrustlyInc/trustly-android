@@ -2,8 +2,8 @@ package net.trustly.android.sdk.util.api
 
 import android.content.Context
 import com.google.gson.Gson
-import net.trustly.android.sdk.data.Settings
-import net.trustly.android.sdk.data.StrategySetting
+import net.trustly.android.sdk.data.model.Settings
+import net.trustly.android.sdk.data.model.StrategySetting
 import net.trustly.android.sdk.util.TrustlyConstants.INTEGRATION_STRATEGY_DEFAULT
 import java.util.Calendar
 import java.util.concurrent.TimeUnit

@@ -1,5 +1,9 @@
 package net.trustly.android.sdk.data
 
+import net.trustly.android.sdk.BuildConfig
+import net.trustly.android.sdk.data.model.Settings
+import net.trustly.android.sdk.data.model.StrategySetting
+import net.trustly.android.sdk.data.model.Tracking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -14,6 +18,8 @@ import java.net.URL
 class TrustlyServiceTest {
 
     private var settingsResult: Settings? = null
+    private val trackingFake = Tracking(BuildConfig.SDK_VERSION, "Android", "19", "Galaxy S25",
+        "error", "Caused by: java.lang.NullPointerException at TrustlyWidget.updateEstablishData(establishData)")
 
     @Mock
     private lateinit var mockURL: URL
@@ -46,7 +52,7 @@ class TrustlyServiceTest {
         `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenReturn(true)
         `when`(mockTrustlyUrlFetcher.getResponse()).thenReturn("{'settings': {'integrationStrategy': 'in-app-browser'}}")
 
-        TrustlyService(mockTrustlyUrlFetcher) { assertEquals(settingsFake, it) }.getSettingsData(URL, TOKEN)
+        TrustlyService(mockTrustlyUrlFetcher).getSettingsData(URL, TOKEN) { assertEquals(settingsFake, it) }
     }
 
     @Test
@@ -57,7 +63,7 @@ class TrustlyServiceTest {
         `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenReturn(false)
         `when`(mockTrustlyUrlFetcher.getErrorResponse()).thenReturn("Forbidden")
 
-        TrustlyService(mockTrustlyUrlFetcher) { assertEquals(settingsFake, it) }.getSettingsData(URL, TOKEN)
+        TrustlyService(mockTrustlyUrlFetcher).getSettingsData(URL, TOKEN) { assertEquals(settingsFake, it) }
     }
 
     @Test
@@ -68,13 +74,40 @@ class TrustlyServiceTest {
         `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenThrow(NullPointerException("Null pointer exception"))
         `when`(mockTrustlyUrlFetcher.getResponse()).thenReturn(null)
 
-        TrustlyService(mockTrustlyUrlFetcher) { assertEquals(settingsFake, it) }.getSettingsData(URL, TOKEN)
+        TrustlyService(mockTrustlyUrlFetcher).getSettingsData(URL, TOKEN) { assertEquals(settingsFake, it) }
+    }
+
+    @Test
+    fun testPostTrackingDataErrorWhenReturnSuccess() {
+        `when`(mockTrustlyUrlFetcher.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK)
+        `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenReturn(true)
+        `when`(mockTrustlyUrlFetcher.getResponse()).thenReturn("{'trustlySdkVersion': '${BuildConfig.SDK_VERSION}', 'deviceSystem': 'Android', 'deviceVersion': '19', 'deviceModel': 'Galaxy S25', 'type': 'error', 'message': 'Caused by: java.lang.NullPointerException at TrustlyWidget.updateEstablishData(establishData)'}")
+
+        TrustlyService(mockTrustlyUrlFetcher).postTrackingData(URL, trackingFake) { assertEquals(trackingFake, it) }
+    }
+
+    @Test
+    fun testPostTrackingDataErrorWhenReturnSuccessForbidden() {
+        `when`(mockTrustlyUrlFetcher.getResponseCode()).thenReturn(HttpURLConnection.HTTP_FORBIDDEN)
+        `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenReturn(false)
+        `when`(mockTrustlyUrlFetcher.getResponse()).thenReturn("Forbidden")
+
+        TrustlyService(mockTrustlyUrlFetcher).postTrackingData(URL, trackingFake) { assertEquals(trackingFake, it) }
+    }
+
+    @Test
+    fun testPostTrackingDataErrorWhenReturnSuccessNullResponse() {
+        `when`(mockTrustlyUrlFetcher.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK)
+        `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenThrow(NullPointerException("Null pointer exception"))
+        `when`(mockTrustlyUrlFetcher.getResponse()).thenReturn("Forbidden")
+
+        TrustlyService(mockTrustlyUrlFetcher).postTrackingData(URL, trackingFake) { assertEquals(trackingFake, it) }
     }
 
     companion object {
 
-        const val TOKEN = "RXN0YWJsaXNoRGF0YVN0cmluZw=="
         const val URL = "https://www.trustly.com"
+        const val TOKEN = "RXN0YWJsaXNoRGF0YVN0cmluZw=="
 
     }
 

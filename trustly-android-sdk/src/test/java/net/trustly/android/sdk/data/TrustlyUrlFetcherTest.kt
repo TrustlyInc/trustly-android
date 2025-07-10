@@ -103,6 +103,13 @@ class TrustlyUrlFetcherTest {
     }
 
     @Test
+    fun shouldValidateTrustlyUrlFetcherSetRequestProperty() {
+        trustlyUrlFetcher.openConnection(mockURL)
+        trustlyUrlFetcher.setRequestProperty("Content-type", "application/json")
+        verify(mockConnection, times(1)).setRequestProperty("Content-type", "application/json")
+    }
+
+    @Test
     fun shouldValidateTrustlyUrlFetcherSetTimeout() {
         `when`(mockConnection.responseCode).thenReturn(HttpURLConnection.HTTP_FORBIDDEN)
 
