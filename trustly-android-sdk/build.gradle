@@ -64,18 +64,18 @@ dependencies {
     implementation 'androidx.browser:browser:1.8.0'
     //noinspection GradleDependency
     implementation 'androidx.core:core-ktx:1.13.1'
-    implementation 'com.google.code.gson:gson:2.11.0'
+    implementation 'com.google.code.gson:gson:2.13.1'
 
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'com.google.code.gson:gson:2.11.0'
-    testImplementation 'org.mockito:mockito-core:5.15.2'
+    testImplementation 'com.google.code.gson:gson:2.13.1'
+    testImplementation 'org.mockito:mockito-core:5.18.0'
     testImplementation 'org.mockito:mockito-inline:5.2.0'
 
     androidTestImplementation 'androidx.test:core:1.6.1'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'androidx.test:runner:1.6.2'
     androidTestImplementation 'androidx.test:rules:1.6.1'
-    androidTestImplementation 'org.mockito:mockito-android:5.10.0'
+    androidTestImplementation 'org.mockito:mockito-android:5.17.0'
 }
 
 tasks.register('javadoc', Javadoc) {
