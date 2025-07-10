@@ -117,7 +117,7 @@ object UrlUtils {
     }
 
     fun getDomain(function: String, establishData: Map<String, String>): String {
-        var environment = if (establishData[ENV] != null) Objects.requireNonNull<String?>(
+        var environment = if (establishData[ENV] != null) Objects.requireNonNull<String>(
             establishData[ENV]
         ).lowercase(Locale.getDefault()) else null
         if (environment == null) {
