@@ -5,7 +5,7 @@ plugins {
     id 'org.jetbrains.kotlin.android' version '2.2.0'
 }
 
-def sdkVersion = "3.5.0"
+def sdkVersion = "3.6.0"
 def localIP = "10.0.2.2"
 
 android {
@@ -15,9 +15,7 @@ android {
         }
     }
     namespace = 'net.trustly.android.sdk'
-
     compileSdk = 36
-
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 36
@@ -34,12 +32,10 @@ android {
             testCoverageEnabled = true
         }
     }
-
     buildTypes.configureEach {
         buildConfigField "String", "SDK_VERSION", "\"$sdkVersion\""
         buildConfigField "String", "LOCAL_IP", "\"$localIP\""
     }
-
     testOptions {
         unitTests.returnDefaultValues = true
     }
@@ -65,6 +61,7 @@ dependencies {
     //noinspection GradleDependency
     implementation 'androidx.core:core-ktx:1.13.1'
     implementation 'com.google.code.gson:gson:2.13.1'
+    implementation 'androidx.multidex:multidex:2.0.1'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'com.google.code.gson:gson:2.13.1'
