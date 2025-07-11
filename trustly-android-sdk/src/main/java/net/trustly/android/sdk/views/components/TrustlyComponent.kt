@@ -14,10 +14,10 @@ abstract class TrustlyComponent {
         token: String,
         settingsCallback: (Settings) -> Unit
     ) {
-        TrustlyService(trustlyUrlFetcher) { settingsCallback.invoke(it) }.getSettingsData(
+        TrustlyService(trustlyUrlFetcher).getSettingsData(
             baseUrl,
             token
-        )
+        ) { settingsCallback.invoke(it) }
     }
 
 }
