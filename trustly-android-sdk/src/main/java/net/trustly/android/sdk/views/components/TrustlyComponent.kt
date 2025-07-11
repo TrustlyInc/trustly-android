@@ -20,4 +20,14 @@ abstract class TrustlyComponent {
         ) { settingsCallback.invoke(it) }
     }
 
+    fun postLightboxUrl(
+        trustlyUrlFetcher: TrustlyUrlFetcher,
+        baseUrl: String,
+        lightboxUrlCallback: (String?) -> Unit
+    ) {
+        TrustlyService(trustlyUrlFetcher).postLightboxUrl(
+            baseUrl
+        ) { lightboxUrlCallback.invoke(it) }
+    }
+
 }

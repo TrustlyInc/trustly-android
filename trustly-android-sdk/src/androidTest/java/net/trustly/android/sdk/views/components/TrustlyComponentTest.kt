@@ -6,29 +6,14 @@ import net.trustly.android.sdk.TrustlyActivityTest
 import net.trustly.android.sdk.data.Settings
 import net.trustly.android.sdk.data.StrategySetting
 import net.trustly.android.sdk.data.TrustlyUrlFetcher
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.MockitoAnnotations
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class TrustlyComponentTest : TrustlyActivityTest() {
-
-    @Before
-    override fun setUp() {
-        super.setUp()
-
-        MockitoAnnotations.openMocks(this)
-    }
-
-    @After
-    override fun tearDown() {
-        super.tearDown()
-    }
 
     @Test
     fun shouldValidateTrustlyComponentInstance() {
@@ -54,7 +39,7 @@ class TrustlyComponentTest : TrustlyActivityTest() {
     }
 
     @Test
-    fun shouldValidateTrustlyComponentGetSettingsDataSuccess() {
+    fun shouldValidateTrustlyComponentGetSettingsData() {
         scenario.onActivity {
             val settingsFake = Settings(StrategySetting("webview"))
             val trustlyUrlFetcher = TrustlyUrlFetcher()
@@ -66,25 +51,12 @@ class TrustlyComponentTest : TrustlyActivityTest() {
     }
 
     @Test
-    fun shouldValidateTrustlyComponentGetSettingsDataFailedNullBody() {
+    fun shouldValidateTrustlyComponentPostLightboxUrl() {
         scenario.onActivity {
-            val settingsFake = Settings(StrategySetting("webview"))
             val trustlyUrlFetcher = TrustlyUrlFetcher()
             val trustlyComponent = MockTrustlyComponent()
-            trustlyComponent.getSettingsData(trustlyUrlFetcher, URL, TOKEN) {
-                assertEquals(settingsFake, it)
-            }
-        }
-    }
-
-    @Test
-    fun shouldValidateTrustlyComponentGetSettingsDataFailed() {
-        scenario.onActivity {
-            val settingsFake = Settings(StrategySetting("webview"))
-            val trustlyUrlFetcher = TrustlyUrlFetcher()
-            val trustlyComponent = MockTrustlyComponent()
-            trustlyComponent.getSettingsData(trustlyUrlFetcher, URL, TOKEN) {
-                assertEquals(settingsFake, it)
+            trustlyComponent.postLightboxUrl(trustlyUrlFetcher, URL) {
+                assertEquals(null, it)
             }
         }
     }

@@ -89,7 +89,7 @@ class TrustlyUrlFetcherTest {
         `when`(mockConnection.responseCode).thenReturn(HttpURLConnection.HTTP_FORBIDDEN)
 
         trustlyUrlFetcher.openConnection(mockURL)
-        trustlyUrlFetcher.setRequestMethod("GET")
+        trustlyUrlFetcher.setRequestMethod(TrustlyUrlFetcher.Method.GET)
         verify(mockConnection, times(1)).setRequestMethod("GET")
     }
 
@@ -98,7 +98,7 @@ class TrustlyUrlFetcherTest {
         `when`(mockConnection.responseCode).thenReturn(HttpURLConnection.HTTP_FORBIDDEN)
 
         trustlyUrlFetcher.openConnection(mockURL)
-        trustlyUrlFetcher.setRequestMethod("POST")
+        trustlyUrlFetcher.setRequestMethod(TrustlyUrlFetcher.Method.POST)
         verify(mockConnection, times(1)).setRequestMethod("POST")
     }
 

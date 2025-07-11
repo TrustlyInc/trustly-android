@@ -17,8 +17,8 @@ class TrustlyUrlFetcher {
         connection = url.openConnection() as HttpURLConnection
     }
 
-    fun setRequestMethod(method: String) {
-        connection.requestMethod = method
+    fun setRequestMethod(method: Method) {
+        connection.requestMethod = method.name
     }
 
     fun setTimeOut(timeout: Int) {
@@ -38,6 +38,10 @@ class TrustlyUrlFetcher {
 
     fun disconnect() {
         connection.disconnect()
+    }
+
+    enum class Method {
+        GET, POST
     }
 
 }

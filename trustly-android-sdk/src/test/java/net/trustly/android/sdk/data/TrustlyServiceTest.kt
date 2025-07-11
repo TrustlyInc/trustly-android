@@ -71,6 +71,44 @@ class TrustlyServiceTest {
         TrustlyService(mockTrustlyUrlFetcher).getSettingsData(URL, TOKEN) { assertEquals(settingsFake, it) }
     }
 
+    @Test
+    fun shouldValidateTrustlyServicePostLightboxUrlWhenReturnSuccess() {
+        val lightboxUrlFake = "http://trustly.lightboxurl.com"
+
+        `when`(mockTrustlyUrlFetcher.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK)
+        `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenReturn(true)
+        `when`(mockTrustlyUrlFetcher.getResponse()).thenReturn("http://trustly.lightboxurl.com")
+
+        TrustlyService(mockTrustlyUrlFetcher).postLightboxUrl(URL) { assertEquals(lightboxUrlFake, it) }
+    }
+
+    @Test
+    fun shouldValidateTrustlyServicePostLightboxUrlWhenReturnSuccessForbidden() {
+        `when`(mockTrustlyUrlFetcher.getResponseCode()).thenReturn(HttpURLConnection.HTTP_FORBIDDEN)
+        `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenReturn(false)
+        `when`(mockTrustlyUrlFetcher.getErrorResponse()).thenReturn("Forbidden")
+
+        TrustlyService(mockTrustlyUrlFetcher).postLightboxUrl(URL) { assertEquals(null, it) }
+    }
+
+    @Test
+    fun shouldValidateTrustlyServicePostLightboxUrlWhenReturnSuccessWithNullResponse() {
+        `when`(mockTrustlyUrlFetcher.getResponseCode()).thenReturn(HttpURLConnection.HTTP_FORBIDDEN)
+        `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenReturn(true)
+        `when`(mockTrustlyUrlFetcher.getResponse()).thenReturn(null)
+
+        TrustlyService(mockTrustlyUrlFetcher).postLightboxUrl(URL) { assertEquals(null, it) }
+    }
+
+    @Test
+    fun shouldValidateTrustlyServicePostLightboxUrlWhenReturnSuccessThrowsException() {
+        `when`(mockTrustlyUrlFetcher.getResponseCode()).thenReturn(HttpURLConnection.HTTP_FORBIDDEN)
+        `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenReturn(true)
+        `when`(mockTrustlyUrlFetcher.getResponse()).thenThrow(NullPointerException())
+
+        TrustlyService(mockTrustlyUrlFetcher).postLightboxUrl(URL) { assertEquals(null, it) }
+    }
+
     companion object {
 
         const val TOKEN = "RXN0YWJsaXNoRGF0YVN0cmluZw=="

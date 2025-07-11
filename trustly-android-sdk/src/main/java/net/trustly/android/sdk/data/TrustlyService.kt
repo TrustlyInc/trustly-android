@@ -12,7 +12,7 @@ class TrustlyService(private val urlFetcher: TrustlyUrlFetcher) {
             urlFetcher.let {
                 val url = URL("$baseUrl/frontend/mobile/setup?token=$token")
                 it.openConnection(url)
-                it.setRequestMethod("GET")
+                it.setRequestMethod(TrustlyUrlFetcher.Method.GET)
                 it.setTimeOut(10000)
                 try {
                     if (it.isUrlAvailable()) {
@@ -23,6 +23,29 @@ class TrustlyService(private val urlFetcher: TrustlyUrlFetcher) {
                     }
                 } catch (_: Exception) {
                     settings.invoke(settingsResponseDefault)
+                } finally {
+                    it.disconnect()
+                }
+            }
+        }.start()
+    }
+
+    fun postLightboxUrl(baseUrl: String, lightboxUrl: (String?) -> Unit) {
+        Thread {
+            urlFetcher.let {
+                val url = URL(baseUrl)
+                it.openConnection(url)
+                it.setRequestMethod(TrustlyUrlFetcher.Method.POST)
+                it.setTimeOut(10000)
+                try {
+                    if (it.isUrlAvailable()) {
+                        val apiResponse = Gson().fromJson(it.getResponse(), String::class.java)
+                        lightboxUrl.invoke(apiResponse)
+                    } else {
+                        lightboxUrl.invoke(null)
+                    }
+                } catch (_: Exception) {
+                    lightboxUrl.invoke(null)
                 } finally {
                     it.disconnect()
                 }
