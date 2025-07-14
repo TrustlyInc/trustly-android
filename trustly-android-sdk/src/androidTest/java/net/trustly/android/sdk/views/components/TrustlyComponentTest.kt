@@ -55,7 +55,12 @@ class TrustlyComponentTest : TrustlyActivityTest() {
         scenario.onActivity {
             val trustlyUrlFetcher = TrustlyUrlFetcher()
             val trustlyComponent = MockTrustlyComponent()
-            trustlyComponent.postLightboxUrl(trustlyUrlFetcher, URL) {
+            trustlyComponent.postLightboxUrl(
+                trustlyUrlFetcher,
+                URL,
+                "user-agent",
+                byteArrayOf()
+            ) {
                 assertEquals(null, it)
             }
         }

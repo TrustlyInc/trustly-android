@@ -134,4 +134,10 @@ class TrustlyUrlFetcherTest {
         verify(mockConnection, times(1)).disconnect()
     }
 
+    @Test
+    fun shouldValidateTrustlyUrlFetcherAddHeader() {
+        trustlyUrlFetcher.addHeader("key", "value")
+        verify(mockConnection, times(1)).addRequestProperty("key", "value")
+    }
+
 }

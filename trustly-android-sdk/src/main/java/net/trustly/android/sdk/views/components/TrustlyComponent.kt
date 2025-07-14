@@ -23,10 +23,14 @@ abstract class TrustlyComponent {
     fun postLightboxUrl(
         trustlyUrlFetcher: TrustlyUrlFetcher,
         baseUrl: String,
+        userAgentString: String,
+        encodedParameters: ByteArray,
         lightboxUrlCallback: (String?) -> Unit
     ) {
         TrustlyService(trustlyUrlFetcher).postLightboxUrl(
-            baseUrl
+            baseUrl,
+            userAgentString,
+            encodedParameters
         ) { lightboxUrlCallback.invoke(it) }
     }
 

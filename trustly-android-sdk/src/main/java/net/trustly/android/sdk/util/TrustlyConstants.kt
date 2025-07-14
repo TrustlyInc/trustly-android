@@ -24,6 +24,7 @@ object TrustlyConstants {
     const val MERCHANT_REFERENCE: String = "merchantReference"
     const val CUSTOMER_ADDRESS_COUNTRY: String = "customer.address.country"
     const val REQUEST_SIGNATURE: String = "requestSignature"
+    const val STORAGE: String = "storage"
 
     const val WIDGET: String = "widget"
     const val WIDGET_LOADED: String = "widgetLoaded"

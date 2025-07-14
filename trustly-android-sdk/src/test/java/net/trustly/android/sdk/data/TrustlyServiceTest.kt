@@ -79,7 +79,16 @@ class TrustlyServiceTest {
         `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenReturn(true)
         `when`(mockTrustlyUrlFetcher.getResponse()).thenReturn("http://trustly.lightboxurl.com")
 
-        TrustlyService(mockTrustlyUrlFetcher).postLightboxUrl(URL) { assertEquals(lightboxUrlFake, it) }
+        TrustlyService(mockTrustlyUrlFetcher).postLightboxUrl(
+            URL,
+            "user-agent",
+            byteArrayOf()
+        ) {
+            assertEquals(
+                lightboxUrlFake,
+                it
+            )
+        }
     }
 
     @Test
@@ -88,7 +97,16 @@ class TrustlyServiceTest {
         `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenReturn(false)
         `when`(mockTrustlyUrlFetcher.getErrorResponse()).thenReturn("Forbidden")
 
-        TrustlyService(mockTrustlyUrlFetcher).postLightboxUrl(URL) { assertEquals(null, it) }
+        TrustlyService(mockTrustlyUrlFetcher).postLightboxUrl(
+            URL,
+            "user-agent",
+            byteArrayOf()
+        ) {
+            assertEquals(
+                null,
+                it
+            )
+        }
     }
 
     @Test
@@ -97,7 +115,16 @@ class TrustlyServiceTest {
         `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenReturn(true)
         `when`(mockTrustlyUrlFetcher.getResponse()).thenReturn(null)
 
-        TrustlyService(mockTrustlyUrlFetcher).postLightboxUrl(URL) { assertEquals(null, it) }
+        TrustlyService(mockTrustlyUrlFetcher).postLightboxUrl(
+            URL,
+            "user-agent",
+            byteArrayOf()
+        ) {
+            assertEquals(
+                null,
+                it
+            )
+        }
     }
 
     @Test
@@ -106,7 +133,16 @@ class TrustlyServiceTest {
         `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenReturn(true)
         `when`(mockTrustlyUrlFetcher.getResponse()).thenThrow(NullPointerException())
 
-        TrustlyService(mockTrustlyUrlFetcher).postLightboxUrl(URL) { assertEquals(null, it) }
+        TrustlyService(mockTrustlyUrlFetcher).postLightboxUrl(
+            URL,
+            "user-agent",
+            byteArrayOf()
+        ) {
+            assertEquals(
+                null,
+                it
+            )
+        }
     }
 
     companion object {

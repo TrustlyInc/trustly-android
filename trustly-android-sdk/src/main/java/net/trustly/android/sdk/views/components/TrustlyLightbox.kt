@@ -1,6 +1,8 @@
 package net.trustly.android.sdk.views.components
 
 import android.content.Context
+import android.os.Build
+import android.util.Log
 import android.webkit.WebView
 import net.trustly.android.sdk.BuildConfig
 import net.trustly.android.sdk.data.Settings
@@ -23,6 +25,7 @@ import net.trustly.android.sdk.util.TrustlyConstants.METADATA_URL_SCHEME
 import net.trustly.android.sdk.util.TrustlyConstants.PAYMENT_PROVIDER_ID
 import net.trustly.android.sdk.util.TrustlyConstants.RETURN_URL
 import net.trustly.android.sdk.util.TrustlyConstants.SESSION_CID
+import net.trustly.android.sdk.util.TrustlyConstants.STORAGE
 import net.trustly.android.sdk.util.TrustlyConstants.WIDGET_LOADED
 import net.trustly.android.sdk.util.UrlUtils
 import net.trustly.android.sdk.util.api.APIRequestManager
@@ -81,25 +84,36 @@ class TrustlyLightbox(
     }
 
     private fun openWebViewOrCustomTabs(settings: Settings, establishData: HashMap<String, String>) {
-        if (settings.settings.integrationStrategy == INTEGRATION_STRATEGY_DEFAULT) {
+        val useWebView = settings.settings.integrationStrategy == INTEGRATION_STRATEGY_DEFAULT
+        if (useWebView) {
             establishData[METADATA_INTEGRATION_CONTEXT] = "InAppBrowser"
-            val encodedParameters = UrlUtils.getParameterString(establishData.toMap()).toByteArray(StandardCharsets.UTF_8)
-            webView.post { webView.postUrl(UrlUtils.getEndpointUrl(FUNCTION_INDEX, establishData), encodedParameters) }
         } else {
             establishData[METADATA_URL_SCHEME]?.let {
                 establishData[RETURN_URL] = it
                 establishData[CANCEL_URL] = it
             }
-            TrustlyCustomTabsManager.openCustomTabsIntent(
-                context,
-                UrlUtils.getEndpointUrl(
-                    FUNCTION_MOBILE,
-                    establishData
-                ) + "?token=" + getTokenByEncodedParameters(establishData)
-            )
         }
-        trustlyEvents.notifyClose()
+        establishData[STORAGE] = "supported"
+
+        val userAgentString = webView.settings.userAgentString ?: getInAppBrowserUserAgent()
+        val encodedParameters = UrlUtils.getParameterString(establishData.toMap()).toByteArray(
+            StandardCharsets.UTF_8)
+        super.postLightboxUrl(TrustlyUrlFetcher(), UrlUtils.getEndpointUrl(FUNCTION_INDEX, establishData), userAgentString, encodedParameters) {
+            Log.d("TrustlyLightbox", it.toString())
+            if (it != null) {
+                if (useWebView) {
+                    with(webView) {
+                        loadUrl(it)
+                    }
+                }
+                else TrustlyCustomTabsManager.openCustomTabsIntent(context, it)
+            }
+            trustlyEvents.notifyClose()
+        }
     }
+
+    private fun getInAppBrowserUserAgent() = "Mozilla/5.0 (Linux; Android " + Build.VERSION.RELEASE + "; " + Build.MODEL + ") " +
+                "AppleWebKit/537.36 (KHTML, like Gecko) InAppBrowser/1.0 Mobile Safari/537.36"
 
     private fun getTokenByEncodedParameters(data: Map<String, String>): String {
         val jsonFromParameters = UrlUtils.getJsonFromParameters(data)

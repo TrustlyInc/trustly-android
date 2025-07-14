@@ -40,6 +40,21 @@ class TrustlyUrlFetcher {
         connection.disconnect()
     }
 
+    fun addHeader(key: String, value: String) {
+        connection.setRequestProperty(key, value)
+    }
+
+    fun setDoOutput(doOutput: Boolean) {
+        connection.doOutput = doOutput
+    }
+
+    fun addBody(encodedParameters: ByteArray) {
+        connection.outputStream.use { os ->
+            os.write(encodedParameters)
+            os.flush()
+        }
+    }
+
     enum class Method {
         GET, POST
     }
