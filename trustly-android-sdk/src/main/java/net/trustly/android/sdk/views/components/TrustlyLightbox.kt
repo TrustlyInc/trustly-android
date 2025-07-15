@@ -105,9 +105,7 @@ class TrustlyLightbox(
                 if (it != null) {
                     if (useWebView) {
                         with(webView) {
-                            post {
-                                loadUrl(it)
-                            }
+                            post { loadUrl(it) }
                         }
                     } else TrustlyCustomTabsManager.openCustomTabsIntent(context, it)
                 }
