@@ -1,5 +1,6 @@
 package net.trustly.android.sdk.views.components
 
+import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -16,6 +17,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.clearInvocations
+import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import java.util.Calendar
 
@@ -26,6 +28,9 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
     @Mock
     lateinit var mockWebView: WebView
 
+    @Mock
+    lateinit var mockWebSettings: WebSettings
+
     private lateinit var trustlyEvents: TrustlyEvents
 
     @Before
@@ -35,13 +40,15 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
         MockitoAnnotations.openMocks(this)
 
         trustlyEvents = TrustlyEvents()
+
+        `when`(mockWebView.settings).thenReturn(mockWebSettings)
     }
 
     @After
     override fun tearDown() {
         super.tearDown()
 
-        clearInvocations(mockWebView)
+        clearInvocations(mockWebView, mockWebSettings)
     }
 
     @Test
@@ -57,9 +64,9 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
         scenario.onActivity { activity ->
             val trustlyLightbox = TrustlyLightbox(activity, mockWebView, "returnUrl", "cancelUrl", trustlyEvents)
             trustlyLightbox.updateEstablishData(mapOf(), 0)
+            waitToCloseCustomTabs()
             assertNotNull(trustlyLightbox)
         }
-        waitToCloseCustomTabs()
     }
 
     @Test
@@ -116,6 +123,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
 
             val trustlyLightbox = TrustlyLightbox(activity, mockWebView, "returnUrl", "cancelUrl", trustlyEvents)
             trustlyLightbox.updateEstablishData(EstablishDataMock.getEstablishDataValues(), 0)
+            waitToCloseCustomTabs()
             assertNotNull(trustlyLightbox)
         }
     }

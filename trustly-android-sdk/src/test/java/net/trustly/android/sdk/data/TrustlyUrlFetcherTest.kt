@@ -7,6 +7,7 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito.clearInvocations
 import org.mockito.Mockito.times
@@ -14,7 +15,8 @@ import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import java.io.ByteArrayInputStream
-import java.io.InputStream
+import java.io.ByteArrayOutputStream
+import java.io.DataOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -25,9 +27,6 @@ class TrustlyUrlFetcherTest {
 
     @Mock
     private lateinit var mockConnection: HttpURLConnection
-
-    @Mock
-    private lateinit var mockInputStream: InputStream
 
     private lateinit var trustlyUrlFetcher: TrustlyUrlFetcher
 
@@ -43,7 +42,7 @@ class TrustlyUrlFetcherTest {
 
     @After
     fun tearDown() {
-        clearInvocations(mockURL, mockConnection, mockInputStream)
+        clearInvocations(mockURL, mockConnection)
     }
 
     @Test
@@ -82,6 +81,22 @@ class TrustlyUrlFetcherTest {
 
         trustlyUrlFetcher.openConnection(mockURL)
         assertFalse(trustlyUrlFetcher.isUrlAvailable())
+    }
+
+    @Test
+    fun shouldValidateTrustlyUrlFetcherIsUrlRedirect() {
+        `when`(mockConnection.responseCode).thenReturn(HttpURLConnection.HTTP_MOVED_TEMP)
+
+        trustlyUrlFetcher.openConnection(mockURL)
+        assertTrue(trustlyUrlFetcher.isUrlRedirect())
+    }
+
+    @Test
+    fun shouldValidateTrustlyUrlFetcherIsUrlNotRedirect() {
+        `when`(mockConnection.responseCode).thenReturn(HttpURLConnection.HTTP_FORBIDDEN)
+
+        trustlyUrlFetcher.openConnection(mockURL)
+        assertFalse(trustlyUrlFetcher.isUrlRedirect())
     }
 
     @Test
@@ -137,7 +152,42 @@ class TrustlyUrlFetcherTest {
     @Test
     fun shouldValidateTrustlyUrlFetcherAddHeader() {
         trustlyUrlFetcher.addHeader("key", "value")
-        verify(mockConnection, times(1)).addRequestProperty("key", "value")
+        verify(mockConnection, times(1)).setRequestProperty("key", "value")
+    }
+
+    @Test
+    fun shouldValidateTrustlyUrlFetcherSetDoOutput() {
+        trustlyUrlFetcher.setDoOutput(true)
+        verify(mockConnection, times(1)).doOutput = true
+    }
+
+    @Test
+    fun shouldValidateTrustlyUrlFetcherSetDoInput() {
+        trustlyUrlFetcher.setDoInput(true)
+        verify(mockConnection, times(1)).doInput = true
+    }
+
+    @Test
+    fun shouldValidateTrustlyUrlFetcherSetInstanceFollowRedirects() {
+        trustlyUrlFetcher.setInstanceFollowRedirects(true)
+        verify(mockConnection, times(1)).instanceFollowRedirects = true
+    }
+
+    @Test
+    fun shouldValidateTrustlyUrlFetcherGetHeaderFields() {
+        `when`(mockConnection.getHeaderField(anyString())).thenReturn("url")
+
+        val response = trustlyUrlFetcher.getHeaderField("fieldName")
+        assertEquals("url", response)
+        verify(mockConnection, times(1)).getHeaderField("fieldName")
+    }
+
+    @Test
+    fun shouldValidateTrustlyUrlFetcherAddBody() {
+        `when`(mockConnection.outputStream).thenReturn(DataOutputStream(ByteArrayOutputStream(1000)))
+
+        trustlyUrlFetcher.addBody(byteArrayOf())
+        assertNotNull(mockConnection.outputStream)
     }
 
 }

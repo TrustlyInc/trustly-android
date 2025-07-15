@@ -4,6 +4,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito.clearInvocations
 import org.mockito.Mockito.`when`
@@ -75,9 +76,9 @@ class TrustlyServiceTest {
     fun shouldValidateTrustlyServicePostLightboxUrlWhenReturnSuccess() {
         val lightboxUrlFake = "http://trustly.lightboxurl.com"
 
-        `when`(mockTrustlyUrlFetcher.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK)
-        `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenReturn(true)
-        `when`(mockTrustlyUrlFetcher.getResponse()).thenReturn("http://trustly.lightboxurl.com")
+        `when`(mockTrustlyUrlFetcher.getResponseCode()).thenReturn(HttpURLConnection.HTTP_MOVED_TEMP)
+        `when`(mockTrustlyUrlFetcher.isUrlRedirect()).thenReturn(true)
+        `when`(mockTrustlyUrlFetcher.getHeaderField(anyString())).thenReturn("http://trustly.lightboxurl.com")
 
         TrustlyService(mockTrustlyUrlFetcher).postLightboxUrl(
             URL,
@@ -94,7 +95,7 @@ class TrustlyServiceTest {
     @Test
     fun shouldValidateTrustlyServicePostLightboxUrlWhenReturnSuccessForbidden() {
         `when`(mockTrustlyUrlFetcher.getResponseCode()).thenReturn(HttpURLConnection.HTTP_FORBIDDEN)
-        `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenReturn(false)
+        `when`(mockTrustlyUrlFetcher.isUrlRedirect()).thenReturn(false)
         `when`(mockTrustlyUrlFetcher.getErrorResponse()).thenReturn("Forbidden")
 
         TrustlyService(mockTrustlyUrlFetcher).postLightboxUrl(
@@ -110,28 +111,10 @@ class TrustlyServiceTest {
     }
 
     @Test
-    fun shouldValidateTrustlyServicePostLightboxUrlWhenReturnSuccessWithNullResponse() {
-        `when`(mockTrustlyUrlFetcher.getResponseCode()).thenReturn(HttpURLConnection.HTTP_FORBIDDEN)
-        `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenReturn(true)
-        `when`(mockTrustlyUrlFetcher.getResponse()).thenReturn(null)
-
-        TrustlyService(mockTrustlyUrlFetcher).postLightboxUrl(
-            URL,
-            "user-agent",
-            byteArrayOf()
-        ) {
-            assertEquals(
-                null,
-                it
-            )
-        }
-    }
-
-    @Test
     fun shouldValidateTrustlyServicePostLightboxUrlWhenReturnSuccessThrowsException() {
-        `when`(mockTrustlyUrlFetcher.getResponseCode()).thenReturn(HttpURLConnection.HTTP_FORBIDDEN)
-        `when`(mockTrustlyUrlFetcher.isUrlAvailable()).thenReturn(true)
-        `when`(mockTrustlyUrlFetcher.getResponse()).thenThrow(NullPointerException())
+        `when`(mockTrustlyUrlFetcher.getResponseCode()).thenReturn(HttpURLConnection.HTTP_MOVED_TEMP)
+        `when`(mockTrustlyUrlFetcher.isUrlRedirect()).thenReturn(true)
+        `when`(mockTrustlyUrlFetcher.getHeaderField(anyString())).thenThrow(NullPointerException())
 
         TrustlyService(mockTrustlyUrlFetcher).postLightboxUrl(
             URL,

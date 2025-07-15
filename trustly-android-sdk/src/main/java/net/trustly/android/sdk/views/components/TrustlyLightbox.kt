@@ -2,7 +2,8 @@ package net.trustly.android.sdk.views.components
 
 import android.content.Context
 import android.os.Build
-import android.util.Log
+import android.os.Handler
+import android.os.Looper
 import android.webkit.WebView
 import net.trustly.android.sdk.BuildConfig
 import net.trustly.android.sdk.data.Settings
@@ -95,20 +96,23 @@ class TrustlyLightbox(
         }
         establishData[STORAGE] = "supported"
 
-        val userAgentString = webView.settings.userAgentString ?: getInAppBrowserUserAgent()
-        val encodedParameters = UrlUtils.getParameterString(establishData.toMap()).toByteArray(
-            StandardCharsets.UTF_8)
-        super.postLightboxUrl(TrustlyUrlFetcher(), UrlUtils.getEndpointUrl(FUNCTION_INDEX, establishData), userAgentString, encodedParameters) {
-            Log.d("TrustlyLightbox", it.toString())
-            if (it != null) {
-                if (useWebView) {
-                    with(webView) {
-                        loadUrl(it)
-                    }
+        Handler(Looper.getMainLooper()).post {
+            val userAgentString = webView.settings.userAgentString ?: getInAppBrowserUserAgent()
+            val encodedParameters = UrlUtils.getParameterString(establishData.toMap()).toByteArray(
+                StandardCharsets.UTF_8
+            )
+            super.postLightboxUrl(TrustlyUrlFetcher(), UrlUtils.getEndpointUrl(FUNCTION_INDEX, establishData), userAgentString, encodedParameters) {
+                if (it != null) {
+                    if (useWebView) {
+                        with(webView) {
+                            post {
+                                loadUrl(it)
+                            }
+                        }
+                    } else TrustlyCustomTabsManager.openCustomTabsIntent(context, it)
                 }
-                else TrustlyCustomTabsManager.openCustomTabsIntent(context, it)
+                trustlyEvents.notifyClose()
             }
-            trustlyEvents.notifyClose()
         }
     }
 

@@ -1,6 +1,7 @@
 package net.trustly.android.sdk.data
 
 import java.io.BufferedReader
+import java.io.DataOutputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
@@ -12,6 +13,8 @@ class TrustlyUrlFetcher {
     fun getResponseCode() = connection.responseCode
 
     fun isUrlAvailable() = getResponseCode() == HttpURLConnection.HTTP_OK
+
+    fun isUrlRedirect() = getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP
 
     fun openConnection(url: URL) {
         connection = url.openConnection() as HttpURLConnection
@@ -44,16 +47,25 @@ class TrustlyUrlFetcher {
         connection.setRequestProperty(key, value)
     }
 
+    fun setDoInput(doInput: Boolean) {
+        connection.doInput = doInput
+    }
+
     fun setDoOutput(doOutput: Boolean) {
         connection.doOutput = doOutput
     }
 
     fun addBody(encodedParameters: ByteArray) {
-        connection.outputStream.use { os ->
-            os.write(encodedParameters)
-            os.flush()
-        }
+        val outputStream = DataOutputStream(connection.outputStream)
+        outputStream.write(encodedParameters)
+        outputStream.close()
     }
+
+    fun setInstanceFollowRedirects(followRedirects: Boolean) {
+        connection.instanceFollowRedirects = followRedirects
+    }
+
+    fun getHeaderField(field: String): String = connection.getHeaderField(field);
 
     enum class Method {
         GET, POST
