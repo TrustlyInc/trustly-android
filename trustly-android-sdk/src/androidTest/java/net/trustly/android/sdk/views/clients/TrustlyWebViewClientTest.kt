@@ -177,19 +177,6 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
     }
 
     @Test
-    fun shouldValidateTrustlyWebViewClientOnErrorReceived() {
-        scenario.onActivity { activity: MockActivity ->
-            trustlyEvents.setOnCancelCallback(mockOnCancelCallback)
-            trustlyView = TrustlyView(activity.applicationContext)
-            val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
-            trustlyWebViewClient.onReceivedError(webView, 0, "", URL)
-            assertNotNull(trustlyWebViewClient)
-            verify(mockOnCancelCallback, times(1)).handle(trustlyView, HashMap())
-        }
-    }
-
-    @Test
     fun shouldValidateTrustlyWebViewClientOnErrorReceivedOnCancelLocalEnvironmentJPG() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
@@ -211,30 +198,6 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
             val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             trustlyWebViewClient.onReceivedError(webView, 0, "", "$URL/image.jpg")
             verify(mockOnCancelCallback, times(0)).handle(trustlyView, HashMap())
-        }
-    }
-
-    @Test
-    fun shouldValidateTrustlyWebViewClientOnErrorReceivedCallNullOnCancelDOC() {
-        scenario.onActivity { activity: MockActivity ->
-            trustlyView = TrustlyView(activity.applicationContext)
-            trustlyEvents.setOnCancelCallback(mockOnCancelCallback)
-            val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
-            trustlyWebViewClient.onReceivedError(webView, 0, "", "$URL/document.doc")
-            verify(mockOnCancelCallback, times(1)).handle(trustlyView, HashMap())
-        }
-    }
-
-    @Test
-    fun shouldValidateTrustlyWebViewClientOnErrorReceivedCallOnCancelDOC() {
-        scenario.onActivity { activity: MockActivity ->
-            trustlyView = TrustlyView(activity.applicationContext)
-            trustlyEvents.setOnCancelCallback(mockOnCancelCallback)
-            val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
-            trustlyWebViewClient.onReceivedError(webView, 0, "", "$URL/document.doc")
-            verify(mockOnCancelCallback, times(1)).handle(trustlyView, HashMap())
         }
     }
 
@@ -261,18 +224,6 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
             val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             trustlyWebViewClient.onReceivedError(webView, 0, "", "$URL/image.jpg")
             verify(mockOnCancelCallback, times(0)).handle(trustlyView, HashMap())
-        }
-    }
-
-    @Test
-    fun shouldValidateTrustlyWebViewClientOnErrorReceivedCallOnCancelNotLocalEnvironmentOnCancel() {
-        scenario.onActivity { activity: MockActivity ->
-            trustlyView = TrustlyView(activity.applicationContext)
-            trustlyEvents.setOnCancelCallback(mockOnCancelCallback)
-            val webView = WebView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
-            trustlyWebViewClient.onReceivedError(webView, 0, "", "$URL/image.doc")
-            verify(mockOnCancelCallback, times(1)).handle(trustlyView, HashMap())
         }
     }
 

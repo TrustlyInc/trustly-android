@@ -1,7 +1,6 @@
 package net.trustly.android.sdk.views.clients
 
 import android.os.Build
-import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -47,27 +46,6 @@ class TrustlyWebViewClient(
         handleWebViewClientOnPageFinished(view, trustlyView)
     }
 
-    @Suppress("DEPRECATION")
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    override fun onReceivedError(
-        view: WebView,
-        request: WebResourceRequest,
-        error: WebResourceError?
-    ) {
-        val url = request.url.toString()
-        this.onReceivedError(view, 0, "", url)
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onReceivedError(
-        view: WebView,
-        errorCode: Int,
-        description: String,
-        failingUrl: String
-    ) {
-        handleWebViewClientOnReceivedError(trustlyView, failingUrl)
-    }
-
     private fun handleWebViewClientShouldOverrideUrlLoading(url: String): Boolean {
         if (url.startsWith(returnURL) || url.startsWith(cancelURL)) {
             val queryParametersFromUrl = UrlUtils.getQueryParametersFromUrl(url)
@@ -104,13 +82,6 @@ class TrustlyWebViewClient(
             }
         }
         trustlyEvents.notifyWidgetLoaded()
-    }
-
-    private fun handleWebViewClientOnReceivedError(trustlyView: TrustlyView, failingUrl: String) {
-        val isAssetFile = failingUrl.matches(".*(svg|png|jpg|jpeg|css|gif|webp)$".toRegex())
-        if (!TrustlyView.isLocalEnvironment() && !isAssetFile) {
-            trustlyEvents.handleOnCancel(trustlyView, HashMap())
-        }
     }
 
 }
