@@ -1,6 +1,6 @@
 plugins {
     id 'maven-publish'
-    id 'com.android.library' version '8.11.0'
+    id 'com.android.library' version '8.11.1'
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
     id 'org.jetbrains.kotlin.android' version '2.2.0'
 }
@@ -14,41 +14,37 @@ android {
             withSourcesJar()
         }
     }
-    namespace 'net.trustly.android.sdk'
-
-    compileSdk 36
-
+    namespace = 'net.trustly.android.sdk'
+    compileSdk = 36
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 34
+        targetSdkVersion 36
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        multiDexEnabled true
+        multiDexEnabled = true
     }
     buildTypes {
         debug {
-            testCoverageEnabled true
+            testCoverageEnabled = true
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            testCoverageEnabled true
+            testCoverageEnabled = true
         }
     }
-
     buildTypes.configureEach {
         buildConfigField "String", "SDK_VERSION", "\"$sdkVersion\""
         buildConfigField "String", "LOCAL_IP", "\"$localIP\""
     }
-
     testOptions {
         unitTests.returnDefaultValues = true
     }
     buildFeatures {
-        buildConfig true
+        buildConfig = true
     }
     sourceSets {
         debug {
-            root 'src/mock'
+            root = 'src/mock'
         }
     }
     kotlinOptions {
@@ -61,14 +57,11 @@ android {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.browser:browser:1.8.0'
     //noinspection GradleDependency
     implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'com.google.code.gson:gson:2.13.1'
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation 'com.squareup.retrofit2:retrofit:3.0.0'
-    implementation 'com.squareup.retrofit2:converter-gson:3.0.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'com.google.code.gson:gson:2.13.1'
@@ -76,11 +69,11 @@ dependencies {
     testImplementation 'org.mockito:mockito-inline:5.2.0'
 
     androidTestImplementation 'androidx.test:core:1.6.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.6.1'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
-    androidTestImplementation 'androidx.test.ext:truth:1.6.0'
     androidTestImplementation 'androidx.test:runner:1.6.2'
     androidTestImplementation 'androidx.test:rules:1.6.1'
+    //noinspection NewerVersionAvailable
+    androidTestImplementation 'org.mockito:mockito-android:5.17.0'
 }
 
 tasks.register('javadoc', Javadoc) {

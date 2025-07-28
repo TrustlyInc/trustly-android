@@ -1,11 +1,13 @@
-package net.trustly.android.sdk.util.api
+package net.trustly.android.sdk.util.cid
 
 import android.content.Context
 import androidx.core.content.edit
 
-object APIRequestStorage {
+object CidStorage {
 
-    private const val API_STORAGE = "API_STORAGE"
+    private const val CID_STORAGE: String = "CID_STORAGE"
+    const val SESSION_CID: String = "SESSION_CID"
+    const val CID: String = "CID"
 
     fun saveData(context: Context, preferenceId: String?, preferenceValue: String?) {
         getSharedPreferences(context).edit { putString(preferenceId, preferenceValue) }
@@ -15,6 +17,6 @@ object APIRequestStorage {
         getSharedPreferences(context).getString(preferenceId, null)
 
     private fun getSharedPreferences(context: Context) =
-        context.getSharedPreferences(API_STORAGE, Context.MODE_PRIVATE)
+        context.getSharedPreferences(CID_STORAGE, Context.MODE_PRIVATE)
 
 }

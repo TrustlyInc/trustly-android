@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.gson.Gson
 import net.trustly.android.sdk.data.Settings
 import net.trustly.android.sdk.data.StrategySetting
+import net.trustly.android.sdk.util.TrustlyConstants.INTEGRATION_STRATEGY_DEFAULT
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
@@ -22,22 +23,22 @@ object APIRequestManager {
         return true
     }
 
-    private fun getAPIRequest(context: Context): String? {
-        return APIRequestStorage.readDataFrom(context, API_REQUEST)
-    }
+    private fun getAPIRequest(context: Context) =
+        APIRequestStorage.readDataFrom(context, API_REQUEST)
 
     fun saveAPIRequestSettings(context: Context, settings: Settings) {
         APIRequestStorage.saveData(context, API_REQUEST_SETTINGS, Gson().toJson(settings))
     }
 
     fun getAPIRequestSettings(context: Context): Settings {
-        val settings = Gson().fromJson(APIRequestStorage.readDataFrom(context, API_REQUEST_SETTINGS), Settings::class.java)
-        return settings ?: Settings(StrategySetting("webview"))
+        val settings = Gson().fromJson(
+            APIRequestStorage.readDataFrom(context, API_REQUEST_SETTINGS),
+            Settings::class.java
+        )
+        return settings ?: Settings(StrategySetting(INTEGRATION_STRATEGY_DEFAULT))
     }
 
-    private fun getTimestamp(): String {
-        return Calendar.getInstance().timeInMillis.toString()
-    }
+    private fun getTimestamp() = Calendar.getInstance().timeInMillis.toString()
 
     private fun isValid(timestamp: String): Boolean {
         val lastTime = Calendar.getInstance()

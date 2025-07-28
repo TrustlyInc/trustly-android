@@ -14,11 +14,11 @@ import org.mockito.Mock
 import org.mockito.Mockito.CALLS_REAL_METHODS
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.clearInvocations
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.mockStatic
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
+import org.mockito.MockitoAnnotations
 import java.util.Calendar
 
 class APIRequestManagerTest {
@@ -37,10 +37,7 @@ class APIRequestManagerTest {
 
     @Before
     fun setUp() {
-        mockedEdit = mock(SharedPreferences.Editor::class.java)
-        mockedPrefs = mock(SharedPreferences::class.java)
-        mockedContext = mock(Context::class.java)
-        mockedCalendar = mock(Calendar::class.java)
+        MockitoAnnotations.openMocks(this)
     }
 
     @After
@@ -49,7 +46,7 @@ class APIRequestManagerTest {
     }
 
     @Test
-    fun testValidateAPIRequestReturnTrue() {
+    fun shouldValidateApiRequestManagerAPIRequestReturnTrue() {
         `when`(mockedEdit.putString(anyString(), anyString())).thenReturn(mockedEdit)
         `when`(mockedPrefs.edit()).thenReturn(mockedEdit)
         `when`(mockedContext.getSharedPreferences("API_STORAGE", Context.MODE_PRIVATE)).thenReturn(mockedPrefs)
@@ -73,7 +70,7 @@ class APIRequestManagerTest {
     }
 
     @Test
-    fun testValidateAPIRequestReturnFalse() {
+    fun shouldValidateApiRequestManagerAPIRequestReturnFalse() {
         `when`(mockedEdit.putString(anyString(), anyString())).thenReturn(mockedEdit)
         `when`(mockedPrefs.edit()).thenReturn(mockedEdit)
         `when`(mockedContext.getSharedPreferences("API_STORAGE", Context.MODE_PRIVATE)).thenReturn(mockedPrefs)
@@ -94,7 +91,7 @@ class APIRequestManagerTest {
     }
 
     @Test
-    fun testGettingDataAPIRequest() {
+    fun shouldValidateApiRequestManagerAPIRequest() {
         `when`(mockedEdit.putString(anyString(), anyString())).thenReturn(mockedEdit)
         `when`(mockedPrefs.edit()).thenReturn(mockedEdit)
         `when`(mockedContext.getSharedPreferences("API_STORAGE", Context.MODE_PRIVATE)).thenReturn(mockedPrefs)
@@ -114,7 +111,7 @@ class APIRequestManagerTest {
     }
 
     @Test
-    fun testGettingDataAPIRequestSettingsWithWebView() {
+    fun shouldValidateApiRequestManagerAPIRequestSettingsWithWebView() {
         val output = getSettingsMockData("webview")
         `when`(mockedContext.getSharedPreferences("API_STORAGE", Context.MODE_PRIVATE)).thenReturn(mockedPrefs)
 
@@ -128,7 +125,7 @@ class APIRequestManagerTest {
     }
 
     @Test
-    fun testGettingDataAPIRequestSettingsWithInAppBrowser() {
+    fun shouldValidateApiRequestManagerAPIRequestSettingsWithInAppBrowser() {
         val output = getSettingsMockData("in-app-browser")
         `when`(mockedContext.getSharedPreferences("API_STORAGE", Context.MODE_PRIVATE)).thenReturn(mockedPrefs)
 
@@ -142,7 +139,7 @@ class APIRequestManagerTest {
     }
 
     @Test
-    fun testGettingDataAPIRequestSettingsWithNull() {
+    fun shouldValidateApiRequestManagerAPIRequestSettingsWithNull() {
         `when`(mockedContext.getSharedPreferences("API_STORAGE", Context.MODE_PRIVATE)).thenReturn(mockedPrefs)
 
         mockStatic(APIRequestStorage::class.java, CALLS_REAL_METHODS).use { static ->
@@ -155,7 +152,7 @@ class APIRequestManagerTest {
     }
 
     @Test
-    fun testSavingDataAPIRequestSettings() {
+    fun shouldValidateApiRequestManagerSavingDataAPIRequestSettings() {
         `when`(mockedEdit.putString(anyString(), anyString())).thenReturn(mockedEdit)
         `when`(mockedPrefs.edit()).thenReturn(mockedEdit)
         `when`(mockedContext.getSharedPreferences("API_STORAGE", Context.MODE_PRIVATE)).thenReturn(mockedPrefs)

@@ -9,10 +9,10 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.clearInvocations
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
+import org.mockito.MockitoAnnotations
 
 class APIRequestStorageTest {
 
@@ -27,9 +27,7 @@ class APIRequestStorageTest {
 
     @Before
     fun setUp() {
-        mockEdit = mock(SharedPreferences.Editor::class.java)
-        mockedPrefs = mock(SharedPreferences::class.java)
-        mockedContext = mock(Context::class.java)
+        MockitoAnnotations.openMocks(this)
     }
 
     @After
@@ -38,7 +36,7 @@ class APIRequestStorageTest {
     }
 
     @Test
-    fun testSavingDataAPIRequest() {
+    fun shouldValidateApiRequestStorageSavingDataAPIRequest() {
         `when`(mockEdit.putString(anyString(), anyString())).thenReturn(mockEdit)
         `when`(mockedPrefs.edit()).thenReturn(mockEdit)
         `when`(mockedContext.getSharedPreferences("API_STORAGE", Context.MODE_PRIVATE)).thenReturn(mockedPrefs)
@@ -50,7 +48,7 @@ class APIRequestStorageTest {
     }
 
     @Test
-    fun testReadingDataNullAPIRequest() {
+    fun shouldValidateApiRequestStorageReadingDataNullAPIRequest() {
         `when`(mockedPrefs.getString(anyString(), anyString())).thenReturn("1724258668")
         `when`(mockedContext.getSharedPreferences("API_STORAGE", Context.MODE_PRIVATE)).thenReturn(mockedPrefs)
 

@@ -1,0 +1,131 @@
+package net.trustly.android.sdk.views.components
+
+import android.content.Context
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.webkit.WebView
+import net.trustly.android.sdk.BuildConfig
+import net.trustly.android.sdk.data.Settings
+import net.trustly.android.sdk.data.TrustlyUrlFetcher
+import net.trustly.android.sdk.util.EstablishDataManager
+import net.trustly.android.sdk.util.TrustlyConstants.CANCEL_URL
+import net.trustly.android.sdk.util.TrustlyConstants.DEVICE_TYPE
+import net.trustly.android.sdk.util.TrustlyConstants.ENV
+import net.trustly.android.sdk.util.TrustlyConstants.ENV_LOCAL
+import net.trustly.android.sdk.util.TrustlyConstants.FUNCTION_INDEX
+import net.trustly.android.sdk.util.TrustlyConstants.FUNCTION_MOBILE
+import net.trustly.android.sdk.util.TrustlyConstants.GRP
+import net.trustly.android.sdk.util.TrustlyConstants.INTEGRATION_STRATEGY_DEFAULT
+import net.trustly.android.sdk.util.TrustlyConstants.LANG
+import net.trustly.android.sdk.util.TrustlyConstants.METADATA_CID
+import net.trustly.android.sdk.util.TrustlyConstants.METADATA_INTEGRATION_CONTEXT
+import net.trustly.android.sdk.util.TrustlyConstants.METADATA_LANG
+import net.trustly.android.sdk.util.TrustlyConstants.METADATA_SDK_ANDROID_VERSION
+import net.trustly.android.sdk.util.TrustlyConstants.METADATA_URL_SCHEME
+import net.trustly.android.sdk.util.TrustlyConstants.PAYMENT_PROVIDER_ID
+import net.trustly.android.sdk.util.TrustlyConstants.RETURN_URL
+import net.trustly.android.sdk.util.TrustlyConstants.SESSION_CID
+import net.trustly.android.sdk.util.TrustlyConstants.STORAGE
+import net.trustly.android.sdk.util.TrustlyConstants.WIDGET_LOADED
+import net.trustly.android.sdk.util.UrlUtils
+import net.trustly.android.sdk.util.api.APIRequestManager
+import net.trustly.android.sdk.util.cid.CidManager
+import net.trustly.android.sdk.views.TrustlyCustomTabsManager
+import net.trustly.android.sdk.views.TrustlyView
+import net.trustly.android.sdk.views.events.TrustlyEvents
+import java.nio.charset.StandardCharsets
+
+class TrustlyLightbox(
+    private val context: Context,
+    private val webView: WebView,
+    private val returnURL: String,
+    private val cancelURL: String,
+    private val trustlyEvents: TrustlyEvents,
+) : TrustlyComponent() {
+    
+    override fun updateEstablishData(establishData: Map<String, String>, grp: Int) {
+        trustlyEvents.notifyOpen()
+        CidManager.generateCid(context)
+
+        EstablishDataManager.updateEstablishData(establishData)
+        val data = HashMap<String, String>(establishData)
+
+        val lang = establishData[METADATA_LANG]
+        if (lang != null) data[LANG] = lang
+
+        data[METADATA_SDK_ANDROID_VERSION] = SDK_VERSION
+        data[DEVICE_TYPE] = "${establishData[DEVICE_TYPE] ?: "mobile"}:android:native"
+        data[RETURN_URL] = returnURL
+        data[CANCEL_URL] = cancelURL
+        data[GRP] = grp.toString()
+
+        if (data.containsKey(PAYMENT_PROVIDER_ID)) {
+            data[WIDGET_LOADED] = "true"
+        }
+
+        val sessionCidValues = CidManager.getOrCreateSessionCid(context)
+        sessionCidValues[CidManager.SESSION_CID_PARAM]?.let { data[SESSION_CID] = it }
+        sessionCidValues[CidManager.CID_PARAM]?.let { data[METADATA_CID] = it }
+
+        if (ENV_LOCAL == data[ENV]) {
+            TrustlyView.setIsLocalEnvironment(true)
+            WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
+        }
+
+        if (APIRequestManager.validateAPIRequest(context)) {
+            val settings = APIRequestManager.getAPIRequestSettings(context)
+            openWebViewOrCustomTabs(settings, data)
+        } else {
+            super.getSettingsData(TrustlyUrlFetcher(), UrlUtils.getDomain(FUNCTION_MOBILE, establishData), getTokenByEncodedParameters(data)) {
+                APIRequestManager.saveAPIRequestSettings(context, it)
+                openWebViewOrCustomTabs(it, data)
+            }
+        }
+    }
+
+    private fun openWebViewOrCustomTabs(settings: Settings, establishData: HashMap<String, String>) {
+        val useWebView = settings.settings.integrationStrategy == INTEGRATION_STRATEGY_DEFAULT
+        if (useWebView) {
+            establishData[METADATA_INTEGRATION_CONTEXT] = "InAppBrowser"
+        } else {
+            establishData[METADATA_URL_SCHEME]?.let {
+                establishData[RETURN_URL] = it
+                establishData[CANCEL_URL] = it
+            }
+        }
+        establishData[STORAGE] = "supported"
+
+        Handler(Looper.getMainLooper()).post {
+            val userAgentString = webView.settings.userAgentString ?: getInAppBrowserUserAgent()
+            val encodedParameters = UrlUtils.getParameterString(establishData.toMap()).toByteArray(
+                StandardCharsets.UTF_8
+            )
+            super.postLightboxUrl(TrustlyUrlFetcher(), UrlUtils.getEndpointUrl(FUNCTION_INDEX, establishData), userAgentString, encodedParameters) {
+                if (it != null) {
+                    if (useWebView) {
+                        with(webView) {
+                            post { loadUrl(it) }
+                        }
+                    } else TrustlyCustomTabsManager.openCustomTabsIntent(context, it)
+                }
+                trustlyEvents.notifyClose()
+            }
+        }
+    }
+
+    private fun getInAppBrowserUserAgent() = "Mozilla/5.0 (Linux; Android " + Build.VERSION.RELEASE + "; " + Build.MODEL + ") " +
+                "AppleWebKit/537.36 (KHTML, like Gecko) InAppBrowser/1.0 Mobile Safari/537.36"
+
+    private fun getTokenByEncodedParameters(data: Map<String, String>): String {
+        val jsonFromParameters = UrlUtils.getJsonFromParameters(data)
+        return UrlUtils.encodeStringToBase64(jsonFromParameters).replace("\n", "")
+    }
+
+    companion object {
+
+        const val SDK_VERSION: String = BuildConfig.SDK_VERSION
+
+    }
+    
+}
