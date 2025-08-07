@@ -9,6 +9,7 @@ import net.trustly.android.sdk.data.Settings
 import net.trustly.android.sdk.data.StrategySetting
 import net.trustly.android.sdk.util.api.APIRequestManager
 import net.trustly.android.sdk.util.api.APIRequestStorage
+import net.trustly.android.sdk.views.TrustlyView
 import net.trustly.android.sdk.views.events.TrustlyEvents
 import org.junit.After
 import org.junit.Assert.assertNotNull
@@ -26,10 +27,10 @@ import java.util.Calendar
 class TrustlyLightboxTest : TrustlyActivityTest() {
 
     @Mock
-    lateinit var mockWebView: WebView
+    private lateinit var mockWebView: WebView
 
     @Mock
-    lateinit var mockWebSettings: WebSettings
+    private lateinit var mockWebSettings: WebSettings
 
     private lateinit var trustlyEvents: TrustlyEvents
 
@@ -55,7 +56,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
     fun shouldValidateTrustlyLightboxInstance() {
         scenario.onActivity { activity ->
             val trustlyLightbox = TrustlyLightbox(
-                this,
+                TrustlyView(activity),
                 activity,
                 mockWebView,
                 "returnUrl",
@@ -70,7 +71,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
     fun shouldValidateTrustlyLightboxInstanceEmptyEstablishData() {
         scenario.onActivity { activity ->
             val trustlyLightbox = TrustlyLightbox(
-                this,
+                TrustlyView(activity),
                 activity,
                 mockWebView,
                 "returnUrl",
@@ -89,7 +90,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
             APIRequestManager.saveAPIRequestSettings(activity, Settings(StrategySetting("in-app-browser")))
 
             val trustlyLightbox = TrustlyLightbox(
-                this,
+                TrustlyView(activity),
                 activity,
                 mockWebView,
                 "returnUrl",
@@ -108,7 +109,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
             APIRequestManager.saveAPIRequestSettings(activity, Settings(StrategySetting("in-app-browser")))
 
             val trustlyLightbox = TrustlyLightbox(
-                this,
+                TrustlyView(activity),
                 activity,
                 mockWebView,
                 "returnUrl",
@@ -131,7 +132,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
             APIRequestManager.saveAPIRequestSettings(activity, Settings(StrategySetting("in-app-browser")))
 
             val trustlyLightbox = TrustlyLightbox(
-                this,
+                TrustlyView(activity),
                 activity,
                 mockWebView,
                 "returnUrl",
@@ -157,7 +158,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
             APIRequestManager.saveAPIRequestSettings(activity, Settings(StrategySetting("webview")))
 
             val trustlyLightbox = TrustlyLightbox(
-                this,
+                TrustlyView(activity),
                 activity,
                 mockWebView,
                 "returnUrl",
