@@ -3,6 +3,7 @@ package net.trustly.android.sdk.views.components
 import android.content.Context
 import android.graphics.Color
 import android.webkit.WebView
+import net.trustly.android.sdk.interfaces.TrustlyJsInterface
 import net.trustly.android.sdk.util.EstablishDataManager
 import net.trustly.android.sdk.util.TrustlyConstants.CID
 import net.trustly.android.sdk.util.TrustlyConstants.CUSTOMER_ADDRESS_COUNTRY
@@ -15,13 +16,19 @@ import net.trustly.android.sdk.util.TrustlyConstants.SESSION_CID
 import net.trustly.android.sdk.util.TrustlyConstants.WIDGET
 import net.trustly.android.sdk.util.UrlUtils
 import net.trustly.android.sdk.util.cid.CidManager
+import net.trustly.android.sdk.views.TrustlyView
 import net.trustly.android.sdk.views.events.TrustlyEvents
 
 class TrustlyWidget(
+    trustlyView: TrustlyView,
     private val context: Context,
     private val webView: WebView,
     private val trustlyEvents: TrustlyEvents
 ) : TrustlyComponent() {
+
+    init {
+        startTrustlyComponent(webView, TrustlyJsInterface(trustlyView, trustlyEvents, Type.WIDGET))
+    }
 
     override fun updateEstablishData(establishData: Map<String, String>, grp: Int) {
         trustlyEvents.notifyWidgetLoading()
