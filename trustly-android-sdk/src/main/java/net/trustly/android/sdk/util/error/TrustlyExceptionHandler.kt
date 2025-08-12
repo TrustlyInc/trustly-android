@@ -10,7 +10,7 @@ import java.util.Calendar
 class TrustlyExceptionHandler : Thread.UncaughtExceptionHandler {
 
     override fun uncaughtException(thread: Thread, exception: Throwable) {
-        exception.stackTraceToString().let {
+        exception.message?.let {
             if (it.contains(BuildConfig.LIBRARY_PACKAGE_NAME)) {
                 val errorMessage = StringBuilder()
                 errorMessage.apply {
