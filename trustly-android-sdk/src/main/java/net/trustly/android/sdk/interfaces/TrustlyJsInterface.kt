@@ -2,9 +2,14 @@ package net.trustly.android.sdk.interfaces
 
 import android.webkit.JavascriptInterface
 import net.trustly.android.sdk.views.TrustlyView
+import net.trustly.android.sdk.views.components.TrustlyComponent.Type
 import net.trustly.android.sdk.views.events.TrustlyEvents
 
-open class TrustlyJsInterface(private val trustlyView: TrustlyView, private val trustlyEvents: TrustlyEvents) {
+open class TrustlyJsInterface(
+    private val trustlyView: TrustlyView,
+    private val trustlyEvents: TrustlyEvents,
+    private val type: Type
+) {
 
     @JavascriptInterface
     fun postMessage(message: String?) {
@@ -25,7 +30,7 @@ open class TrustlyJsInterface(private val trustlyView: TrustlyView, private val 
 
     @JavascriptInterface
     fun resize(width: Float, height: Float) {
-        trustlyView.resize(width, height)
+        if (type == Type.WIDGET) trustlyView.resize(width, height)
     }
 
     fun addToListenerDetails(

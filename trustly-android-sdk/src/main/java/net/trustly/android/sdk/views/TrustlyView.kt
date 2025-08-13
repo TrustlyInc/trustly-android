@@ -12,7 +12,6 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import net.trustly.android.sdk.interfaces.Trustly
 import net.trustly.android.sdk.interfaces.TrustlyCallback
-import net.trustly.android.sdk.interfaces.TrustlyJsInterface
 import net.trustly.android.sdk.interfaces.TrustlyListener
 import net.trustly.android.sdk.util.error.TrustlyExceptionHandler
 import net.trustly.android.sdk.util.grp.GRPManager
@@ -74,8 +73,6 @@ class TrustlyView @JvmOverloads constructor(
                 javaScriptCanOpenWindowsAutomatically = true
                 domStorageEnabled = true
             }
-
-            addJavascriptInterface(TrustlyJsInterface(this@TrustlyView, trustlyEvents), "TrustlyNativeSDK")
         }
     }
 
@@ -92,7 +89,7 @@ class TrustlyView @JvmOverloads constructor(
     }
 
     override fun selectBankWidget(establishData: Map<String, String>): Trustly {
-        val trustlyWidget = TrustlyWidget(context, webView, trustlyEvents)
+        val trustlyWidget = TrustlyWidget(this, context, webView, trustlyEvents)
         trustlyWidget.updateEstablishData(establishData, grp)
         return this
     }
@@ -103,7 +100,7 @@ class TrustlyView @JvmOverloads constructor(
     }
 
     override fun establish(establishData: Map<String, String>): Trustly {
-        val trustlyLightbox = TrustlyLightbox(context, webView, returnURL, cancelURL, trustlyEvents)
+        val trustlyLightbox = TrustlyLightbox(this, context, webView, returnURL, cancelURL, trustlyEvents)
         trustlyLightbox.updateEstablishData(establishData, grp)
         return this
     }
@@ -141,7 +138,7 @@ class TrustlyView @JvmOverloads constructor(
     }
 
     override fun proceedToChooseAccount() {
-        webView.loadUrl("javascript:Paywithmybank.proceedToChooseAccount();")
+        webView.loadUrl("javascript:Trustly.proceedToChooseAccount();")
     }
 
     fun resize(width: Float, height: Float) {
