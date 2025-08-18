@@ -9,6 +9,7 @@ import net.trustly.android.sdk.interfaces.Trustly
 import net.trustly.android.sdk.interfaces.TrustlyCallback
 import net.trustly.android.sdk.interfaces.TrustlyJsInterface
 import net.trustly.android.sdk.mock.MockActivity
+import net.trustly.android.sdk.views.components.TrustlyComponent
 import net.trustly.android.sdk.views.events.TrustlyEvents
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -124,7 +125,7 @@ class TrustlyViewTest : TrustlyActivityTest() {
     fun shouldValidateTrustlyJsInterfaceResizeMethod() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
-            val trustlyJsInterface = TrustlyJsInterface(trustlyView, TrustlyEvents())
+            val trustlyJsInterface = TrustlyJsInterface(trustlyView, TrustlyEvents(), TrustlyComponent.Type.WIDGET)
             trustlyJsInterface.resize(100f, 0f)
             assertNotNull(trustlyJsInterface)
         }
@@ -134,7 +135,7 @@ class TrustlyViewTest : TrustlyActivityTest() {
     fun shouldValidateTrustlyJsInterfaceResizeMethodSameWidthAndHeight() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
-            val trustlyJsInterface = TrustlyJsInterface(trustlyView, TrustlyEvents())
+            val trustlyJsInterface = TrustlyJsInterface(trustlyView, TrustlyEvents(), TrustlyComponent.Type.WIDGET)
             trustlyJsInterface.resize(100f, 100f)
             assertNotNull(trustlyJsInterface)
         }
