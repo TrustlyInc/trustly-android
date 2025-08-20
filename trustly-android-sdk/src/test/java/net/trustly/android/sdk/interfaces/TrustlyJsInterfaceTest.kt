@@ -1,6 +1,7 @@
 package net.trustly.android.sdk.interfaces
 
 import net.trustly.android.sdk.views.TrustlyView
+import net.trustly.android.sdk.views.components.TrustlyComponent
 import net.trustly.android.sdk.views.events.TrustlyEvents
 import org.junit.After
 import org.junit.Assert.assertNotNull
@@ -28,18 +29,21 @@ class TrustlyJsInterfaceTest {
     @Mock
     private lateinit var mockTrustlyEvents: TrustlyEvents
 
+    @Mock
+    private lateinit var mockTrustlyComponentType: TrustlyComponent.Type
+
     private lateinit var trustlyJsInterface: TrustlyJsInterface
 
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
 
-        trustlyJsInterface = TrustlyJsInterface(mockTrustlyView, mockTrustlyEvents)
+        trustlyJsInterface = TrustlyJsInterface(mockTrustlyView, mockTrustlyEvents, mockTrustlyComponentType)
     }
 
     @After
     fun tearDown() {
-        clearInvocations(mockTrustlyView, mockTrustlyEvents)
+        clearInvocations(mockTrustlyView, mockTrustlyEvents, mockTrustlyComponentType)
     }
 
     @Test
@@ -174,9 +178,17 @@ class TrustlyJsInterfaceTest {
     }
 
     @Test
-    fun shouldValidateTrustlyJsInterfaceResize() {
+    fun shouldValidateTrustlyJsInterfaceResizeWidget() {
+        trustlyJsInterface = TrustlyJsInterface(mockTrustlyView, mockTrustlyEvents, TrustlyComponent.Type.WIDGET)
         trustlyJsInterface.resize(100f, 100f)
         verify(mockTrustlyView, times(1)).resize(100f, 100f)
+    }
+
+    @Test
+    fun shouldValidateTrustlyJsInterfaceResizeLightbox() {
+        trustlyJsInterface = TrustlyJsInterface(mockTrustlyView, mockTrustlyEvents, TrustlyComponent.Type.LIGHTBOX)
+        trustlyJsInterface.resize(100f, 100f)
+        verify(mockTrustlyView, times(0)).resize(100f, 100f)
     }
 
     @Test
