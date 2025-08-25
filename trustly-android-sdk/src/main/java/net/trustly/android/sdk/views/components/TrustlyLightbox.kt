@@ -99,6 +99,7 @@ class TrustlyLightbox(
                 establishData[RETURN_URL] = it
                 establishData[CANCEL_URL] = it
             }
+            establishData[METADATA_INTEGRATION_CONTEXT] = "SecureBrowser"
         }
         establishData[STORAGE] = "supported"
 
