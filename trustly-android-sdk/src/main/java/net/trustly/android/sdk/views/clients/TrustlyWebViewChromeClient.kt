@@ -2,6 +2,7 @@ package net.trustly.android.sdk.views.clients
 
 import android.content.Context
 import android.os.Message
+import android.webkit.ConsoleMessage
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebView.WebViewTransport
@@ -24,6 +25,11 @@ class TrustlyWebViewChromeClient(
         isUserGesture: Boolean,
         resultMsg: Message
     ) = handleWebChromeClientOnCreateWindow(view, resultMsg)
+
+    override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
+        trustlyEvents.handleErrorLog(consoleMessage.message())
+        return true
+    }
 
     private fun handleWebChromeClientOnCreateWindow(view: WebView, resultMsg: Message): Boolean {
         val result = view.hitTestResult

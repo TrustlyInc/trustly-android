@@ -83,7 +83,7 @@ class TrustlyEvents {
         )
     }
 
-    fun handleErrorLog(description: String, failingUrl: String) {
+    fun handleErrorLog(description: String, failingUrl: String = "") {
         TrustlyExceptionHandler().uncaughtException(
             Thread.currentThread(),
             Exception(failingUrl, Throwable(description))
