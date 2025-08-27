@@ -1,7 +1,9 @@
 package net.trustly.android.sdk.views.clients
 
 import android.os.Build
+import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
@@ -44,6 +46,35 @@ class TrustlyWebViewClient(
 
     override fun onPageFinished(view: WebView, url: String) {
         handleWebViewClientOnPageFinished(view, trustlyView)
+    }
+
+    @Suppress("DEPRECATION")
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    override fun onReceivedError(
+        view: WebView,
+        request: WebResourceRequest,
+        error: WebResourceError?
+    ) {
+        this.onReceivedError(view, 0, error.toString(), request.url.toString())
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onReceivedError(
+        view: WebView,
+        errorCode: Int,
+        description: String,
+        failingUrl: String
+    ) {
+        trustlyEvents.handleErrorLog(description, failingUrl)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    override fun onReceivedHttpError(
+        view: WebView?,
+        request: WebResourceRequest,
+        errorResponse: WebResourceResponse
+    ) {
+        trustlyEvents.handleErrorLog(errorResponse.toString(), request.url.toString())
     }
 
     private fun handleWebViewClientShouldOverrideUrlLoading(url: String): Boolean {

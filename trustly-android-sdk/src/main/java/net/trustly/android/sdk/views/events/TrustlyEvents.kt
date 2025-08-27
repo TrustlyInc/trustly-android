@@ -7,6 +7,7 @@ import net.trustly.android.sdk.util.TrustlyConstants.EVENT
 import net.trustly.android.sdk.util.TrustlyConstants.EVENT_PAGE
 import net.trustly.android.sdk.util.TrustlyConstants.EVENT_TYPE
 import net.trustly.android.sdk.util.TrustlyConstants.WIDGET
+import net.trustly.android.sdk.util.error.TrustlyExceptionHandler
 
 class TrustlyEvents {
 
@@ -79,6 +80,13 @@ class TrustlyEvents {
                 EVENT_PAGE to WIDGET,
                 EVENT_TYPE to "load"
             )
+        )
+    }
+
+    fun handleErrorLog(description: String, failingUrl: String = "") {
+        TrustlyExceptionHandler().uncaughtException(
+            Thread.currentThread(),
+            Exception(failingUrl, Throwable(description))
         )
     }
 
