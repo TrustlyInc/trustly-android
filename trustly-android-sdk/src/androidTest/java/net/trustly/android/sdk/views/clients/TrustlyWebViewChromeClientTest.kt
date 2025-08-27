@@ -118,7 +118,7 @@ class TrustlyWebViewChromeClientTest : TrustlyActivityTest() {
     fun shouldValidateTrustlyWebViewChromeClientHandleWebChromeClientOnCreateWindowMethodWithUrl() {
         scenario.onActivity { activity: MockActivity ->
             `when`(mockHitTestResult.type).thenReturn(1)
-            `when`(mockHitTestResult.extra).thenReturn("www.trustly.com")
+            `when`(mockHitTestResult.extra).thenReturn("www.url.com")
 
             trustlyView = TrustlyView(activity.applicationContext)
             val trustlyWebViewChromeClient = TrustlyWebViewChromeClient(activity, trustlyView, trustlyEvents)
@@ -167,11 +167,11 @@ class TrustlyWebViewChromeClientTest : TrustlyActivityTest() {
     fun shouldValidateTrustlyWebViewChromeClientHandleWebChromeClientOnCreateWindowMethodWithUrlExternalUrlCallback() {
         scenario.onActivity { activity: MockActivity ->
             `when`(mockHitTestResult.type).thenReturn(1)
-            `when`(mockHitTestResult.extra).thenReturn("www.trustly.com")
+            `when`(mockHitTestResult.extra).thenReturn("www.url.com")
 
             trustlyView = TrustlyView(activity)
             trustlyView.onExternalUrl { _: Trustly, params: Map<String, String>? ->
-                assertEquals("www.trustly.com", params?.get("url"))
+                assertEquals("www.url.com", params?.get("url"))
             }
             val trustlyWebViewChromeClient = TrustlyWebViewChromeClient(activity, trustlyView, trustlyEvents)
             trustlyWebViewChromeClient.onCreateWindow(mockWebView,

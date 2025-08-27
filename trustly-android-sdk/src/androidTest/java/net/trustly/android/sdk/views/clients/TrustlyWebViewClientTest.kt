@@ -1,6 +1,7 @@
 package net.trustly.android.sdk.views.clients
 
 import android.net.Uri
+import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -32,7 +33,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
 
     companion object {
 
-        const val URL: String = "www.trustly.com"
+        const val URL: String = "www.url.com"
         const val RETURN_URL = "msg://return"
         const val CANCEL_URL = "msg://cancel"
 
@@ -43,6 +44,9 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
 
     @Mock
     private lateinit var mockOnCancelCallback: TrustlyCallback<Trustly, Map<String, String>>
+
+    @Mock
+    private lateinit var mockWebResourceError: WebResourceError
 
     private lateinit var trustlyEvents: TrustlyEvents
     private lateinit var trustlyView: TrustlyView
@@ -60,7 +64,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
     override fun tearDown() {
         super.tearDown()
 
-        clearInvocations(mockWebView, mockOnCancelCallback)
+        clearInvocations(mockWebView, mockOnCancelCallback, mockWebResourceError)
     }
 
     @Test
@@ -173,6 +177,19 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
             trustlyWebViewClient.onPageFinished(mockWebView, URL)
             assertNotNull(trustlyWebViewClient)
             verify(mockOnCancelCallback, times(1)).handle(trustlyView, HashMap())
+        }
+    }
+
+    @Test
+    fun shouldValidateTrustlyWebViewClientOnErrorReceived() {
+        scenario.onActivity { activity: MockActivity ->
+            trustlyView = TrustlyView(activity.applicationContext)
+            trustlyEvents.setOnCancelCallback(mockOnCancelCallback)
+            TrustlyView.setIsLocalEnvironment(true)
+            val webView = WebView(activity.applicationContext)
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
+            trustlyWebViewClient.onReceivedError(webView, getWebResourceRequest(), mockWebResourceError)
+            verify(mockOnCancelCallback, times(0)).handle(trustlyView, HashMap())
         }
     }
 

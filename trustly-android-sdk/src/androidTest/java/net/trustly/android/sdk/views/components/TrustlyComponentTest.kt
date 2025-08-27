@@ -79,7 +79,7 @@ class TrustlyComponentTest : TrustlyActivityTest() {
     companion object {
 
         const val TOKEN = "RXN0YWJsaXNoRGF0YVN0cmluZw=="
-        const val URL = "http://www.trustly.com"
+        const val URL = "http://www.url.com"
 
     }
 

@@ -17,7 +17,7 @@ class TrustlyCustomTabsManagerTest : TrustlyActivityTest() {
     @Test
     fun shouldValidateCustomTabsManagerOpenCustomTabsIntentMethod() {
         scenario.onActivity { activity: MockActivity ->
-            openCustomTabsIntent(activity, "http://www.trustly.com")
+            openCustomTabsIntent(activity, "http://www.url.com")
             assertEquals(5, TrustlyCustomTabsManager::class.java.declaredMethods.size)
         }
         waitToCloseCustomTabs()
