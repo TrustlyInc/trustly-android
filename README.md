@@ -39,7 +39,7 @@ it, include the dependency below in your `build.gradle` file.
 
 ```
 dependencies {
-    implementation 'net.trustly:trustly-android-sdk:4.0.0'
+    implementation 'net.trustly:trustly-android-sdk:4.1.0'
 }
 ```
 
