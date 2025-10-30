@@ -51,7 +51,7 @@ class TrustlyWebViewChromeClientTest : TrustlyActivityTest() {
 
         MockitoAnnotations.openMocks(this)
 
-        trustlyEvents = TrustlyEvents()
+        trustlyEvents = TrustlyEvents
 
         `when`(mockWebView.hitTestResult).thenReturn(mockHitTestResult)
         `when`(mockHandler.sendMessageDelayed(any(), anyLong())).thenReturn(true)
@@ -170,7 +170,7 @@ class TrustlyWebViewChromeClientTest : TrustlyActivityTest() {
             `when`(mockHitTestResult.extra).thenReturn("www.url.com")
 
             trustlyView = TrustlyView(activity)
-            trustlyView.onExternalUrl { _: Trustly, params: Map<String, String>? ->
+            trustlyView.onExternalUrl { _: Trustly?, params: Map<String, String>? ->
                 assertEquals("www.url.com", params?.get("url"))
             }
             val trustlyWebViewChromeClient = TrustlyWebViewChromeClient(activity, trustlyView, trustlyEvents)

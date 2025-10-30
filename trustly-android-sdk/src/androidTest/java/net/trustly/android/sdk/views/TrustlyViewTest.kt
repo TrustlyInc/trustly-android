@@ -125,7 +125,7 @@ class TrustlyViewTest : TrustlyActivityTest() {
     fun shouldValidateTrustlyJsInterfaceResizeMethod() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
-            val trustlyJsInterface = TrustlyJsInterface(trustlyView, TrustlyEvents(), TrustlyComponent.Type.WIDGET)
+            val trustlyJsInterface = TrustlyJsInterface(trustlyView, TrustlyEvents, TrustlyComponent.Type.WIDGET)
             trustlyJsInterface.resize(100f, 0f)
             assertNotNull(trustlyJsInterface)
         }
@@ -135,7 +135,7 @@ class TrustlyViewTest : TrustlyActivityTest() {
     fun shouldValidateTrustlyJsInterfaceResizeMethodSameWidthAndHeight() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
-            val trustlyJsInterface = TrustlyJsInterface(trustlyView, TrustlyEvents(), TrustlyComponent.Type.WIDGET)
+            val trustlyJsInterface = TrustlyJsInterface(trustlyView, TrustlyEvents, TrustlyComponent.Type.WIDGET)
             trustlyJsInterface.resize(100f, 100f)
             assertNotNull(trustlyJsInterface)
         }
@@ -183,7 +183,7 @@ class TrustlyViewTest : TrustlyActivityTest() {
     fun shouldValidateTrustlyViewOnReturnMethod() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
-            val result = trustlyView.onReturn { _: Trustly, _: Map<String, String>? -> }
+            val result = trustlyView.onReturn { _: Trustly?, _: Map<String, String>? -> }
             assertTrue(result is TrustlyView)
             assertEquals(result, trustlyView)
         }
@@ -204,7 +204,7 @@ class TrustlyViewTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
             val result =
-                trustlyView.onCancel { _: Trustly, _: Map<String, String>? -> }
+                trustlyView.onCancel { _: Trustly?, _: Map<String, String>? -> }
             assertTrue(result is TrustlyView)
             assertEquals(result, trustlyView)
         }
@@ -225,7 +225,7 @@ class TrustlyViewTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
             val result =
-                trustlyView.onBankSelected { _: Trustly, _: Map<String, String>? -> }
+                trustlyView.onBankSelected { _: Trustly?, _: Map<String, String>? -> }
             assertTrue(result is TrustlyView)
             assertEquals(result, trustlyView)
         }
@@ -265,7 +265,7 @@ class TrustlyViewTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
             val result =
-                trustlyView.onExternalUrl { _: Trustly, _: Map<String, String>? -> }
+                trustlyView.onExternalUrl { _: Trustly?, _: Map<String, String>? -> }
             assertTrue(result is TrustlyView)
             assertEquals(result, trustlyView)
         }
@@ -290,7 +290,7 @@ class TrustlyViewTest : TrustlyActivityTest() {
 
             trustlyView = TrustlyView(activity.applicationContext)
             trustlyView.setListener(null)
-            TrustlyEvents().notifyListener(
+            TrustlyEvents.notifyListener(
                 EVENT,
                 eventDetails
             )
@@ -310,7 +310,7 @@ class TrustlyViewTest : TrustlyActivityTest() {
                 assertEquals(EVENT, eventName)
                 assertEquals(eventDetailsMap, eventDetails)
             }
-            TrustlyEvents().notifyListener(EVENT, eventDetailsMap)
+            TrustlyEvents.notifyListener(EVENT, eventDetailsMap)
             assertNotNull(trustlyView)
         }
     }
@@ -379,7 +379,7 @@ class TrustlyViewTest : TrustlyActivityTest() {
             val establishDataNewValues = HashMap<String, String>()
             establishDataNewValues[ENV] = "prod"
             val establishData = getCustomEstablishData(establishDataNewValues)
-            callTrustlyViewEstablishMethod(activity, establishData) { _: Trustly, _: Map<String, String>? -> }
+            callTrustlyViewEstablishMethod(activity, establishData) { _: Trustly?, _: Map<String, String>? -> }
         }
     }
 

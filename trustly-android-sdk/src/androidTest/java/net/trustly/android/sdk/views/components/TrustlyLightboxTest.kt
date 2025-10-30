@@ -40,7 +40,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
 
         MockitoAnnotations.openMocks(this)
 
-        trustlyEvents = TrustlyEvents()
+        trustlyEvents = TrustlyEvents
 
         `when`(mockWebView.settings).thenReturn(mockWebSettings)
     }

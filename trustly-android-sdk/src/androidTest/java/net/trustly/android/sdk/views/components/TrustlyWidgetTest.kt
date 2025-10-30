@@ -21,7 +21,7 @@ class TrustlyWidgetTest : TrustlyActivityTest() {
     override fun setUp() {
         super.setUp()
 
-        trustlyEvents = TrustlyEvents()
+        trustlyEvents = TrustlyEvents
     }
 
     @Test
