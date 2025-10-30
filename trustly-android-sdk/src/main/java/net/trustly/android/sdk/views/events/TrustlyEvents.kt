@@ -9,7 +9,7 @@ import net.trustly.android.sdk.util.TrustlyConstants.EVENT_TYPE
 import net.trustly.android.sdk.util.TrustlyConstants.WIDGET
 import net.trustly.android.sdk.util.error.TrustlyExceptionHandler
 
-class TrustlyEvents {
+object TrustlyEvents {
 
     private var onReturn: TrustlyCallback<Trustly, Map<String, String>>? = null
     private var onCancel: TrustlyCallback<Trustly, Map<String, String>>? = null
@@ -29,7 +29,7 @@ class TrustlyEvents {
         this.onReturn = onReturn
     }
 
-    fun handleOnReturn(trustlyView: Trustly, queryParametersFromUrl: Map<String, String>) {
+    fun handleOnReturn(trustlyView: Trustly?, queryParametersFromUrl: Map<String, String>) {
         this.onReturn?.handle(trustlyView, queryParametersFromUrl)
     }
 
@@ -37,7 +37,7 @@ class TrustlyEvents {
         this.onCancel = onCancel
     }
 
-    fun handleOnCancel(trustlyView: Trustly, queryParametersFromUrl: Map<String, String>) {
+    fun handleOnCancel(trustlyView: Trustly?, queryParametersFromUrl: Map<String, String>) {
         this.onCancel?.handle(trustlyView, queryParametersFromUrl)
     }
 

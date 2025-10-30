@@ -77,7 +77,7 @@ class TrustlyView @JvmOverloads constructor(
     }
 
     private fun initEvents() {
-        trustlyEvents = TrustlyEvents()
+        trustlyEvents = TrustlyEvents
     }
 
     private fun setWebViewChromeClient() {

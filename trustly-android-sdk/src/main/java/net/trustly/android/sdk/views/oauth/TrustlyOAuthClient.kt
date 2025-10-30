@@ -5,7 +5,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
-import net.trustly.android.sdk.views.TrustlyCustomTabsManager.openCustomTabsIntent
+import net.trustly.android.sdk.views.TrustlyRedirectActivity
 import net.trustly.android.sdk.views.TrustlyView
 
 /**
@@ -24,7 +24,8 @@ class TrustlyOAuthClient : WebViewClient() {
                     (url.contains("paywithmybank.com") || url.contains("trustly.one"))
                             && url.contains("/oauth/login/"))
         ) {
-            openCustomTabsIntent(view.context, url)
+            TrustlyRedirectActivity.startIntent(view.context, url)
+//            openCustomTabsIntent(view.context, url)
         }
         return true
     }
