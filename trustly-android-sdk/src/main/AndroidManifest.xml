@@ -3,6 +3,10 @@
 
     <application>
         <activity
+            android:name=".views.TrustlyCustomTabsManagerActivity"
+            android:launchMode="singleTask"
+            android:exported="false" />
+        <activity
             android:name=".views.TrustlyRedirectActivity"
             android:exported="true">
             <intent-filter>

@@ -6,7 +6,6 @@ import android.os.Handler
 import android.os.Looper
 import android.webkit.WebView
 import net.trustly.android.sdk.BuildConfig
-import net.trustly.android.sdk.views.TrustlyRedirectActivity
 import net.trustly.android.sdk.data.Settings
 import net.trustly.android.sdk.data.TrustlyUrlFetcher
 import net.trustly.android.sdk.interfaces.TrustlyJsInterface
@@ -33,6 +32,7 @@ import net.trustly.android.sdk.util.TrustlyConstants.WIDGET_LOADED
 import net.trustly.android.sdk.util.UrlUtils
 import net.trustly.android.sdk.util.api.APIRequestManager
 import net.trustly.android.sdk.util.cid.CidManager
+import net.trustly.android.sdk.views.TrustlyCustomTabsManagerActivity
 import net.trustly.android.sdk.views.TrustlyView
 import net.trustly.android.sdk.views.events.TrustlyEvents
 import java.nio.charset.StandardCharsets
@@ -115,7 +115,7 @@ class TrustlyLightbox(
                             post { loadUrl(it) }
                         }
                     } else {
-                        TrustlyRedirectActivity.startIntent(context, it)
+                        TrustlyCustomTabsManagerActivity.startIntent(context, it)
 //                        TrustlyCustomTabsManager.openCustomTabsIntent(context, it)
                     }
                 }
