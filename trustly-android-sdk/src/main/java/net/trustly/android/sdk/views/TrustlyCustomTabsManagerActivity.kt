@@ -5,52 +5,35 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
+import net.trustly.android.sdk.views.events.TrustlyEvents
 
 class TrustlyCustomTabsManagerActivity : Activity() {
 
+    private lateinit var trustlyEvents: TrustlyEvents
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("TrustlyCTMActivity", "onCreate")
 
-        val url = intent.getStringExtra(URL)
-        Log.d("TrustlyCTMActivity", url.toString())
-        if (url != null) {
-            openCustomTabsIntent(this, url)
-            finish()
+        trustlyEvents = TrustlyEvents
+
+        intent.getStringExtra(URL)?.let {
+            openCustomTabsIntent(this, it)
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        Log.d("TrustlyCTMActivity", "onStart")
     }
 
     override fun onResume() {
         super.onResume()
 
-        Log.d("TrustlyCTMActivity", "onResume")
-    }
-
-    override fun onRestart() {
-        super.onRestart()
-
-        Log.d("TrustlyCTMActivity", "onRestart")
-    }
-
-    override fun onStop() {
-        super.onStop()
-
-        Log.d("TrustlyCTMActivity", "onStop")
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        Log.d("TrustlyCTMActivity", "onPause")
+        if (intent.hasExtra(ESTABLISH_DATA)) {
+            val transactionDetails = intent.getSerializableExtra(ESTABLISH_DATA) as Map<String, String>
+            if (transactionDetails[STATUS_PARAM] == SUCCESS_STATUS_PARAM)
+                this.trustlyEvents.handleOnReturn(null, transactionDetails)
+            else
+                this.trustlyEvents.handleOnCancel(null, transactionDetails)
+            finish()
+        }
     }
 
     private fun openCustomTabsIntent(context: Context, url: String) {
@@ -75,7 +58,10 @@ class TrustlyCustomTabsManagerActivity : Activity() {
 
     companion object {
 
-        const val URL = "URL"
+        const val ESTABLISH_DATA = "establishData"
+        private const val URL = "URL"
+        private const val STATUS_PARAM = "status"
+        private const val SUCCESS_STATUS_PARAM = "2"
 
         fun startIntent(context: Context, url: String) {
             val intent = Intent(context, TrustlyCustomTabsManagerActivity::class.java)
