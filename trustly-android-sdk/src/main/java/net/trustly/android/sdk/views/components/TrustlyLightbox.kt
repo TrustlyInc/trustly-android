@@ -116,7 +116,6 @@ class TrustlyLightbox(
                         }
                     } else {
                         TrustlyCustomTabsManagerActivity.startIntent(context, it)
-//                        TrustlyCustomTabsManager.openCustomTabsIntent(context, it)
                     }
                 }
                 trustlyEvents.notifyClose()

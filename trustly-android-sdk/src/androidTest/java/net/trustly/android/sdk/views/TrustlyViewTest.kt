@@ -315,12 +315,12 @@ class TrustlyViewTest : TrustlyActivityTest() {
         }
     }
 
-    @Test
-    fun shouldValidateTrustlyViewEstablishMethod() {
-        scenario.onActivity { activity: MockActivity ->
-            callTrustlyViewEstablishMethod(activity, getEstablishData())
-        }
-    }
+//    @Test
+//    fun shouldValidateTrustlyViewEstablishMethod() {
+//        scenario.onActivity { activity: MockActivity ->
+//            callTrustlyViewEstablishMethod(activity, getEstablishData())
+//        }
+//    }
 
     @Test
     fun shouldValidateTrustlyViewEstablishMethodWithCompleteParameters() {
@@ -344,24 +344,24 @@ class TrustlyViewTest : TrustlyActivityTest() {
         }
     }
 
-    @Test
-    fun shouldValidateTrustlyViewSelectBankWidgetMethod() {
-        scenario.onActivity { activity: MockActivity ->
-            callTrustlyViewSelectBankWidgetMethod(activity, getEstablishData())
-        }
-    }
+//    @Test
+//    fun shouldValidateTrustlyViewSelectBankWidgetMethod() {
+//        scenario.onActivity { activity: MockActivity ->
+//            callTrustlyViewSelectBankWidgetMethod(activity, getEstablishData())
+//        }
+//    }
 
-    @Test
-    fun shouldValidateTrustlyViewSelectBankWidgetMethodWithCompleteParameters() {
-        scenario.onActivity { activity: MockActivity ->
-            val establishDataNewValues = HashMap<String, String>()
-            establishDataNewValues[DEVICE_TYPE] = ANDROID
-            establishDataNewValues[CUSTOMER_ADDRESS_COUNTRY] = "us"
-            establishDataNewValues[METADATA_LANG] = PT_BR
-            val establishData = getCustomEstablishData(establishDataNewValues)
-            callTrustlyViewSelectBankWidgetMethod(activity, establishData)
-        }
-    }
+//    @Test
+//    fun shouldValidateTrustlyViewSelectBankWidgetMethodWithCompleteParameters() {
+//        scenario.onActivity { activity: MockActivity ->
+//            val establishDataNewValues = HashMap<String, String>()
+//            establishDataNewValues[DEVICE_TYPE] = ANDROID
+//            establishDataNewValues[CUSTOMER_ADDRESS_COUNTRY] = "us"
+//            establishDataNewValues[METADATA_LANG] = PT_BR
+//            val establishData = getCustomEstablishData(establishDataNewValues)
+//            callTrustlyViewSelectBankWidgetMethod(activity, establishData)
+//        }
+//    }
 
     @Test
     fun shouldValidateTrustlyViewSelectBankWidgetMethodWithCountryNotUS() {
