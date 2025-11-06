@@ -18,7 +18,8 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             TrustlyCustomTabsManagerActivity.startIntent(
                 activity,
-                "http://www.url.com"
+                "http://www.url.com",
+                useWebView
             )
             assertEquals(7, TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size)
         }

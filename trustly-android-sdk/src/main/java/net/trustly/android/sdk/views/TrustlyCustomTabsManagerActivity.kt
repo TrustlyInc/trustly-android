@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import net.trustly.android.sdk.views.events.TrustlyEvents
@@ -12,35 +13,45 @@ import net.trustly.android.sdk.views.events.TrustlyEvents
 class TrustlyCustomTabsManagerActivity : Activity() {
 
     private lateinit var trustlyEvents: TrustlyEvents
+    private lateinit var customTabsIntent: CustomTabsIntent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        Log.d("CCT", "onCreate")
+
         trustlyEvents = TrustlyEvents
 
-        intent.getStringExtra(URL)?.let {
-            openCustomTabsIntent(this, it)
-        }
+        val url = intent.getStringExtra(URL)
+        Log.d("CCT", url.toString())
+        val useWebView = intent.getBooleanExtra(USE_WEBVIEW, false)
+        if (url != null) openCustomTabsIntent(this, url, useWebView)
     }
 
     override fun onResume() {
         super.onResume()
 
+        Log.d("CCT", "onResume")
+
         if (intent.hasExtra(ESTABLISH_DATA)) {
+            Log.d("CCT", "Has extras")
             val transactionDetails = intent.getSerializableExtra(ESTABLISH_DATA) as Map<String, String>
-            if (transactionDetails[STATUS_PARAM] == SUCCESS_STATUS_PARAM)
+            if (transactionDetails[STATUS_PARAM] == SUCCESS_STATUS_PARAM) {
                 this.trustlyEvents.handleOnReturn(null, transactionDetails)
-            else
+            } else {
                 this.trustlyEvents.handleOnCancel(null, transactionDetails)
-            finish()
+            }
         }
+        finish()
     }
 
-    private fun openCustomTabsIntent(context: Context, url: String) {
+    private fun openCustomTabsIntent(context: Context, url: String, useWebView: Boolean) {
         try {
             val builder = CustomTabsIntent.Builder()
-            val customTabsIntent = builder.build()
+            customTabsIntent = builder.build()
             customTabsIntent.intent.setPackage("com.android.chrome")
+            Log.d("CCT", "Use webview $useWebView")
+            if (useWebView) customTabsIntent.intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
             customTabsIntent.launchUrl(context, url.toUri())
         } catch (_: Exception) {
             showDisabledBrowserMessage(context)
@@ -60,12 +71,14 @@ class TrustlyCustomTabsManagerActivity : Activity() {
 
         const val ESTABLISH_DATA = "establishData"
         private const val URL = "URL"
+        private const val USE_WEBVIEW = "USE_WEBVIEW"
         private const val STATUS_PARAM = "status"
         private const val SUCCESS_STATUS_PARAM = "2"
 
-        fun startIntent(context: Context, url: String) {
+        fun startIntent(context: Context, url: String, useWebView: Boolean = true) {
             val intent = Intent(context, TrustlyCustomTabsManagerActivity::class.java)
                 .putExtra(URL, url)
+                .putExtra(USE_WEBVIEW, useWebView)
             context.startActivity(intent)
         }
 

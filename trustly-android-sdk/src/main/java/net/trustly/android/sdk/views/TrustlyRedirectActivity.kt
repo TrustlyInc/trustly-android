@@ -4,12 +4,16 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import java.io.Serializable
 
 class TrustlyRedirectActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("Redirect", "onCreate")
+        Log.d("Redirect", "Intent $intent")
+        Log.d("Redirect", "Intent data ${intent.data}")
 
         if (intent.extras != null && intent.data!!.getQueryParameter(STATUS_PARAM) != null) {
             val transactionDetail = getTransactionDetailFromUri(intent.data!!)

@@ -1,6 +1,7 @@
 package net.trustly.android.sdk.views.oauth
 
 import android.os.Build
+import android.util.Log
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -25,7 +26,6 @@ class TrustlyOAuthClient : WebViewClient() {
                             && url.contains("/oauth/login/"))
         ) {
             TrustlyCustomTabsManagerActivity.startIntent(view.context, url)
-//            openCustomTabsIntent(view.context, url)
         }
         return true
     }
