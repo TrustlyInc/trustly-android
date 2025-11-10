@@ -35,7 +35,7 @@ class TrustlyWebViewChromeClient(
         val result = view.hitTestResult
         return if (result.type == 0) {
             //window.open
-            val trustlyOAuthView = TrustlyOAuthView(context)
+            val trustlyOAuthView = TrustlyOAuthView(context, trustlyView, trustlyEvents)
             trustlyView.addView(trustlyOAuthView)
             val transport = resultMsg.obj as WebViewTransport
             transport.webView = trustlyOAuthView.webView

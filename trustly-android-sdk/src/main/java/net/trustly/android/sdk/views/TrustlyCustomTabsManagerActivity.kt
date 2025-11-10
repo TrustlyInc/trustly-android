@@ -8,32 +8,31 @@ import android.os.Bundle
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import net.trustly.android.sdk.interfaces.TrustlyEvents
-import net.trustly.android.sdk.views.events.TrustlyEventsImpl
 
 class TrustlyCustomTabsManagerActivity : Activity() {
 
-    private lateinit var trustlyEvents: TrustlyEvents
     private lateinit var customTabsIntent: CustomTabsIntent
+    private lateinit var trustlyEvents: TrustlyEvents
+    private lateinit var trustlyView: TrustlyView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        trustlyEvents = TrustlyEventsImpl()
-
         val url = intent.getStringExtra(URL)
         val useWebView = intent.getBooleanExtra(USE_WEBVIEW, false)
-        if (url != null) openCustomTabsIntent(this, url, useWebView)
+        openCustomTabsIntent(this, url!!, useWebView)
     }
 
     override fun onResume() {
         super.onResume()
 
         if (intent.hasExtra(ESTABLISH_DATA)) {
-            val transactionDetails = intent.getSerializableExtra(ESTABLISH_DATA) as Map<String, String>
+            val transactionDetails =
+                intent.getSerializableExtra(ESTABLISH_DATA) as Map<String, String>
             if (transactionDetails[STATUS_PARAM] == SUCCESS_STATUS_PARAM) {
-                this.trustlyEvents.handleOnReturn(null, transactionDetails)
+                this.trustlyEvents.handleOnReturn(this.trustlyView, transactionDetails)
             } else {
-                this.trustlyEvents.handleOnCancel(null, transactionDetails)
+                this.trustlyEvents.handleOnCancel(this.trustlyView, transactionDetails)
             }
         }
         finish()
@@ -62,6 +61,22 @@ class TrustlyCustomTabsManagerActivity : Activity() {
         alertDialog.show()
     }
 
+    fun startIntent(
+        context: Context,
+        url: String,
+        useWebView: Boolean = true
+    ) {
+        val intent = Intent(context, TrustlyCustomTabsManagerActivity::class.java)
+            .putExtra(URL, url)
+            .putExtra(USE_WEBVIEW, useWebView)
+        context.startActivity(intent)
+    }
+
+    fun setEventsCallback(trustlyView: TrustlyView, trustlyEvents: TrustlyEvents) {
+        this.trustlyView = trustlyView
+        this.trustlyEvents = trustlyEvents
+    }
+
     companion object {
 
         const val ESTABLISH_DATA = "establishData"
@@ -69,13 +84,6 @@ class TrustlyCustomTabsManagerActivity : Activity() {
         private const val USE_WEBVIEW = "USE_WEBVIEW"
         private const val STATUS_PARAM = "status"
         private const val SUCCESS_STATUS_PARAM = "2"
-
-        fun startIntent(context: Context, url: String, useWebView: Boolean = true) {
-            val intent = Intent(context, TrustlyCustomTabsManagerActivity::class.java)
-                .putExtra(URL, url)
-                .putExtra(USE_WEBVIEW, useWebView)
-            context.startActivity(intent)
-        }
 
     }
 

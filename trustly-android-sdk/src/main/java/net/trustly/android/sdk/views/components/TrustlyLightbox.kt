@@ -38,7 +38,7 @@ import net.trustly.android.sdk.views.TrustlyView
 import java.nio.charset.StandardCharsets
 
 class TrustlyLightbox(
-    trustlyView: TrustlyView,
+    private val trustlyView: TrustlyView,
     private val context: Context,
     private val webView: WebView,
     private val returnURL: String,
@@ -115,7 +115,10 @@ class TrustlyLightbox(
                             post { loadUrl(it) }
                         }
                     } else {
-                        TrustlyCustomTabsManagerActivity.startIntent(context, it, useWebView)
+                        TrustlyCustomTabsManagerActivity().apply {
+                            setEventsCallback(trustlyView, trustlyEvents)
+                            startIntent(context, it, useWebView)
+                        }
                     }
                 }
                 trustlyEvents.notifyClose()

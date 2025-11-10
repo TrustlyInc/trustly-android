@@ -6,6 +6,8 @@ import android.util.AttributeSet
 import android.webkit.WebView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import net.trustly.android.sdk.interfaces.TrustlyEvents
+import net.trustly.android.sdk.views.TrustlyView
 
 /**
  * View for Trustly OAuth login
@@ -14,7 +16,12 @@ import android.widget.RelativeLayout
  *
  */
 @SuppressLint("SetJavaScriptEnabled")
-class TrustlyOAuthView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
+class TrustlyOAuthView @JvmOverloads constructor(
+    context: Context,
+    trustlyView: TrustlyView,
+    trustlyEvents: TrustlyEvents,
+    attrs: AttributeSet? = null
+) :
     LinearLayout(context, attrs) {
 
     var webView: WebView = WebView(context)
@@ -32,7 +39,7 @@ class TrustlyOAuthView @JvmOverloads constructor(context: Context, attrs: Attrib
                     LayoutParams.MATCH_PARENT,
                     LayoutParams.MATCH_PARENT
                 )
-            webViewClient = TrustlyOAuthClient()
+            webViewClient = TrustlyOAuthClient(trustlyView, trustlyEvents)
         }
     }
 
