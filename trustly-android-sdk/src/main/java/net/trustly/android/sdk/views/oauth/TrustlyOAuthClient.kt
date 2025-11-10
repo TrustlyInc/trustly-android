@@ -1,7 +1,6 @@
 package net.trustly.android.sdk.views.oauth
 
 import android.os.Build
-import android.util.Log
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient

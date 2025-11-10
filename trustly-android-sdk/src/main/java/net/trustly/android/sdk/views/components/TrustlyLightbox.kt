@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.webkit.WebView
 import net.trustly.android.sdk.BuildConfig
 import net.trustly.android.sdk.data.Settings
@@ -116,7 +115,6 @@ class TrustlyLightbox(
                             post { loadUrl(it) }
                         }
                     } else {
-                        Log.d("Lightbox", "UseWebView $useWebView")
                         TrustlyCustomTabsManagerActivity.startIntent(context, it, useWebView)
                     }
                 }

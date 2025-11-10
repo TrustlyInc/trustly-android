@@ -5,7 +5,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import net.trustly.android.sdk.views.events.TrustlyEvents
@@ -18,12 +17,9 @@ class TrustlyCustomTabsManagerActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Log.d("CCT", "onCreate")
-
         trustlyEvents = TrustlyEvents
 
         val url = intent.getStringExtra(URL)
-        Log.d("CCT", url.toString())
         val useWebView = intent.getBooleanExtra(USE_WEBVIEW, false)
         if (url != null) openCustomTabsIntent(this, url, useWebView)
     }
@@ -31,10 +27,7 @@ class TrustlyCustomTabsManagerActivity : Activity() {
     override fun onResume() {
         super.onResume()
 
-        Log.d("CCT", "onResume")
-
         if (intent.hasExtra(ESTABLISH_DATA)) {
-            Log.d("CCT", "Has extras")
             val transactionDetails = intent.getSerializableExtra(ESTABLISH_DATA) as Map<String, String>
             if (transactionDetails[STATUS_PARAM] == SUCCESS_STATUS_PARAM) {
                 this.trustlyEvents.handleOnReturn(null, transactionDetails)
@@ -50,8 +43,9 @@ class TrustlyCustomTabsManagerActivity : Activity() {
             val builder = CustomTabsIntent.Builder()
             customTabsIntent = builder.build()
             customTabsIntent.intent.setPackage("com.android.chrome")
-            Log.d("CCT", "Use webview $useWebView")
-            if (useWebView) customTabsIntent.intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+            if (useWebView) {
+                customTabsIntent.intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+            }
             customTabsIntent.launchUrl(context, url.toUri())
         } catch (_: Exception) {
             showDisabledBrowserMessage(context)
