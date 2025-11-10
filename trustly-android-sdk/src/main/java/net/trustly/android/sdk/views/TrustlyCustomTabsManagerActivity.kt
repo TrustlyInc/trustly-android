@@ -7,7 +7,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
-import net.trustly.android.sdk.views.events.TrustlyEvents
+import net.trustly.android.sdk.interfaces.TrustlyEvents
+import net.trustly.android.sdk.views.events.TrustlyEventsImpl
 
 class TrustlyCustomTabsManagerActivity : Activity() {
 
@@ -17,7 +18,7 @@ class TrustlyCustomTabsManagerActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        trustlyEvents = TrustlyEvents
+        trustlyEvents = TrustlyEventsImpl()
 
         val url = intent.getStringExtra(URL)
         val useWebView = intent.getBooleanExtra(USE_WEBVIEW, false)

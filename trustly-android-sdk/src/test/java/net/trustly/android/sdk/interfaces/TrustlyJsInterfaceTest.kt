@@ -2,7 +2,7 @@ package net.trustly.android.sdk.interfaces
 
 import net.trustly.android.sdk.views.TrustlyView
 import net.trustly.android.sdk.views.components.TrustlyComponent
-import net.trustly.android.sdk.views.events.TrustlyEvents
+import net.trustly.android.sdk.views.events.TrustlyEventsImpl
 import org.junit.After
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -27,7 +27,7 @@ class TrustlyJsInterfaceTest {
     private lateinit var mockTrustlyView: TrustlyView
 
     @Mock
-    private lateinit var mockTrustlyEvents: TrustlyEvents
+    private lateinit var mockTrustlyEventsImpl: TrustlyEventsImpl
 
     @Mock
     private lateinit var mockTrustlyComponentType: TrustlyComponent.Type
@@ -38,12 +38,12 @@ class TrustlyJsInterfaceTest {
     fun setUp() {
         MockitoAnnotations.openMocks(this)
 
-        trustlyJsInterface = TrustlyJsInterface(mockTrustlyView, mockTrustlyEvents, mockTrustlyComponentType)
+        trustlyJsInterface = TrustlyJsInterface(mockTrustlyView, mockTrustlyEventsImpl, mockTrustlyComponentType)
     }
 
     @After
     fun tearDown() {
-        clearInvocations(mockTrustlyView, mockTrustlyEvents, mockTrustlyComponentType)
+        clearInvocations(mockTrustlyView, mockTrustlyEventsImpl, mockTrustlyComponentType)
     }
 
     @Test
@@ -54,7 +54,7 @@ class TrustlyJsInterfaceTest {
     @Test
     fun shouldValidateTrustlyJsInterfacePostMessageWithoutMessage() {
         trustlyJsInterface.postMessage(null)
-        verify(mockTrustlyEvents, times(0)).notifyListener(
+        verify(mockTrustlyEventsImpl, times(0)).notifyListener(
             EVENT_NAME, HashMap()
         )
     }
@@ -62,7 +62,7 @@ class TrustlyJsInterfaceTest {
     @Test
     fun shouldValidateTrustlyJsInterfacePostMessageNullCommand() {
         trustlyJsInterface.postMessage("|event")
-        verify(mockTrustlyEvents, times(0)).notifyListener(
+        verify(mockTrustlyEventsImpl, times(0)).notifyListener(
             EVENT_NAME, HashMap()
         )
     }
@@ -70,7 +70,7 @@ class TrustlyJsInterfaceTest {
     @Test
     fun shouldValidateTrustlyJsInterfacePostMessageNullCommandAndNullEvent() {
         trustlyJsInterface.postMessage("|")
-        verify(mockTrustlyEvents, times(0)).notifyListener(
+        verify(mockTrustlyEventsImpl, times(0)).notifyListener(
             EVENT_NAME, HashMap()
         )
     }
@@ -78,7 +78,7 @@ class TrustlyJsInterfaceTest {
     @Test
     fun shouldValidateTrustlyJsInterfacePostMessageWithEmptyMessage() {
         trustlyJsInterface.postMessage("")
-        verify(mockTrustlyEvents, times(0)).notifyListener(
+        verify(mockTrustlyEventsImpl, times(0)).notifyListener(
             EVENT_NAME, HashMap()
         )
     }
@@ -86,7 +86,7 @@ class TrustlyJsInterfaceTest {
     @Test
     fun shouldValidateTrustlyJsInterfacePostMessageWithNoDividerMessage() {
         trustlyJsInterface.postMessage("event")
-        verify(mockTrustlyEvents, times(0)).notifyListener(
+        verify(mockTrustlyEventsImpl, times(0)).notifyListener(
             EVENT_NAME, HashMap()
         )
     }
@@ -94,7 +94,7 @@ class TrustlyJsInterfaceTest {
     @Test
     fun shouldValidateTrustlyJsInterfacePostMessageWithNoValidEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.eventNotValid|event")
-        verify(mockTrustlyEvents, times(0)).notifyListener(
+        verify(mockTrustlyEventsImpl, times(0)).notifyListener(
             EVENT_NAME, HashMap()
         )
     }
@@ -102,7 +102,7 @@ class TrustlyJsInterfaceTest {
     @Test
     fun shouldValidateTrustlyJsInterfacePostMessageWithValidEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.event|event")
-        verify(mockTrustlyEvents, times(1)).notifyListener(
+        verify(mockTrustlyEventsImpl, times(1)).notifyListener(
             EVENT_NAME, HashMap()
         )
     }
@@ -110,7 +110,7 @@ class TrustlyJsInterfaceTest {
     @Test
     fun shouldValidateTrustlyJsInterfacePostMessageWithNullEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.event|null")
-        verify(mockTrustlyEvents, times(1)).notifyListener(
+        verify(mockTrustlyEventsImpl, times(1)).notifyListener(
             EVENT_NAME, HashMap()
         )
     }
@@ -118,13 +118,13 @@ class TrustlyJsInterfaceTest {
     @Test
     fun shouldValidateTrustlyJsInterfacePostMessageWithNoPassedEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.event|")
-        verify(mockTrustlyEvents).notifyListener(EVENT_NAME, HashMap())
+        verify(mockTrustlyEventsImpl).notifyListener(EVENT_NAME, HashMap())
     }
 
     @Test
     fun shouldValidateTrustlyJsInterfacePostMessageWithAllValidEvents() {
         trustlyJsInterface.postMessage("PayWithMyBank.event|event|http://www.url.com|123456|47d7-89d3-9628d4cfb65e|bank_selected|100021|123")
-        verify(mockTrustlyEvents, times(1)).notifyListener(
+        verify(mockTrustlyEventsImpl, times(1)).notifyListener(
             EVENT_NAME, getAllEventNames()
         )
     }
@@ -132,7 +132,7 @@ class TrustlyJsInterfaceTest {
     @Test
     fun shouldValidateTrustlyJsInterfacePostMessageWithoutPageEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.event|event||123456|47d7-89d3-9628d4cfb65e|bank_selected|100021|123")
-        verify(mockTrustlyEvents, times(1)).notifyListener(
+        verify(mockTrustlyEventsImpl, times(1)).notifyListener(
             EVENT_NAME, getAllOtherEventNames("page")
         )
     }
@@ -140,7 +140,7 @@ class TrustlyJsInterfaceTest {
     @Test
     fun shouldValidateTrustlyJsInterfacePostMessageWithoutTransactionIdEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.event|event|http://www.url.com||47d7-89d3-9628d4cfb65e|bank_selected|100021|123")
-        verify(mockTrustlyEvents, times(1)).notifyListener(
+        verify(mockTrustlyEventsImpl, times(1)).notifyListener(
             EVENT_NAME, getAllOtherEventNames("transactionId")
         )
     }
@@ -148,7 +148,7 @@ class TrustlyJsInterfaceTest {
     @Test
     fun shouldValidateTrustlyJsInterfacePostMessageWithoutMerchantReferenceEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.event|event|http://www.url.com|123456||bank_selected|100021|123")
-        verify(mockTrustlyEvents, times(1)).notifyListener(
+        verify(mockTrustlyEventsImpl, times(1)).notifyListener(
             EVENT_NAME, getAllOtherEventNames("merchantReference")
         )
     }
@@ -156,7 +156,7 @@ class TrustlyJsInterfaceTest {
     @Test
     fun shouldValidateTrustlyJsInterfacePostMessageWithoutTypeEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.event|event|http://www.url.com|123456|47d7-89d3-9628d4cfb65e||100021|123")
-        verify(mockTrustlyEvents, times(1)).notifyListener(
+        verify(mockTrustlyEventsImpl, times(1)).notifyListener(
             EVENT_NAME, getAllOtherEventNames("type")
         )
     }
@@ -164,7 +164,7 @@ class TrustlyJsInterfaceTest {
     @Test
     fun shouldValidateTrustlyJsInterfacePostMessageWithoutDataEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.event|event|http://www.url.com|123456|47d7-89d3-9628d4cfb65e|bank_selected||123")
-        verify(mockTrustlyEvents, times(1)).notifyListener(
+        verify(mockTrustlyEventsImpl, times(1)).notifyListener(
             EVENT_NAME, getAllOtherEventNames("data")
         )
     }
@@ -172,21 +172,21 @@ class TrustlyJsInterfaceTest {
     @Test
     fun shouldValidateTrustlyJsInterfacePostMessageWithoutTransferEvent() {
         trustlyJsInterface.postMessage("PayWithMyBank.event|event|http://www.url.com|123456|47d7-89d3-9628d4cfb65e|bank_selected|100021|")
-        verify(mockTrustlyEvents, times(1)).notifyListener(
+        verify(mockTrustlyEventsImpl, times(1)).notifyListener(
             EVENT_NAME, getAllOtherEventNames("transfer")
         )
     }
 
     @Test
     fun shouldValidateTrustlyJsInterfaceResizeWidget() {
-        trustlyJsInterface = TrustlyJsInterface(mockTrustlyView, mockTrustlyEvents, TrustlyComponent.Type.WIDGET)
+        trustlyJsInterface = TrustlyJsInterface(mockTrustlyView, mockTrustlyEventsImpl, TrustlyComponent.Type.WIDGET)
         trustlyJsInterface.resize(100f, 100f)
         verify(mockTrustlyView, times(1)).resize(100f, 100f)
     }
 
     @Test
     fun shouldValidateTrustlyJsInterfaceResizeLightbox() {
-        trustlyJsInterface = TrustlyJsInterface(mockTrustlyView, mockTrustlyEvents, TrustlyComponent.Type.LIGHTBOX)
+        trustlyJsInterface = TrustlyJsInterface(mockTrustlyView, mockTrustlyEventsImpl, TrustlyComponent.Type.LIGHTBOX)
         trustlyJsInterface.resize(100f, 100f)
         verify(mockTrustlyView, times(0)).resize(100f, 100f)
     }

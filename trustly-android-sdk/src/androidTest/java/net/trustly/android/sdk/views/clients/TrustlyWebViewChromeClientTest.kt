@@ -8,9 +8,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import net.trustly.android.sdk.TrustlyActivityTest
 import net.trustly.android.sdk.interfaces.Trustly
+import net.trustly.android.sdk.interfaces.TrustlyEvents
 import net.trustly.android.sdk.mock.MockActivity
 import net.trustly.android.sdk.views.TrustlyView
-import net.trustly.android.sdk.views.events.TrustlyEvents
+import net.trustly.android.sdk.views.events.TrustlyEventsImpl
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -51,7 +52,7 @@ class TrustlyWebViewChromeClientTest : TrustlyActivityTest() {
 
         MockitoAnnotations.openMocks(this)
 
-        trustlyEvents = TrustlyEvents
+        trustlyEvents = TrustlyEventsImpl()
 
         `when`(mockWebView.hitTestResult).thenReturn(mockHitTestResult)
         `when`(mockHandler.sendMessageDelayed(any(), anyLong())).thenReturn(true)

@@ -7,10 +7,10 @@ import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
+import net.trustly.android.sdk.interfaces.TrustlyEvents
 import net.trustly.android.sdk.util.EstablishDataManager
 import net.trustly.android.sdk.util.UrlUtils
 import net.trustly.android.sdk.views.TrustlyView
-import net.trustly.android.sdk.views.events.TrustlyEvents
 import java.util.regex.Pattern
 
 /**

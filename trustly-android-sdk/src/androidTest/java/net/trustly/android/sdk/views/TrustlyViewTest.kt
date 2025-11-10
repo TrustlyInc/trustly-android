@@ -7,16 +7,21 @@ import androidx.test.filters.LargeTest
 import net.trustly.android.sdk.TrustlyActivityTest
 import net.trustly.android.sdk.interfaces.Trustly
 import net.trustly.android.sdk.interfaces.TrustlyCallback
+import net.trustly.android.sdk.interfaces.TrustlyEvents
 import net.trustly.android.sdk.interfaces.TrustlyJsInterface
 import net.trustly.android.sdk.mock.MockActivity
 import net.trustly.android.sdk.views.components.TrustlyComponent
-import net.trustly.android.sdk.views.events.TrustlyEvents
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mock
+import org.mockito.Mockito.clearInvocations
+import org.mockito.MockitoAnnotations
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -39,7 +44,24 @@ class TrustlyViewTest : TrustlyActivityTest() {
 
     }
 
+    @Mock
+    private lateinit var mockTrustlyEvents: TrustlyEvents
+
     private lateinit var trustlyView: TrustlyView
+
+    @Before
+    override fun setUp() {
+        super.setUp()
+
+        MockitoAnnotations.openMocks(this)
+    }
+
+    @After
+    override fun tearDown() {
+        super.tearDown()
+
+        clearInvocations(mockTrustlyEvents)
+    }
 
     @Test
     fun shouldValidateTrustlyViewInstance() {
@@ -125,7 +147,7 @@ class TrustlyViewTest : TrustlyActivityTest() {
     fun shouldValidateTrustlyJsInterfaceResizeMethod() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
-            val trustlyJsInterface = TrustlyJsInterface(trustlyView, TrustlyEvents, TrustlyComponent.Type.WIDGET)
+            val trustlyJsInterface = TrustlyJsInterface(trustlyView, mockTrustlyEvents, TrustlyComponent.Type.WIDGET)
             trustlyJsInterface.resize(100f, 0f)
             assertNotNull(trustlyJsInterface)
         }
@@ -135,7 +157,7 @@ class TrustlyViewTest : TrustlyActivityTest() {
     fun shouldValidateTrustlyJsInterfaceResizeMethodSameWidthAndHeight() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
-            val trustlyJsInterface = TrustlyJsInterface(trustlyView, TrustlyEvents, TrustlyComponent.Type.WIDGET)
+            val trustlyJsInterface = TrustlyJsInterface(trustlyView, mockTrustlyEvents, TrustlyComponent.Type.WIDGET)
             trustlyJsInterface.resize(100f, 100f)
             assertNotNull(trustlyJsInterface)
         }
@@ -290,7 +312,7 @@ class TrustlyViewTest : TrustlyActivityTest() {
 
             trustlyView = TrustlyView(activity.applicationContext)
             trustlyView.setListener(null)
-            TrustlyEvents.notifyListener(
+            mockTrustlyEvents.notifyListener(
                 EVENT,
                 eventDetails
             )
@@ -310,17 +332,17 @@ class TrustlyViewTest : TrustlyActivityTest() {
                 assertEquals(EVENT, eventName)
                 assertEquals(eventDetailsMap, eventDetails)
             }
-            TrustlyEvents.notifyListener(EVENT, eventDetailsMap)
+            mockTrustlyEvents.notifyListener(EVENT, eventDetailsMap)
             assertNotNull(trustlyView)
         }
     }
 
-//    @Test
-//    fun shouldValidateTrustlyViewEstablishMethod() {
-//        scenario.onActivity { activity: MockActivity ->
-//            callTrustlyViewEstablishMethod(activity, getEstablishData())
-//        }
-//    }
+    @Test
+    fun shouldValidateTrustlyViewEstablishMethod() {
+        scenario.onActivity { activity: MockActivity ->
+            callTrustlyViewEstablishMethod(activity, getEstablishData())
+        }
+    }
 
     @Test
     fun shouldValidateTrustlyViewEstablishMethodWithCompleteParameters() {
@@ -344,24 +366,24 @@ class TrustlyViewTest : TrustlyActivityTest() {
         }
     }
 
-//    @Test
-//    fun shouldValidateTrustlyViewSelectBankWidgetMethod() {
-//        scenario.onActivity { activity: MockActivity ->
-//            callTrustlyViewSelectBankWidgetMethod(activity, getEstablishData())
-//        }
-//    }
+    @Test
+    fun shouldValidateTrustlyViewSelectBankWidgetMethod() {
+        scenario.onActivity { activity: MockActivity ->
+            callTrustlyViewSelectBankWidgetMethod(activity, getEstablishData())
+        }
+    }
 
-//    @Test
-//    fun shouldValidateTrustlyViewSelectBankWidgetMethodWithCompleteParameters() {
-//        scenario.onActivity { activity: MockActivity ->
-//            val establishDataNewValues = HashMap<String, String>()
-//            establishDataNewValues[DEVICE_TYPE] = ANDROID
-//            establishDataNewValues[CUSTOMER_ADDRESS_COUNTRY] = "us"
-//            establishDataNewValues[METADATA_LANG] = PT_BR
-//            val establishData = getCustomEstablishData(establishDataNewValues)
-//            callTrustlyViewSelectBankWidgetMethod(activity, establishData)
-//        }
-//    }
+    @Test
+    fun shouldValidateTrustlyViewSelectBankWidgetMethodWithCompleteParameters() {
+        scenario.onActivity { activity: MockActivity ->
+            val establishDataNewValues = HashMap<String, String>()
+            establishDataNewValues[DEVICE_TYPE] = ANDROID
+            establishDataNewValues[CUSTOMER_ADDRESS_COUNTRY] = "us"
+            establishDataNewValues[METADATA_LANG] = PT_BR
+            val establishData = getCustomEstablishData(establishDataNewValues)
+            callTrustlyViewSelectBankWidgetMethod(activity, establishData)
+        }
+    }
 
     @Test
     fun shouldValidateTrustlyViewSelectBankWidgetMethodWithCountryNotUS() {

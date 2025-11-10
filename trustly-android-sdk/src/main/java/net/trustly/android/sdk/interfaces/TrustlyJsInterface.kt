@@ -3,7 +3,6 @@ package net.trustly.android.sdk.interfaces
 import android.webkit.JavascriptInterface
 import net.trustly.android.sdk.views.TrustlyView
 import net.trustly.android.sdk.views.components.TrustlyComponent.Type
-import net.trustly.android.sdk.views.events.TrustlyEvents
 
 open class TrustlyJsInterface(
     private val trustlyView: TrustlyView,

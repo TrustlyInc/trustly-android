@@ -6,8 +6,8 @@ import android.webkit.ConsoleMessage
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebView.WebViewTransport
+import net.trustly.android.sdk.interfaces.TrustlyEvents
 import net.trustly.android.sdk.views.TrustlyView
-import net.trustly.android.sdk.views.events.TrustlyEvents
 import net.trustly.android.sdk.views.oauth.TrustlyOAuthView
 
 /**

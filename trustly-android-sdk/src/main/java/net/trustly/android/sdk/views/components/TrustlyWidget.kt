@@ -3,6 +3,7 @@ package net.trustly.android.sdk.views.components
 import android.content.Context
 import android.graphics.Color
 import android.webkit.WebView
+import net.trustly.android.sdk.interfaces.TrustlyEvents
 import net.trustly.android.sdk.interfaces.TrustlyJsInterface
 import net.trustly.android.sdk.util.EstablishDataManager
 import net.trustly.android.sdk.util.TrustlyConstants.CID
@@ -17,7 +18,6 @@ import net.trustly.android.sdk.util.TrustlyConstants.WIDGET
 import net.trustly.android.sdk.util.UrlUtils
 import net.trustly.android.sdk.util.cid.CidManager
 import net.trustly.android.sdk.views.TrustlyView
-import net.trustly.android.sdk.views.events.TrustlyEvents
 
 class TrustlyWidget(
     trustlyView: TrustlyView,

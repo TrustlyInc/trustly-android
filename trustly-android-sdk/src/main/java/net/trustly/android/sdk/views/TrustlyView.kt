@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import net.trustly.android.sdk.interfaces.Trustly
 import net.trustly.android.sdk.interfaces.TrustlyCallback
+import net.trustly.android.sdk.interfaces.TrustlyEvents
 import net.trustly.android.sdk.interfaces.TrustlyListener
 import net.trustly.android.sdk.util.error.TrustlyExceptionHandler
 import net.trustly.android.sdk.util.grp.GRPManager
@@ -19,7 +20,7 @@ import net.trustly.android.sdk.views.clients.TrustlyWebViewChromeClient
 import net.trustly.android.sdk.views.clients.TrustlyWebViewClient
 import net.trustly.android.sdk.views.components.TrustlyLightbox
 import net.trustly.android.sdk.views.components.TrustlyWidget
-import net.trustly.android.sdk.views.events.TrustlyEvents
+import net.trustly.android.sdk.views.events.TrustlyEventsImpl
 import java.security.SecureRandom
 
 /**
@@ -77,7 +78,7 @@ class TrustlyView @JvmOverloads constructor(
     }
 
     private fun initEvents() {
-        trustlyEvents = TrustlyEvents
+        trustlyEvents = TrustlyEventsImpl()
     }
 
     private fun setWebViewChromeClient() {
