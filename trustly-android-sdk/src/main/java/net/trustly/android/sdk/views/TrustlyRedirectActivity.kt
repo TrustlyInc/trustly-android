@@ -9,7 +9,7 @@ class TrustlyRedirectActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (intent.extras != null && intent.data!!.getQueryParameter(STATUS_PARAM) != null) {
+        if (intent.data != null && intent.data!!.getQueryParameter(STATUS_PARAM) != null) {
             val transactionDetail = getTransactionDetailFromUri(intent.data!!)
             TrustlyCustomTabsManagerActivity().apply {
                 startIntent(this, transactionDetail)

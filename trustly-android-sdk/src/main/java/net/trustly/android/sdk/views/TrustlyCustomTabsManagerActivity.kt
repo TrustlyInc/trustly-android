@@ -8,13 +8,14 @@ import android.os.Bundle
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import net.trustly.android.sdk.interfaces.TrustlyEvents
+import net.trustly.android.sdk.views.events.TrustlyEventsImpl
 import java.io.Serializable
 
 class TrustlyCustomTabsManagerActivity : Activity() {
 
     private lateinit var customTabsIntent: CustomTabsIntent
-    private lateinit var trustlyEvents: TrustlyEvents
-    private lateinit var trustlyView: TrustlyView
+    private var trustlyEvents: TrustlyEvents? = null
+    private var trustlyView: TrustlyView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,12 +31,14 @@ class TrustlyCustomTabsManagerActivity : Activity() {
         super.onResume()
 
         if (intent.hasExtra(ESTABLISH_DATA)) {
+            if (this.trustlyEvents == null)
+                this.trustlyEvents = TrustlyEventsImpl()
             val transactionDetails =
                 intent.getSerializableExtra(ESTABLISH_DATA) as Map<String, String>
             if (transactionDetails[STATUS_PARAM] == SUCCESS_STATUS_PARAM) {
-                this.trustlyEvents.handleOnReturn(this.trustlyView, transactionDetails)
+                this.trustlyEvents!!.handleOnReturn(this.trustlyView, transactionDetails)
             } else {
-                this.trustlyEvents.handleOnCancel(this.trustlyView, transactionDetails)
+                this.trustlyEvents!!.handleOnCancel(this.trustlyView, transactionDetails)
             }
         }
         finish()
