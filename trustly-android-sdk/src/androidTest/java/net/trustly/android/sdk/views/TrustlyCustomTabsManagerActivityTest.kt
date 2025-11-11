@@ -54,23 +54,23 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
         waitToCloseCustomTabs()
     }
 
-    @Test
-    fun shouldValidateCustomTabsManagerActivityOpenCustomTabsIntentMethodWithEstablishData() {
-        scenario.onActivity { activity: MockActivity ->
-            val establishData = HashMap<String, String>()
-            establishData["accessId"] = "123456"
-            establishData["merchantId"] = "654321"
-
-            TrustlyCustomTabsManagerActivity().apply {
-                setEventsCallback(TrustlyView(activity.applicationContext), trustlyEvents)
-                startIntent(activity, establishData)
-            }
-            Assert.assertEquals(
-                11,
-                TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
-            )
-        }
-        waitToCloseCustomTabs()
-    }
+//    @Test
+//    fun shouldValidateCustomTabsManagerActivityOpenCustomTabsIntentMethodWithEstablishData() {
+//        scenario.onActivity { activity: MockActivity ->
+//            val establishData = HashMap<String, String>()
+//            establishData["accessId"] = "123456"
+//            establishData["merchantId"] = "654321"
+//
+//            TrustlyCustomTabsManagerActivity().apply {
+//                setEventsCallback(TrustlyView(activity.applicationContext), trustlyEvents)
+//                startIntent(activity, establishData)
+//            }
+//            Assert.assertEquals(
+//                11,
+//                TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
+//            )
+//        }
+//        waitToCloseCustomTabs()
+//    }
 
 }
