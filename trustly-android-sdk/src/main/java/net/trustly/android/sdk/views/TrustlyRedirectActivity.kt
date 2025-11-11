@@ -1,10 +1,8 @@
 package net.trustly.android.sdk.views
 
 import android.app.Activity
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import java.io.Serializable
 
 class TrustlyRedirectActivity : Activity() {
 
@@ -13,10 +11,9 @@ class TrustlyRedirectActivity : Activity() {
 
         if (intent.extras != null && intent.data!!.getQueryParameter(STATUS_PARAM) != null) {
             val transactionDetail = getTransactionDetailFromUri(intent.data!!)
-            Intent(this, TrustlyCustomTabsManagerActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-            }.putExtra(TrustlyCustomTabsManagerActivity.ESTABLISH_DATA, transactionDetail as Serializable)
-                .run { startActivity(this) }
+            TrustlyCustomTabsManagerActivity().apply {
+                startIntent(this, transactionDetail)
+            }
         }
         finish()
     }

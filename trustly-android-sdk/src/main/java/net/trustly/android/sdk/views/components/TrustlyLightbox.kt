@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.webkit.WebView
+import androidx.core.content.ContextCompat
 import net.trustly.android.sdk.BuildConfig
 import net.trustly.android.sdk.data.Settings
 import net.trustly.android.sdk.data.TrustlyUrlFetcher
@@ -115,9 +116,11 @@ class TrustlyLightbox(
                             post { loadUrl(it) }
                         }
                     } else {
-                        TrustlyCustomTabsManagerActivity().apply {
-                            setEventsCallback(trustlyView, trustlyEvents)
-                            startIntent(context, it, useWebView)
+                        ContextCompat.getMainExecutor(context).execute {
+                            TrustlyCustomTabsManagerActivity().apply {
+                                setEventsCallback(trustlyView, trustlyEvents)
+                                startIntent(context, it, useWebView)
+                            }
                         }
                     }
                 }

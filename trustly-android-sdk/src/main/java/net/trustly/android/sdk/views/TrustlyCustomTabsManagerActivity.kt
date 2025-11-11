@@ -8,6 +8,7 @@ import android.os.Bundle
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import net.trustly.android.sdk.interfaces.TrustlyEvents
+import java.io.Serializable
 
 class TrustlyCustomTabsManagerActivity : Activity() {
 
@@ -20,11 +21,9 @@ class TrustlyCustomTabsManagerActivity : Activity() {
 
         val url = intent.getStringExtra(URL)
         val useWebView = intent.getBooleanExtra(USE_WEBVIEW, false)
-        openCustomTabsIntent(this, url!!, useWebView)
-    }
-
-    override fun onResume() {
-        super.onResume()
+        if (url != null) {
+            openCustomTabsIntent(this, url, useWebView)
+        }
 
         if (intent.hasExtra(ESTABLISH_DATA)) {
             val transactionDetails =
@@ -35,6 +34,11 @@ class TrustlyCustomTabsManagerActivity : Activity() {
                 this.trustlyEvents.handleOnCancel(this.trustlyView, transactionDetails)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
         finish()
     }
 
@@ -69,6 +73,12 @@ class TrustlyCustomTabsManagerActivity : Activity() {
         val intent = Intent(context, TrustlyCustomTabsManagerActivity::class.java)
             .putExtra(URL, url)
             .putExtra(USE_WEBVIEW, useWebView)
+        context.startActivity(intent)
+    }
+
+    fun startIntent(context: Context, transactionDetail: Map<String, String>) {
+        val intent = Intent(context, TrustlyCustomTabsManagerActivity::class.java)
+            .putExtra(ESTABLISH_DATA, transactionDetail as Serializable)
         context.startActivity(intent)
     }
 

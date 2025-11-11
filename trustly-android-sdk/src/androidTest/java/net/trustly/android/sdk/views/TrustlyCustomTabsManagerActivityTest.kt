@@ -32,7 +32,7 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
                 startIntent(activity, "http://www.url.com")
             }
             Assert.assertEquals(
-                10,
+                11,
                 TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
             )
         }
@@ -47,7 +47,26 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
                 startIntent(activity, "http://www.url.com", false)
             }
             Assert.assertEquals(
-                10,
+                11,
+                TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
+            )
+        }
+        waitToCloseCustomTabs()
+    }
+
+    @Test
+    fun shouldValidateCustomTabsManagerActivityOpenCustomTabsIntentMethodWithEstablishData() {
+        scenario.onActivity { activity: MockActivity ->
+            val establishData = HashMap<String, String>()
+            establishData["accessId"] = "123456"
+            establishData["merchantId"] = "654321"
+
+            TrustlyCustomTabsManagerActivity().apply {
+                setEventsCallback(TrustlyView(activity.applicationContext), trustlyEvents)
+                startIntent(activity, establishData)
+            }
+            Assert.assertEquals(
+                11,
                 TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
             )
         }
