@@ -58,7 +58,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
 
         MockitoAnnotations.openMocks(this)
 
-        trustlyEvents = TrustlyEventsImpl()
+        trustlyEvents = TrustlyEventsImpl
     }
 
     @After

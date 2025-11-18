@@ -52,7 +52,7 @@ class TrustlyWebViewChromeClientTest : TrustlyActivityTest() {
 
         MockitoAnnotations.openMocks(this)
 
-        trustlyEvents = TrustlyEventsImpl()
+        trustlyEvents = TrustlyEventsImpl
 
         `when`(mockWebView.hitTestResult).thenReturn(mockHitTestResult)
         `when`(mockHandler.sendMessageDelayed(any(), anyLong())).thenReturn(true)

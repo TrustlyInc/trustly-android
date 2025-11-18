@@ -12,7 +12,7 @@ class TrustlyRedirectActivity : Activity() {
         if (intent.data != null && intent.data!!.getQueryParameter(STATUS_PARAM) != null) {
             val transactionDetail = getTransactionDetailFromUri(intent.data!!)
             TrustlyCustomTabsManagerActivity().apply {
-                startIntent(this, transactionDetail)
+                startIntent(this@TrustlyRedirectActivity, transactionDetail)
             }
         }
         finish()

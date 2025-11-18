@@ -1,8 +1,6 @@
 package net.trustly.android.sdk.interfaces
 
-import java.io.Serializable
-
-interface TrustlyEvents : Serializable {
+interface TrustlyEvents {
 
     fun setOnExternalUrlCallback(onExternalUrl: TrustlyCallback<Trustly, Map<String, String>>?)
     fun handleOnExternalUrl(trustlyView: Trustly, params: Map<String, String>)

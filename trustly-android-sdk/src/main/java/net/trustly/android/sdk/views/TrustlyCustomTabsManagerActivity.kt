@@ -14,6 +14,7 @@ import java.io.Serializable
 class TrustlyCustomTabsManagerActivity : Activity() {
 
     private lateinit var customTabsIntent: CustomTabsIntent
+
     private var trustlyEvents: TrustlyEvents? = null
     private var trustlyView: TrustlyView? = null
 
@@ -32,7 +33,8 @@ class TrustlyCustomTabsManagerActivity : Activity() {
 
         if (intent.hasExtra(ESTABLISH_DATA)) {
             if (this.trustlyEvents == null)
-                this.trustlyEvents = TrustlyEventsImpl()
+                this.trustlyEvents = TrustlyEventsImpl
+
             val transactionDetails =
                 intent.getSerializableExtra(ESTABLISH_DATA) as Map<String, String>
             if (transactionDetails[STATUS_PARAM] == SUCCESS_STATUS_PARAM) {
@@ -80,12 +82,12 @@ class TrustlyCustomTabsManagerActivity : Activity() {
 
     fun startIntent(context: Context, transactionDetail: Map<String, String>) {
         val intent = Intent(context, TrustlyCustomTabsManagerActivity::class.java)
-            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             .putExtra(ESTABLISH_DATA, transactionDetail as Serializable)
         context.startActivity(intent)
     }
 
-    fun setEventsCallback(trustlyView: TrustlyView, trustlyEvents: TrustlyEvents) {
+    fun setEventsCallback(trustlyView: TrustlyView?, trustlyEvents: TrustlyEvents) {
         this.trustlyView = trustlyView
         this.trustlyEvents = trustlyEvents
     }

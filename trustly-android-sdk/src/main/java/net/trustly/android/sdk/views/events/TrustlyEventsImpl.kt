@@ -10,7 +10,7 @@ import net.trustly.android.sdk.util.TrustlyConstants.EVENT_TYPE
 import net.trustly.android.sdk.util.TrustlyConstants.WIDGET
 import net.trustly.android.sdk.util.error.TrustlyExceptionHandler
 
-class TrustlyEventsImpl : TrustlyEvents {
+object TrustlyEventsImpl : TrustlyEvents {
 
     private var onReturn: TrustlyCallback<Trustly, Map<String, String>>? = null
     private var onCancel: TrustlyCallback<Trustly, Map<String, String>>? = null

@@ -31,7 +31,7 @@ class TrustlyEventsTest : TrustlyActivityTest() {
 
         MockitoAnnotations.openMocks(this)
 
-        trustlyEvents = TrustlyEventsImpl()
+        trustlyEvents = TrustlyEventsImpl
     }
 
     @After

@@ -22,7 +22,7 @@ class TrustlyOAuthViewTest : TrustlyActivityTest() {
     override fun setUp() {
         super.setUp()
 
-        trustlyEvents = TrustlyEventsImpl()
+        trustlyEvents = TrustlyEventsImpl
     }
 
     @Test

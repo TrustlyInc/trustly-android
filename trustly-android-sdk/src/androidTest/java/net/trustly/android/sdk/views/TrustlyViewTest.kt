@@ -308,7 +308,7 @@ class TrustlyViewTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             val eventDetails = HashMap<String, String>()
             eventDetails["page"] = "widget"
-            eventDetails["type"] = "loading"
+            eventDetails["type"] = "load"
 
             trustlyView = TrustlyView(activity.applicationContext)
             trustlyView.setListener(null)
@@ -325,7 +325,7 @@ class TrustlyViewTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             val eventDetailsMap = HashMap<String, String>()
             eventDetailsMap["page"] = "widget"
-            eventDetailsMap["type"] = "loading"
+            eventDetailsMap["type"] = "load"
 
             trustlyView = TrustlyView(activity.applicationContext)
             trustlyView.setListener { eventName: String, eventDetails: HashMap<String, String>? ->
@@ -493,7 +493,16 @@ class TrustlyViewTest : TrustlyActivityTest() {
         activity: Context,
         establishData: Map<String, String>
     ) {
+        val eventDetails = HashMap<String, String>()
+        eventDetails["page"] = "widget"
+        eventDetails["type"] = "loading"
+
         trustlyView = TrustlyView(activity.applicationContext)
+        trustlyView.setListener(null)
+        mockTrustlyEvents.notifyListener(
+            EVENT,
+            eventDetails
+        )
         val result = trustlyView.selectBankWidget(establishData)
         assertTrue(result is TrustlyView)
         assertEquals(result, trustlyView)
