@@ -5,11 +5,11 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import net.trustly.android.sdk.interfaces.TrustlyEvents
 import net.trustly.android.sdk.views.events.TrustlyEventsImpl
-import java.io.Serializable
 
 class TrustlyCustomTabsManagerActivity : Activity() {
 
@@ -21,7 +21,10 @@ class TrustlyCustomTabsManagerActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        Log.d("CTM", "onCreate")
+
         val url = intent.getStringExtra(URL)
+        Log.d("CTM", url.toString())
         val useWebView = intent.getBooleanExtra(USE_WEBVIEW, false)
         if (url != null) {
             openCustomTabsIntent(this, url, useWebView)
@@ -31,19 +34,32 @@ class TrustlyCustomTabsManagerActivity : Activity() {
     override fun onResume() {
         super.onResume()
 
-        if (intent.hasExtra(ESTABLISH_DATA)) {
+        Log.d("CTM", "onResume")
+        Log.d("CTM", intent.data.toString())
+
+        if (intent.getSerializableExtra(ESTABLISH_DATA) != null) {
+            val transactionDetails = intent.getSerializableExtra(ESTABLISH_DATA) as Map<String, String>
+            Log.d("CTM", transactionDetails.toString())
+
             if (this.trustlyEvents == null)
                 this.trustlyEvents = TrustlyEventsImpl
 
-            val transactionDetails =
-                intent.getSerializableExtra(ESTABLISH_DATA) as Map<String, String>
             if (transactionDetails[STATUS_PARAM] == SUCCESS_STATUS_PARAM) {
-                this.trustlyEvents!!.handleOnReturn(this.trustlyView, transactionDetails)
+                this.trustlyEvents!!.handleOnReturn(null, transactionDetails)
             } else {
-                this.trustlyEvents!!.handleOnCancel(this.trustlyView, transactionDetails)
+                this.trustlyEvents!!.handleOnCancel(null, transactionDetails)
             }
+            finish()
+        } else {
+            Log.d("CTM", "else")
+            finish()
         }
-        finish()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        Log.d("CTM", "onDestroy")
     }
 
     private fun openCustomTabsIntent(context: Context, url: String, useWebView: Boolean) {
@@ -53,6 +69,8 @@ class TrustlyCustomTabsManagerActivity : Activity() {
             customTabsIntent.intent.setPackage("com.android.chrome")
             if (useWebView) {
                 customTabsIntent.intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
+            } else {
+                customTabsIntent.intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
             }
             customTabsIntent.launchUrl(context, url.toUri())
         } catch (_: Exception) {
@@ -77,13 +95,6 @@ class TrustlyCustomTabsManagerActivity : Activity() {
         val intent = Intent(context, TrustlyCustomTabsManagerActivity::class.java)
             .putExtra(URL, url)
             .putExtra(USE_WEBVIEW, useWebView)
-        context.startActivity(intent)
-    }
-
-    fun startIntent(context: Context, transactionDetail: Map<String, String>) {
-        val intent = Intent(context, TrustlyCustomTabsManagerActivity::class.java)
-            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            .putExtra(ESTABLISH_DATA, transactionDetail as Serializable)
         context.startActivity(intent)
     }
 
