@@ -14,7 +14,7 @@ class TrustlyCustomTabsManagerActivity : Activity() {
 
     private lateinit var customTabsIntent: CustomTabsIntent
 
-    private var trustlyEvents: TrustlyEvents? = null
+    private var trustlyEvents: TrustlyEvents = TrustlyEventsImpl
     private var trustlyView: TrustlyView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,18 +27,17 @@ class TrustlyCustomTabsManagerActivity : Activity() {
         }
     }
 
+    @Suppress("DEPRECATION")
     override fun onResume() {
         super.onResume()
 
-        if (intent.getSerializableExtra(ESTABLISH_DATA) != null) {
-            if (this.trustlyEvents == null)
-                this.trustlyEvents = TrustlyEventsImpl
-
-            val transactionDetails = intent.getSerializableExtra(ESTABLISH_DATA) as Map<String, String>
+        val serializableExtra = intent.getSerializableExtra(ESTABLISH_DATA)
+        if (serializableExtra != null) {
+            val transactionDetails = serializableExtra as Map<String, String>
             if (transactionDetails[STATUS_PARAM] == SUCCESS_STATUS_PARAM) {
-                this.trustlyEvents!!.handleOnReturn(this.trustlyView, transactionDetails)
+                this.trustlyEvents.handleOnReturn(this.trustlyView, transactionDetails)
             } else {
-                this.trustlyEvents!!.handleOnCancel(this.trustlyView, transactionDetails)
+                this.trustlyEvents.handleOnCancel(this.trustlyView, transactionDetails)
             }
             finish()
         } else {

@@ -27,7 +27,7 @@ class TrustlyWebViewChromeClient(
     ) = handleWebChromeClientOnCreateWindow(view, resultMsg)
 
     override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
-        trustlyEvents.handleErrorLog(consoleMessage.message())
+        trustlyEvents.handleErrorLog(consoleMessage.message(), consoleMessage.sourceId())
         return true
     }
 

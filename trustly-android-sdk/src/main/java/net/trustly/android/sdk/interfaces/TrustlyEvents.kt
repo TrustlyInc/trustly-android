@@ -16,6 +16,6 @@ interface TrustlyEvents {
     fun notifyClose()
     fun notifyWidgetLoading()
     fun notifyWidgetLoaded()
-    fun handleErrorLog(description: String, failingUrl: String = "")
+    fun handleErrorLog(description: String, failingUrl: String)
 
 }

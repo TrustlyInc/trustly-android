@@ -52,9 +52,19 @@ class TrustlyEventsTest : TrustlyActivityTest() {
     }
 
     @Test
+    fun shouldValidateTrustlyEventsHandleOnExternalUrlNoValue() {
+        scenario.onActivity { activity ->
+            val trustlyView = TrustlyView(activity)
+            trustlyEvents.handleOnExternalUrl(trustlyView, mapOf())
+            verify(mockTrustlyCallback, times(0)).handle(trustlyView, mapOf())
+        }
+    }
+
+    @Test
     fun shouldValidateTrustlyEventsHandleOnExternalUrlNull() {
         scenario.onActivity { activity ->
             val trustlyView = TrustlyView(activity)
+            trustlyEvents.setOnExternalUrlCallback(null)
             trustlyEvents.handleOnExternalUrl(trustlyView, mapOf())
             verify(mockTrustlyCallback, times(0)).handle(trustlyView, mapOf())
         }
@@ -71,9 +81,19 @@ class TrustlyEventsTest : TrustlyActivityTest() {
     }
 
     @Test
+    fun shouldValidateTrustlyEventsHandleOnReturnNoValue() {
+        scenario.onActivity { activity ->
+            val trustlyView = TrustlyView(activity)
+            trustlyEvents.handleOnReturn(trustlyView, mapOf())
+            verify(mockTrustlyCallback, times(0)).handle(trustlyView, mapOf())
+        }
+    }
+
+    @Test
     fun shouldValidateTrustlyEventsHandleOnReturnNull() {
         scenario.onActivity { activity ->
             val trustlyView = TrustlyView(activity)
+            trustlyEvents.setOnReturnCallback(null)
             trustlyEvents.handleOnReturn(trustlyView, mapOf())
             verify(mockTrustlyCallback, times(0)).handle(trustlyView, mapOf())
         }
@@ -90,9 +110,19 @@ class TrustlyEventsTest : TrustlyActivityTest() {
     }
 
     @Test
+    fun shouldValidateTrustlyEventsHandleOnCancelNoValue() {
+        scenario.onActivity { activity ->
+            val trustlyView = TrustlyView(activity)
+            trustlyEvents.handleOnCancel(trustlyView, mapOf())
+            verify(mockTrustlyCallback, times(0)).handle(trustlyView, mapOf())
+        }
+    }
+
+    @Test
     fun shouldValidateTrustlyEventsHandleOnCancelNull() {
         scenario.onActivity { activity ->
             val trustlyView = TrustlyView(activity)
+            trustlyEvents.setOnCancelCallback(null)
             trustlyEvents.handleOnCancel(trustlyView, mapOf())
             verify(mockTrustlyCallback, times(0)).handle(trustlyView, mapOf())
         }

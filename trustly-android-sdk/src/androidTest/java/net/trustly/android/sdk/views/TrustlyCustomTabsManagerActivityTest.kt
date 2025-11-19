@@ -1,5 +1,6 @@
 package net.trustly.android.sdk.views
 
+import android.content.Intent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import net.trustly.android.sdk.TrustlyActivityTest
@@ -10,6 +11,7 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.Serializable
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -46,6 +48,49 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
                 setEventsCallback(TrustlyView(activity.applicationContext), trustlyEvents)
                 startIntent(activity, "http://www.url.com", false)
             }
+            Assert.assertEquals(
+                10,
+                TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
+            )
+        }
+        waitToCloseCustomTabs()
+    }
+
+    @Test
+    fun shouldValidateCustomTabsManagerActivityOpenCustomTabsIntentMethodWithEstablishData() {
+        scenario.onActivity { activity: MockActivity ->
+            val establishData = HashMap<String, String>()
+            establishData["accessId"] = "123456"
+            establishData["merchantId"] = "654321"
+
+            val intent = Intent(activity, TrustlyCustomTabsManagerActivity::class.java)
+                .putExtra(
+                    TrustlyCustomTabsManagerActivity.ESTABLISH_DATA,
+                    establishData as Serializable
+                )
+            activity.startActivity(intent)
+            Assert.assertEquals(
+                10,
+                TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
+            )
+        }
+        waitToCloseCustomTabs()
+    }
+
+    @Test
+    fun shouldValidateCustomTabsManagerActivityOpenCustomTabsIntentMethodWithSuccessStatusEstablishData() {
+        scenario.onActivity { activity: MockActivity ->
+            val establishData = HashMap<String, String>()
+            establishData["accessId"] = "123456"
+            establishData["merchantId"] = "654321"
+            establishData["status"] = "2"
+
+            val intent = Intent(activity, TrustlyCustomTabsManagerActivity::class.java)
+                .putExtra(
+                    TrustlyCustomTabsManagerActivity.ESTABLISH_DATA,
+                    establishData as Serializable
+                )
+            activity.startActivity(intent)
             Assert.assertEquals(
                 10,
                 TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
