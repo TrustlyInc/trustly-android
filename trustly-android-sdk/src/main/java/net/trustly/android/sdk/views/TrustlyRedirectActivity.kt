@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import java.io.Serializable
 
 class TrustlyRedirectActivity : Activity() {
@@ -12,11 +11,8 @@ class TrustlyRedirectActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Log.d("Redirect", "onCreate")
-
         if (intent.data != null && intent.data!!.getQueryParameter(STATUS_PARAM) != null) {
             val transactionDetail = getTransactionDetailFromUri(intent.data!!)
-            Log.d("Redirect", transactionDetail.toString())
             val intent = Intent(this, TrustlyCustomTabsManagerActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 .putExtra(
@@ -25,7 +21,6 @@ class TrustlyRedirectActivity : Activity() {
                 )
             startActivity(intent)
         } else {
-            Log.d("Redirect", "No transaction detail")
             val intent = Intent(this, TrustlyCustomTabsManagerActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
             startActivity(intent)

@@ -5,7 +5,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import net.trustly.android.sdk.interfaces.TrustlyEvents
@@ -21,10 +20,7 @@ class TrustlyCustomTabsManagerActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Log.d("CTM", "onCreate")
-
         val url = intent.getStringExtra(URL)
-        Log.d("CTM", url.toString())
         val useWebView = intent.getBooleanExtra(USE_WEBVIEW, false)
         if (url != null) {
             openCustomTabsIntent(this, url, useWebView)
@@ -34,32 +30,20 @@ class TrustlyCustomTabsManagerActivity : Activity() {
     override fun onResume() {
         super.onResume()
 
-        Log.d("CTM", "onResume")
-        Log.d("CTM", intent.data.toString())
-
         if (intent.getSerializableExtra(ESTABLISH_DATA) != null) {
-            val transactionDetails = intent.getSerializableExtra(ESTABLISH_DATA) as Map<String, String>
-            Log.d("CTM", transactionDetails.toString())
-
             if (this.trustlyEvents == null)
                 this.trustlyEvents = TrustlyEventsImpl
 
+            val transactionDetails = intent.getSerializableExtra(ESTABLISH_DATA) as Map<String, String>
             if (transactionDetails[STATUS_PARAM] == SUCCESS_STATUS_PARAM) {
-                this.trustlyEvents!!.handleOnReturn(null, transactionDetails)
+                this.trustlyEvents!!.handleOnReturn(this.trustlyView, transactionDetails)
             } else {
-                this.trustlyEvents!!.handleOnCancel(null, transactionDetails)
+                this.trustlyEvents!!.handleOnCancel(this.trustlyView, transactionDetails)
             }
             finish()
         } else {
-            Log.d("CTM", "else")
             finish()
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        Log.d("CTM", "onDestroy")
     }
 
     private fun openCustomTabsIntent(context: Context, url: String, useWebView: Boolean) {
