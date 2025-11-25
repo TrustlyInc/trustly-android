@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import java.io.Serializable
 
 class TrustlyRedirectActivity : Activity() {
@@ -26,6 +28,14 @@ class TrustlyRedirectActivity : Activity() {
             startActivity(intent)
         }
         finish()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            finish()
+        }, 700)
     }
 
     private fun getTransactionDetailFromUri(appLinkData: Uri): Map<String, String> {
