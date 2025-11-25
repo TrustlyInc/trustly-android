@@ -34,7 +34,7 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
                 startIntent(activity, "http://www.url.com")
             }
             Assert.assertEquals(
-                10,
+                11,
                 TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
             )
         }
@@ -49,7 +49,7 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
                 startIntent(activity, "http://www.url.com", false)
             }
             Assert.assertEquals(
-                10,
+                11,
                 TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
             )
         }
@@ -70,7 +70,7 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
                 )
             activity.startActivity(intent)
             Assert.assertEquals(
-                10,
+                11,
                 TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
             )
         }
@@ -92,7 +92,7 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
                 )
             activity.startActivity(intent)
             Assert.assertEquals(
-                10,
+                11,
                 TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
             )
         }

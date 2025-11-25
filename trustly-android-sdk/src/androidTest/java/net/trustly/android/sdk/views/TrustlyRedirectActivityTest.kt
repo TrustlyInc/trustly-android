@@ -20,7 +20,7 @@ class TrustlyRedirectActivityTest : TrustlyActivityTest() {
             val intent = Intent(activity, TrustlyRedirectActivity::class.java)
             activity.startActivity(intent)
             Assert.assertEquals(
-                3,
+                5,
                 TrustlyRedirectActivity::class.java.declaredMethods.size
             )
         }
@@ -39,7 +39,7 @@ class TrustlyRedirectActivityTest : TrustlyActivityTest() {
             )
             activity.startActivity(intent)
             Assert.assertEquals(
-                3,
+                5,
                 TrustlyRedirectActivity::class.java.declaredMethods.size
             )
         }
@@ -60,7 +60,7 @@ class TrustlyRedirectActivityTest : TrustlyActivityTest() {
                 activity.startActivity(intent)
             }
             Assert.assertEquals(
-                3,
+                5,
                 TrustlyRedirectActivity::class.java.declaredMethods.size
             )
         }
