@@ -40,9 +40,13 @@ class TrustlyCustomTabsManagerActivity : Activity() {
                 this.trustlyEvents.handleOnCancel(this.trustlyView, transactionDetails)
             }
             finish()
-        } else {
-            finish()
         }
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+
+        finish()
     }
 
     private fun openCustomTabsIntent(context: Context, url: String, useWebView: Boolean) {
@@ -52,8 +56,6 @@ class TrustlyCustomTabsManagerActivity : Activity() {
             customTabsIntent.intent.setPackage("com.android.chrome")
             if (useWebView) {
                 customTabsIntent.intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
-            } else {
-                customTabsIntent.intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
             }
             customTabsIntent.launchUrl(context, url.toUri())
         } catch (_: Exception) {

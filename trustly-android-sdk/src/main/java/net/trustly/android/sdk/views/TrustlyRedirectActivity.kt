@@ -23,19 +23,10 @@ class TrustlyRedirectActivity : Activity() {
                 )
             startActivity(intent)
         } else {
-            val intent = Intent(this, TrustlyCustomTabsManagerActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
-            startActivity(intent)
+            Handler(Looper.getMainLooper()).postDelayed({
+                finish()
+            }, 700)
         }
-        finish()
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            finish()
-        }, 700)
     }
 
     private fun getTransactionDetailFromUri(appLinkData: Uri): Map<String, String> {
