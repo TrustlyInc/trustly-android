@@ -24,47 +24,51 @@ class TrustlyRedirectActivityTest : TrustlyActivityTest() {
                 TrustlyRedirectActivity::class.java.declaredMethods.size
             )
         }
-        waitToCloseCustomTabs()
     }
 
     @Test
     fun shouldValidateRedirectActivityWithSuccessStatusTransactionDetail() {
         scenario.onActivity { activity: MockActivity ->
             val transactionDetail =
-                "trustly_url_scheme://transactionId=1234567&transactionType=1&merchantReference=123456&status=2&payment.paymentType=2&payment.paymentProvider.type=1&payment.account.verified=true&panel=1"
+                "trustly_url_scheme://?transactionId=1234567&transactionType=1&merchantReference=123456&status=2&payment.paymentType=2&payment.paymentProvider.type=1&payment.account.verified=true&panel=1"
 
-            val intent = Intent(
-                Intent.ACTION_VIEW, transactionDetail.toUri(), activity,
-                TrustlyRedirectActivity::class.java
-            )
+            val intent = Intent(Intent.ACTION_VIEW, transactionDetail.toUri())
             activity.startActivity(intent)
             Assert.assertEquals(
                 5,
                 TrustlyRedirectActivity::class.java.declaredMethods.size
             )
         }
-        waitToCloseCustomTabs()
     }
 
     @Test
     fun shouldValidateRedirectActivityWithFailedStatusTransactionDetail() {
         scenario.onActivity { activity: MockActivity ->
-            activity.runOnUiThread {
-                val transactionDetail =
-                    "trustly_url_scheme://transactionId=1234567&transactionType=1&merchantReference=123456&status=1&payment.paymentType=2&payment.paymentProvider.type=1&payment.account.verified=true&panel=1"
+            val transactionDetail =
+                "trustly_url_scheme://?transactionId=1234567&transactionType=1&merchantReference=123456&status=1&payment.paymentType=2&payment.paymentProvider.type=1&payment.account.verified=true&panel=1"
 
-                val intent = Intent(
-                    Intent.ACTION_VIEW, transactionDetail.toUri(), activity,
-                    TrustlyRedirectActivity::class.java
-                )
-                activity.startActivity(intent)
-            }
+            val intent = Intent(Intent.ACTION_VIEW, transactionDetail.toUri())
+            activity.startActivity(intent)
             Assert.assertEquals(
                 5,
                 TrustlyRedirectActivity::class.java.declaredMethods.size
             )
         }
-        waitToCloseCustomTabs()
+    }
+
+    @Test
+    fun shouldValidateRedirectActivityWithoutStatusTransactionDetail() {
+        scenario.onActivity { activity: MockActivity ->
+            val transactionDetail =
+                "trustly_url_scheme://?transactionId=1234567&transactionType=1&merchantReference=123456&payment.paymentType=2&payment.paymentProvider.type=1&payment.account.verified=true&panel=1"
+
+            val intent = Intent(Intent.ACTION_VIEW, transactionDetail.toUri())
+            activity.startActivity(intent)
+            Assert.assertEquals(
+                5,
+                TrustlyRedirectActivity::class.java.declaredMethods.size
+            )
+        }
     }
 
 }
