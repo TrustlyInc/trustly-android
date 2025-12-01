@@ -30,7 +30,7 @@ class TrustlyRedirectActivityTest : TrustlyActivityTest() {
     fun shouldValidateRedirectActivityWithSuccessStatusTransactionDetail() {
         scenario.onActivity { activity: MockActivity ->
             val transactionDetail =
-                "trustly_url_scheme://?transactionId=1234567&transactionType=1&merchantReference=123456&status=2&payment.paymentType=2&payment.paymentProvider.type=1&payment.account.verified=true&panel=1"
+                "trustly-url-scheme://?transactionId=1234567&transactionType=1&merchantReference=123456&status=2&payment.paymentType=2&payment.paymentProvider.type=1&payment.account.verified=true&panel=1"
 
             val intent = Intent(Intent.ACTION_VIEW, transactionDetail.toUri())
             activity.startActivity(intent)
@@ -45,7 +45,7 @@ class TrustlyRedirectActivityTest : TrustlyActivityTest() {
     fun shouldValidateRedirectActivityWithFailedStatusTransactionDetail() {
         scenario.onActivity { activity: MockActivity ->
             val transactionDetail =
-                "trustly_url_scheme://?transactionId=1234567&transactionType=1&merchantReference=123456&status=1&payment.paymentType=2&payment.paymentProvider.type=1&payment.account.verified=true&panel=1"
+                "trustly-url-scheme://?transactionId=1234567&transactionType=1&merchantReference=123456&status=1&payment.paymentType=2&payment.paymentProvider.type=1&payment.account.verified=true&panel=1"
 
             val intent = Intent(Intent.ACTION_VIEW, transactionDetail.toUri())
             activity.startActivity(intent)
@@ -60,7 +60,7 @@ class TrustlyRedirectActivityTest : TrustlyActivityTest() {
     fun shouldValidateRedirectActivityWithoutStatusTransactionDetail() {
         scenario.onActivity { activity: MockActivity ->
             val transactionDetail =
-                "trustly_url_scheme://?transactionId=1234567&transactionType=1&merchantReference=123456&payment.paymentType=2&payment.paymentProvider.type=1&payment.account.verified=true&panel=1"
+                "trustly-url-scheme://?transactionId=1234567&transactionType=1&merchantReference=123456&payment.paymentType=2&payment.paymentProvider.type=1&payment.account.verified=true&panel=1"
 
             val intent = Intent(Intent.ACTION_VIEW, transactionDetail.toUri())
             activity.startActivity(intent)
