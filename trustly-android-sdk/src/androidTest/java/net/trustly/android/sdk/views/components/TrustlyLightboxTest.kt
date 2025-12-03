@@ -7,10 +7,11 @@ import androidx.test.filters.LargeTest
 import net.trustly.android.sdk.TrustlyActivityTest
 import net.trustly.android.sdk.data.Settings
 import net.trustly.android.sdk.data.StrategySetting
+import net.trustly.android.sdk.interfaces.TrustlyEvents
 import net.trustly.android.sdk.util.api.APIRequestManager
 import net.trustly.android.sdk.util.api.APIRequestStorage
 import net.trustly.android.sdk.views.TrustlyView
-import net.trustly.android.sdk.views.events.TrustlyEvents
+import net.trustly.android.sdk.views.events.TrustlyEventsImpl
 import org.junit.After
 import org.junit.Assert.assertNotNull
 import org.junit.Before
@@ -40,7 +41,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
 
         MockitoAnnotations.openMocks(this)
 
-        trustlyEvents = TrustlyEvents()
+        trustlyEvents = TrustlyEventsImpl
 
         `when`(mockWebView.settings).thenReturn(mockWebSettings)
     }

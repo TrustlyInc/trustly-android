@@ -6,8 +6,8 @@ import android.webkit.ConsoleMessage
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebView.WebViewTransport
+import net.trustly.android.sdk.interfaces.TrustlyEvents
 import net.trustly.android.sdk.views.TrustlyView
-import net.trustly.android.sdk.views.events.TrustlyEvents
 import net.trustly.android.sdk.views.oauth.TrustlyOAuthView
 
 /**
@@ -27,7 +27,7 @@ class TrustlyWebViewChromeClient(
     ) = handleWebChromeClientOnCreateWindow(view, resultMsg)
 
     override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
-        trustlyEvents.handleErrorLog(consoleMessage.message())
+        trustlyEvents.handleErrorLog(consoleMessage.message(), consoleMessage.sourceId())
         return true
     }
 
@@ -35,7 +35,7 @@ class TrustlyWebViewChromeClient(
         val result = view.hitTestResult
         return if (result.type == 0) {
             //window.open
-            val trustlyOAuthView = TrustlyOAuthView(context)
+            val trustlyOAuthView = TrustlyOAuthView(context, trustlyView, trustlyEvents)
             trustlyView.addView(trustlyOAuthView)
             val transport = resultMsg.obj as WebViewTransport
             transport.webView = trustlyOAuthView.webView

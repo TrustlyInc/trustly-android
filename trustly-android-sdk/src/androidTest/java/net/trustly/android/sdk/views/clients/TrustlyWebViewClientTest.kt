@@ -9,9 +9,10 @@ import androidx.test.filters.LargeTest
 import net.trustly.android.sdk.TrustlyActivityTest
 import net.trustly.android.sdk.interfaces.Trustly
 import net.trustly.android.sdk.interfaces.TrustlyCallback
+import net.trustly.android.sdk.interfaces.TrustlyEvents
 import net.trustly.android.sdk.mock.MockActivity
 import net.trustly.android.sdk.views.TrustlyView
-import net.trustly.android.sdk.views.events.TrustlyEvents
+import net.trustly.android.sdk.views.events.TrustlyEventsImpl
 import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -57,7 +58,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
 
         MockitoAnnotations.openMocks(this)
 
-        trustlyEvents = TrustlyEvents()
+        trustlyEvents = TrustlyEventsImpl
     }
 
     @After
@@ -115,7 +116,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             `when`(mockWebView.title).thenReturn(null)
             trustlyView = TrustlyView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, TrustlyEvents())
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             trustlyWebViewClient.onPageFinished(mockWebView, URL)
             assertNotNull(trustlyWebViewClient)
         }
@@ -126,7 +127,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             `when`(mockWebView.title).thenReturn("title1234567890")
             trustlyView = TrustlyView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, TrustlyEvents())
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             trustlyWebViewClient.onPageFinished(mockWebView, URL)
             assertNotNull(trustlyWebViewClient)
         }
@@ -137,7 +138,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             `when`(mockWebView.title).thenReturn("title400")
             trustlyView = TrustlyView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, TrustlyEvents())
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             trustlyWebViewClient.onPageFinished(mockWebView, URL)
             assertNotNull(trustlyWebViewClient)
         }
@@ -161,7 +162,7 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
         scenario.onActivity { activity: MockActivity ->
             `when`(mockWebView.title).thenReturn("title500")
             trustlyView = TrustlyView(activity.applicationContext)
-            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, TrustlyEvents())
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
             trustlyWebViewClient.onPageFinished(mockWebView, URL)
             assertNotNull(trustlyWebViewClient)
         }

@@ -5,13 +5,17 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
-import net.trustly.android.sdk.views.TrustlyCustomTabsManager.openCustomTabsIntent
+import net.trustly.android.sdk.interfaces.TrustlyEvents
+import net.trustly.android.sdk.views.TrustlyCustomTabsManagerActivity
 import net.trustly.android.sdk.views.TrustlyView
 
 /**
  * Client for Trustly OAuth login
  */
-class TrustlyOAuthClient : WebViewClient() {
+class TrustlyOAuthClient(
+    val trustlyView: TrustlyView,
+    val trustlyEvents: TrustlyEvents
+) : WebViewClient() {
 
     /**
      * @param view The WebView that is initiating the callback.
@@ -24,7 +28,10 @@ class TrustlyOAuthClient : WebViewClient() {
                     (url.contains("paywithmybank.com") || url.contains("trustly.one"))
                             && url.contains("/oauth/login/"))
         ) {
-            openCustomTabsIntent(view.context, url)
+            TrustlyCustomTabsManagerActivity().apply {
+                setEventsCallback(trustlyView, trustlyEvents)
+                startIntent(view.context, url)
+            }
         }
         return true
     }

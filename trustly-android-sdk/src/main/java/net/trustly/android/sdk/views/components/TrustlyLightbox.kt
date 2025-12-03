@@ -5,9 +5,11 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.webkit.WebView
+import androidx.core.content.ContextCompat
 import net.trustly.android.sdk.BuildConfig
 import net.trustly.android.sdk.data.Settings
 import net.trustly.android.sdk.data.TrustlyUrlFetcher
+import net.trustly.android.sdk.interfaces.TrustlyEvents
 import net.trustly.android.sdk.interfaces.TrustlyJsInterface
 import net.trustly.android.sdk.util.EstablishDataManager
 import net.trustly.android.sdk.util.TrustlyConstants.CANCEL_URL
@@ -32,13 +34,12 @@ import net.trustly.android.sdk.util.TrustlyConstants.WIDGET_LOADED
 import net.trustly.android.sdk.util.UrlUtils
 import net.trustly.android.sdk.util.api.APIRequestManager
 import net.trustly.android.sdk.util.cid.CidManager
-import net.trustly.android.sdk.views.TrustlyCustomTabsManager
+import net.trustly.android.sdk.views.TrustlyCustomTabsManagerActivity
 import net.trustly.android.sdk.views.TrustlyView
-import net.trustly.android.sdk.views.events.TrustlyEvents
 import java.nio.charset.StandardCharsets
 
 class TrustlyLightbox(
-    trustlyView: TrustlyView,
+    private val trustlyView: TrustlyView,
     private val context: Context,
     private val webView: WebView,
     private val returnURL: String,
@@ -114,7 +115,14 @@ class TrustlyLightbox(
                         with(webView) {
                             post { loadUrl(it) }
                         }
-                    } else TrustlyCustomTabsManager.openCustomTabsIntent(context, it)
+                    } else {
+                        ContextCompat.getMainExecutor(context).execute {
+                            TrustlyCustomTabsManagerActivity().apply {
+                                setEventsCallback(trustlyView, trustlyEvents)
+                                startIntent(context, it, useWebView)
+                            }
+                        }
+                    }
                 }
                 trustlyEvents.notifyClose()
             }
