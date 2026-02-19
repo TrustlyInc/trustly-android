@@ -1,14 +1,13 @@
-package net.trustly.android.sdk.util
+package net.trustly.android.sdk.data
 
 import android.content.Context
 import android.content.SharedPreferences
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.any
-import org.mockito.ArgumentMatchers.anyInt
-import org.mockito.ArgumentMatchers.anyString
+import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.Mockito.clearInvocations
 import org.mockito.Mockito.times
@@ -36,8 +35,18 @@ class TrustlyStorageTest {
     fun setUp() {
         MockitoAnnotations.openMocks(this)
 
-        `when`(mockSharedPreferencesEditor.putInt(anyString(), anyInt())).thenReturn(mockSharedPreferencesEditor)
-        `when`(mockSharedPreferencesEditor.putString(anyString(), anyString())).thenReturn(mockSharedPreferencesEditor)
+        `when`(
+            mockSharedPreferencesEditor.putInt(
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyInt()
+            )
+        ).thenReturn(mockSharedPreferencesEditor)
+        `when`(
+            mockSharedPreferencesEditor.putString(
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString()
+            )
+        ).thenReturn(mockSharedPreferencesEditor)
         `when`(mockSharedPreferences.edit()).thenReturn(mockSharedPreferencesEditor)
         `when`(mockContext.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)).thenReturn(mockSharedPreferences)
     }
@@ -65,7 +74,12 @@ class TrustlyStorageTest {
 
     @Test
     fun shouldValidateTrustlyStorageReadingIntData() {
-        `when`(mockSharedPreferences.getInt(anyString(), anyInt())).thenReturn(54)
+        `when`(
+            mockSharedPreferences.getInt(
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyInt()
+            )
+        ).thenReturn(54)
 
         val apiRequest = TrustlyStorage(mockContext, PREFERENCES_NAME).readIntDataFrom("preferenceId")
 
@@ -76,7 +90,12 @@ class TrustlyStorageTest {
 
     @Test
     fun shouldValidateTrustlyStorageReadingIntDataMinusOne() {
-        `when`(mockSharedPreferences.getInt(anyString(), anyInt())).thenReturn(-1)
+        `when`(
+            mockSharedPreferences.getInt(
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyInt()
+            )
+        ).thenReturn(-1)
 
         val apiRequest = TrustlyStorage(mockContext, PREFERENCES_NAME).readIntDataFrom("preferenceId")
 
@@ -87,7 +106,12 @@ class TrustlyStorageTest {
 
     @Test
     fun shouldValidateTrustlyStorageReadingStringData() {
-        `when`(mockSharedPreferences.getString(anyString(), any())).thenReturn("preferenceValue")
+        `when`(
+            mockSharedPreferences.getString(
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.any()
+            )
+        ).thenReturn("preferenceValue")
 
         val apiRequest = TrustlyStorage(mockContext, PREFERENCES_NAME).readStringDataFrom("preferenceId")
 
@@ -98,7 +122,12 @@ class TrustlyStorageTest {
 
     @Test
     fun shouldValidateTrustlyStorageReadingStringDataNull() {
-        `when`(mockSharedPreferences.getString(anyString(), any())).thenReturn(null)
+        `when`(
+            mockSharedPreferences.getString(
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.any()
+            )
+        ).thenReturn(null)
 
         val apiRequest = TrustlyStorage(mockContext, PREFERENCES_NAME).readStringDataFrom("preferenceId")
 

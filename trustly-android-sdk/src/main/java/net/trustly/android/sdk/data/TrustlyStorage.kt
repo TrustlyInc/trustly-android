@@ -1,9 +1,9 @@
-package net.trustly.android.sdk.util
+package net.trustly.android.sdk.data
 
 import android.content.Context
 import androidx.core.content.edit
 
-class TrustlyStorage(val context: Context, val preferencesName: String) {
+class TrustlyStorage(private val context: Context, private val preferencesName: String) {
 
     fun saveData(preferenceId: String, preferenceValue: Int) {
         getSharedPreferences().edit { putInt(preferenceId, preferenceValue) }
