@@ -8,6 +8,7 @@ import net.trustly.android.sdk.TrustlyActivityTest
 import net.trustly.android.sdk.data.Settings
 import net.trustly.android.sdk.data.StrategySetting
 import net.trustly.android.sdk.interfaces.TrustlyEvents
+import net.trustly.android.sdk.mock.MockActivity
 import net.trustly.android.sdk.util.api.APIRequestManager
 import net.trustly.android.sdk.util.api.APIRequestStorage
 import net.trustly.android.sdk.views.TrustlyView
@@ -56,14 +57,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
     @Test
     fun shouldValidateTrustlyLightboxInstance() {
         scenario.onActivity { activity ->
-            val trustlyLightbox = TrustlyLightbox(
-                TrustlyView(activity),
-                activity,
-                mockWebView,
-                "returnUrl",
-                "cancelUrl",
-                trustlyEvents
-            )
+            val trustlyLightbox = getTrustlyLightboxInstance(activity)
             assertNotNull(trustlyLightbox)
         }
     }
@@ -71,14 +65,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
     @Test
     fun shouldValidateTrustlyLightboxInstanceEmptyEstablishData() {
         scenario.onActivity { activity ->
-            val trustlyLightbox = TrustlyLightbox(
-                TrustlyView(activity),
-                activity,
-                mockWebView,
-                "returnUrl",
-                "cancelUrl",
-                trustlyEvents
-            )
+            val trustlyLightbox = getTrustlyLightboxInstance(activity)
             trustlyLightbox.updateEstablishData(mapOf(), 0)
             waitToCloseCustomTabs()
             assertNotNull(trustlyLightbox)
@@ -90,14 +77,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
         scenario.onActivity { activity ->
             APIRequestManager.saveAPIRequestSettings(activity, Settings(StrategySetting("in-app-browser")))
 
-            val trustlyLightbox = TrustlyLightbox(
-                TrustlyView(activity),
-                activity,
-                mockWebView,
-                "returnUrl",
-                "cancelUrl",
-                trustlyEvents
-            )
+            val trustlyLightbox = getTrustlyLightboxInstance(activity)
             trustlyLightbox.updateEstablishData(EstablishDataMock.getEstablishDataValues(), 0)
             waitToCloseCustomTabs()
             assertNotNull(trustlyLightbox)
@@ -109,14 +89,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
         scenario.onActivity { activity ->
             APIRequestManager.saveAPIRequestSettings(activity, Settings(StrategySetting("in-app-browser")))
 
-            val trustlyLightbox = TrustlyLightbox(
-                TrustlyView(activity),
-                activity,
-                mockWebView,
-                "returnUrl",
-                "cancelUrl",
-                trustlyEvents
-            )
+            val trustlyLightbox = getTrustlyLightboxInstance(activity)
 
             val establishData = EstablishDataMock.getEstablishDataValues()
             establishData["metadata.urlScheme"] = "urlscheme://"
@@ -132,14 +105,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
         scenario.onActivity { activity ->
             APIRequestManager.saveAPIRequestSettings(activity, Settings(StrategySetting("in-app-browser")))
 
-            val trustlyLightbox = TrustlyLightbox(
-                TrustlyView(activity),
-                activity,
-                mockWebView,
-                "returnUrl",
-                "cancelUrl",
-                trustlyEvents
-            )
+            val trustlyLightbox = getTrustlyLightboxInstance(activity)
 
             val establishData = EstablishDataMock.getEstablishDataValues()
             establishData["metadata.urlScheme"] = "urlscheme://"
@@ -158,18 +124,37 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
 
             APIRequestManager.saveAPIRequestSettings(activity, Settings(StrategySetting("webview")))
 
-            val trustlyLightbox = TrustlyLightbox(
-                TrustlyView(activity),
-                activity,
-                mockWebView,
-                "returnUrl",
-                "cancelUrl",
-                trustlyEvents
-            )
+            val trustlyLightbox = getTrustlyLightboxInstance(activity)
             trustlyLightbox.updateEstablishData(EstablishDataMock.getEstablishDataValues(), 0)
             waitToCloseCustomTabs()
             assertNotNull(trustlyLightbox)
         }
+    }
+
+    @Test
+    fun shouldValidateTrustlyLightboxInstanceWithEstablishDataIntegrationInAppBrowserWithMetadataFlowType() {
+        scenario.onActivity { activity ->
+            APIRequestManager.saveAPIRequestSettings(activity, Settings(StrategySetting("in-app-browser")))
+
+            val trustlyLightbox = getTrustlyLightboxInstance(activity)
+            val establishData = EstablishDataMock.getEstablishDataValues()
+            establishData["metadata.flowType"] = "webview"
+
+            trustlyLightbox.updateEstablishData(establishData, 0)
+            waitToCloseCustomTabs()
+            assertNotNull(trustlyLightbox)
+        }
+    }
+
+    private fun getTrustlyLightboxInstance(activity: MockActivity): TrustlyLightbox {
+        return TrustlyLightbox(
+            TrustlyView(activity),
+            activity,
+            mockWebView,
+            "returnUrl",
+            "cancelUrl",
+            trustlyEvents
+        )
     }
 
 }

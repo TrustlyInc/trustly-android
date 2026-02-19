@@ -16,12 +16,14 @@ import net.trustly.android.sdk.util.TrustlyConstants.CANCEL_URL
 import net.trustly.android.sdk.util.TrustlyConstants.DEVICE_TYPE
 import net.trustly.android.sdk.util.TrustlyConstants.ENV
 import net.trustly.android.sdk.util.TrustlyConstants.ENV_LOCAL
+import net.trustly.android.sdk.util.TrustlyConstants.FLOWTYPE
 import net.trustly.android.sdk.util.TrustlyConstants.FUNCTION_INDEX
 import net.trustly.android.sdk.util.TrustlyConstants.FUNCTION_MOBILE
 import net.trustly.android.sdk.util.TrustlyConstants.GRP
 import net.trustly.android.sdk.util.TrustlyConstants.INTEGRATION_STRATEGY_DEFAULT
 import net.trustly.android.sdk.util.TrustlyConstants.LANG
 import net.trustly.android.sdk.util.TrustlyConstants.METADATA_CID
+import net.trustly.android.sdk.util.TrustlyConstants.METADATA_FLOWTYPE
 import net.trustly.android.sdk.util.TrustlyConstants.METADATA_INTEGRATION_CONTEXT
 import net.trustly.android.sdk.util.TrustlyConstants.METADATA_LANG
 import net.trustly.android.sdk.util.TrustlyConstants.METADATA_SDK_ANDROID_VERSION
@@ -69,6 +71,11 @@ class TrustlyLightbox(
 
         if (data.containsKey(PAYMENT_PROVIDER_ID)) {
             data[WIDGET_LOADED] = "true"
+        }
+
+        establishData[METADATA_FLOWTYPE]?.let {
+            data.remove(METADATA_FLOWTYPE)
+            data[FLOWTYPE] = it
         }
 
         val sessionCidValues = CidManager.getOrCreateSessionCid(context)

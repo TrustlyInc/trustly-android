@@ -25,6 +25,7 @@ object TrustlyConstants {
     const val CUSTOMER_ADDRESS_COUNTRY: String = "customer.address.country"
     const val REQUEST_SIGNATURE: String = "requestSignature"
     const val STORAGE: String = "storage"
+    const val FLOWTYPE: String = "flowType"
 
     const val WIDGET: String = "widget"
     const val WIDGET_LOADED: String = "widgetLoaded"
@@ -37,6 +38,7 @@ object TrustlyConstants {
     const val METADATA_INTEGRATION_CONTEXT: String = "metadata.integrationContext"
     const val METADATA_LANG: String = "metadata.lang"
     const val METADATA_URL_SCHEME: String = "metadata.urlScheme"
+    const val METADATA_FLOWTYPE: String = "metadata.flowType"
     const val SESSION_CID: String = "sessionCid"
 
     const val EVENT: String = "event"
