@@ -1,4 +1,4 @@
-package net.trustly.android.sdk.util.manager
+package net.trustly.android.sdk.util.last_used
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -17,10 +17,6 @@ import org.mockito.MockitoAnnotations
 
 class LastUsedBankManagerTest {
 
-    companion object {
-        private const val PREFERENCES_NAME = "last_used_bank"
-    }
-
     @Mock
     private lateinit var mockSharedPreferences: SharedPreferences
 
@@ -34,7 +30,7 @@ class LastUsedBankManagerTest {
     fun setUp() {
         MockitoAnnotations.openMocks(this)
 
-        `when`(mockContext.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)).thenReturn(
+        `when`(mockContext.getSharedPreferences("last_used_bank", Context.MODE_PRIVATE)).thenReturn(
             mockSharedPreferences
         )
     }
