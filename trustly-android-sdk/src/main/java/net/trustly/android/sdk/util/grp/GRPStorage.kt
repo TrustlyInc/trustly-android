@@ -1,7 +1,7 @@
 package net.trustly.android.sdk.util.grp
 
 import android.content.Context
-import androidx.core.content.edit
+import net.trustly.android.sdk.data.TrustlyStorage
 
 object GRPStorage {
 
@@ -9,12 +9,11 @@ object GRPStorage {
     private const val GRP: String = "grp"
 
     fun saveData(context: Context, preferenceValue: Int) {
-        getSharedPreferences(context).edit { putInt(GRP, preferenceValue) }
+        getTrustlyStorage(context).saveData(GRP, preferenceValue)
     }
 
-    fun readDataFrom(context: Context) = getSharedPreferences(context).getInt(GRP, -1)
+    fun readDataFrom(context: Context) = getTrustlyStorage(context).readIntDataFrom(GRP)
 
-    private fun getSharedPreferences(context: Context) =
-        context.getSharedPreferences(GRP_STORAGE, Context.MODE_PRIVATE)
+    private fun getTrustlyStorage(context: Context) = TrustlyStorage(context, GRP_STORAGE)
 
 }

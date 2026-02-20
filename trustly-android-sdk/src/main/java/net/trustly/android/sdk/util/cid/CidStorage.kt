@@ -1,7 +1,7 @@
 package net.trustly.android.sdk.util.cid
 
 import android.content.Context
-import androidx.core.content.edit
+import net.trustly.android.sdk.data.TrustlyStorage
 
 object CidStorage {
 
@@ -9,14 +9,13 @@ object CidStorage {
     const val SESSION_CID: String = "SESSION_CID"
     const val CID: String = "CID"
 
-    fun saveData(context: Context, preferenceId: String?, preferenceValue: String?) {
-        getSharedPreferences(context).edit { putString(preferenceId, preferenceValue) }
+    fun saveData(context: Context, preferenceId: String, preferenceValue: String?) {
+        getTrustlyStorage(context).saveData(preferenceId, preferenceValue)
     }
 
     fun readDataFrom(context: Context, preferenceId: String?) =
-        getSharedPreferences(context).getString(preferenceId, null)
+        getTrustlyStorage(context).readStringDataFrom(preferenceId)
 
-    private fun getSharedPreferences(context: Context) =
-        context.getSharedPreferences(CID_STORAGE, Context.MODE_PRIVATE)
+    private fun getTrustlyStorage(context: Context) = TrustlyStorage(context, CID_STORAGE)
 
 }
