@@ -16,7 +16,7 @@ class TrustlyStorage(private val context: Context, private val preferencesName: 
     fun readIntDataFrom(preferenceId: String) =
         getSharedPreferences().getInt(preferenceId, -1)
 
-    fun readStringDataFrom(preferenceId: String?) =
+    fun readStringDataFrom(preferenceId: String) =
         getSharedPreferences().getString(preferenceId, null)
 
     private fun getSharedPreferences() =

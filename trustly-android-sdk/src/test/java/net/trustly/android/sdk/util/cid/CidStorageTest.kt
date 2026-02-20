@@ -82,13 +82,4 @@ class CidStorageTest {
         assertNull(result)
     }
 
-    @Test
-    fun shouldValidateCidStorageReadDataFromMethodWithNullKey() {
-        val result = readDataFrom(mockContext, null)
-
-        verify(mockSharedPreferences, times(1)).getString(null, null)
-        verify(mockSharedPreferences, times(0)).edit()
-        assertNull(result)
-    }
-
 }

@@ -13,7 +13,7 @@ object CidStorage {
         getTrustlyStorage(context).saveData(preferenceId, preferenceValue)
     }
 
-    fun readDataFrom(context: Context, preferenceId: String?) =
+    fun readDataFrom(context: Context, preferenceId: String) =
         getTrustlyStorage(context).readStringDataFrom(preferenceId)
 
     private fun getTrustlyStorage(context: Context) = TrustlyStorage(context, CID_STORAGE)
