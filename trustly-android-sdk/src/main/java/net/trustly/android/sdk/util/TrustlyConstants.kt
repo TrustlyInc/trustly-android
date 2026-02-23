@@ -38,6 +38,7 @@ object TrustlyConstants {
     const val METADATA_LANG: String = "metadata.lang"
     const val METADATA_URL_SCHEME: String = "metadata.urlScheme"
     const val SESSION_CID: String = "sessionCid"
+    const val TRUSTLY_CONTEXT: String = "trustlyContext"
 
     const val EVENT: String = "event"
     const val EVENT_PAGE: String = "page"
