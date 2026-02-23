@@ -8,6 +8,7 @@ import android.webkit.WebView
 import androidx.core.content.ContextCompat
 import net.trustly.android.sdk.BuildConfig
 import net.trustly.android.sdk.data.Settings
+import net.trustly.android.sdk.data.TrustlyStorage
 import net.trustly.android.sdk.data.TrustlyUrlFetcher
 import net.trustly.android.sdk.interfaces.TrustlyEvents
 import net.trustly.android.sdk.interfaces.TrustlyJsInterface
@@ -25,6 +26,7 @@ import net.trustly.android.sdk.util.TrustlyConstants.METADATA_CID
 import net.trustly.android.sdk.util.TrustlyConstants.METADATA_INTEGRATION_CONTEXT
 import net.trustly.android.sdk.util.TrustlyConstants.METADATA_LANG
 import net.trustly.android.sdk.util.TrustlyConstants.METADATA_SDK_ANDROID_VERSION
+import net.trustly.android.sdk.util.TrustlyConstants.METADATA_TRUSTLY_CONTEXT
 import net.trustly.android.sdk.util.TrustlyConstants.METADATA_URL_SCHEME
 import net.trustly.android.sdk.util.TrustlyConstants.PAYMENT_PROVIDER_ID
 import net.trustly.android.sdk.util.TrustlyConstants.RETURN_URL
@@ -34,6 +36,7 @@ import net.trustly.android.sdk.util.TrustlyConstants.WIDGET_LOADED
 import net.trustly.android.sdk.util.UrlUtils
 import net.trustly.android.sdk.util.api.APIRequestManager
 import net.trustly.android.sdk.util.cid.CidManager
+import net.trustly.android.sdk.util.last_used.LastUsedBankManager
 import net.trustly.android.sdk.views.TrustlyCustomTabsManagerActivity
 import net.trustly.android.sdk.views.TrustlyView
 import java.nio.charset.StandardCharsets
@@ -74,6 +77,12 @@ class TrustlyLightbox(
         val sessionCidValues = CidManager.getOrCreateSessionCid(context)
         sessionCidValues[CidManager.SESSION_CID_PARAM]?.let { data[SESSION_CID] = it }
         sessionCidValues[CidManager.CID_PARAM]?.let { data[METADATA_CID] = it }
+
+        val trustlyStorage =
+            TrustlyStorage(context, LastUsedBankManager.LAST_USED_BANK_PREFERENCES_NAME)
+        LastUsedBankManager(trustlyStorage).getLastUsedBank()?.let {
+            data[METADATA_TRUSTLY_CONTEXT] = it
+        }
 
         if (ENV_LOCAL == data[ENV]) {
             TrustlyView.setIsLocalEnvironment(true)

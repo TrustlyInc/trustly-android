@@ -37,6 +37,7 @@ object TrustlyConstants {
     const val METADATA_INTEGRATION_CONTEXT: String = "metadata.integrationContext"
     const val METADATA_LANG: String = "metadata.lang"
     const val METADATA_URL_SCHEME: String = "metadata.urlScheme"
+    const val METADATA_TRUSTLY_CONTEXT: String = "metadata.trustlyContext"
     const val SESSION_CID: String = "sessionCid"
     const val TRUSTLY_CONTEXT: String = "trustlyContext"
 
