@@ -1,6 +1,7 @@
 package net.trustly.android.sdk.util.last_used
 
 import net.trustly.android.sdk.data.TrustlyStorage
+import net.trustly.android.sdk.util.UrlUtils
 
 class LastUsedBankManager(private val trustlyStorage: TrustlyStorage) {
 
@@ -15,6 +16,12 @@ class LastUsedBankManager(private val trustlyStorage: TrustlyStorage) {
         trustlyStorage.saveData(LAST_USED_BANK_ID, lastUsedBank)
     }
 
-    fun getLastUsedBank(): String? = trustlyStorage.readStringDataFrom(LAST_USED_BANK_ID)
+    fun getLastUsedBank(isDecodeFromBase64: Boolean = false): String? {
+        val lastUsedBank = trustlyStorage.readStringDataFrom(LAST_USED_BANK_ID)
+        if (isDecodeFromBase64) {
+            return UrlUtils.decodeBase64ToString(lastUsedBank!!)
+        }
+        return lastUsedBank
+    }
 
 }

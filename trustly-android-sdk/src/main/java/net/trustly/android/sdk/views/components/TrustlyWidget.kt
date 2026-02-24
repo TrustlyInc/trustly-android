@@ -3,6 +3,7 @@ package net.trustly.android.sdk.views.components
 import android.content.Context
 import android.graphics.Color
 import android.webkit.WebView
+import net.trustly.android.sdk.data.TrustlyStorage
 import net.trustly.android.sdk.interfaces.TrustlyEvents
 import net.trustly.android.sdk.interfaces.TrustlyJsInterface
 import net.trustly.android.sdk.util.EstablishDataManager
@@ -13,10 +14,12 @@ import net.trustly.android.sdk.util.TrustlyConstants.DYNAMIC_WIDGET
 import net.trustly.android.sdk.util.TrustlyConstants.GRP
 import net.trustly.android.sdk.util.TrustlyConstants.LANG
 import net.trustly.android.sdk.util.TrustlyConstants.METADATA_LANG
+import net.trustly.android.sdk.util.TrustlyConstants.METADATA_TRUSTLY_CONTEXT
 import net.trustly.android.sdk.util.TrustlyConstants.SESSION_CID
 import net.trustly.android.sdk.util.TrustlyConstants.WIDGET
 import net.trustly.android.sdk.util.UrlUtils
 import net.trustly.android.sdk.util.cid.CidManager
+import net.trustly.android.sdk.util.last_used.LastUsedBankManager
 import net.trustly.android.sdk.views.TrustlyView
 
 class TrustlyWidget(
@@ -49,6 +52,12 @@ class TrustlyWidget(
         val sessionCidValues = CidManager.getOrCreateSessionCid(context)
         sessionCidValues[CidManager.SESSION_CID_PARAM]?.let { data[SESSION_CID] = it }
         sessionCidValues[CidManager.CID_PARAM]?.let { data[CID] = it }
+
+        val trustlyStorage =
+            TrustlyStorage(context, LastUsedBankManager.LAST_USED_BANK_PREFERENCES_NAME)
+        LastUsedBankManager(trustlyStorage).getLastUsedBank(true)?.let {
+            data[METADATA_TRUSTLY_CONTEXT] = it
+        }
 
         val dataParameters = UrlUtils.getParameterString(data)
         val hashParameters = UrlUtils.encodeStringToBase64(dataParameters)
