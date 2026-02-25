@@ -3,7 +3,6 @@ package net.trustly.android.sdk.views.components
 import android.content.Context
 import android.graphics.Color
 import android.webkit.WebView
-import net.trustly.android.sdk.data.TrustlyStorage
 import net.trustly.android.sdk.interfaces.TrustlyEvents
 import net.trustly.android.sdk.interfaces.TrustlyJsInterface
 import net.trustly.android.sdk.util.EstablishDataManager
@@ -53,9 +52,7 @@ class TrustlyWidget(
         sessionCidValues[CidManager.SESSION_CID_PARAM]?.let { data[SESSION_CID] = it }
         sessionCidValues[CidManager.CID_PARAM]?.let { data[CID] = it }
 
-        val trustlyStorage =
-            TrustlyStorage(context, LastUsedBankManager.LAST_USED_BANK_PREFERENCES_NAME)
-        LastUsedBankManager(trustlyStorage).getLastUsedBank(true)?.let {
+        LastUsedBankManager(context).getLastUsedBank(true)?.let {
             data[METADATA_TRUSTLY_CONTEXT] = it
         }
 

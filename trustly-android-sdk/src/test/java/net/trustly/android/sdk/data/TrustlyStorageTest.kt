@@ -3,7 +3,6 @@ package net.trustly.android.sdk.data
 import android.content.Context
 import android.content.SharedPreferences
 import org.junit.After
-import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test

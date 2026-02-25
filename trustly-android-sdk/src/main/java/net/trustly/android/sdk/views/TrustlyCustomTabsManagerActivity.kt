@@ -7,7 +7,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
-import net.trustly.android.sdk.data.TrustlyStorage
 import net.trustly.android.sdk.interfaces.TrustlyEvents
 import net.trustly.android.sdk.util.TrustlyConstants
 import net.trustly.android.sdk.util.last_used.LastUsedBankManager
@@ -38,9 +37,7 @@ class TrustlyCustomTabsManagerActivity : Activity() {
         if (serializableExtra != null) {
             val transactionDetails = serializableExtra as Map<String, String>
             transactionDetails[TrustlyConstants.TRUSTLY_CONTEXT]?.let {
-                val trustlyStorage =
-                    TrustlyStorage(this, LastUsedBankManager.LAST_USED_BANK_PREFERENCES_NAME)
-                LastUsedBankManager(trustlyStorage).saveLastUsedBank(it)
+                LastUsedBankManager(this).saveLastUsedBank(it)
             }
             if (transactionDetails[STATUS_PARAM] == SUCCESS_STATUS_PARAM) {
                 this.trustlyEvents.handleOnReturn(this.trustlyView, transactionDetails)

@@ -8,7 +8,6 @@ import android.webkit.WebView
 import androidx.core.content.ContextCompat
 import net.trustly.android.sdk.BuildConfig
 import net.trustly.android.sdk.data.Settings
-import net.trustly.android.sdk.data.TrustlyStorage
 import net.trustly.android.sdk.data.TrustlyUrlFetcher
 import net.trustly.android.sdk.interfaces.TrustlyEvents
 import net.trustly.android.sdk.interfaces.TrustlyJsInterface
@@ -85,9 +84,7 @@ class TrustlyLightbox(
         sessionCidValues[CidManager.SESSION_CID_PARAM]?.let { data[SESSION_CID] = it }
         sessionCidValues[CidManager.CID_PARAM]?.let { data[METADATA_CID] = it }
 
-        val trustlyStorage =
-            TrustlyStorage(context, LastUsedBankManager.LAST_USED_BANK_PREFERENCES_NAME)
-        LastUsedBankManager(trustlyStorage).getLastUsedBank()?.let {
+        LastUsedBankManager(context).getLastUsedBank()?.let {
             data[METADATA_TRUSTLY_CONTEXT] = it
         }
 

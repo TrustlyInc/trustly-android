@@ -7,7 +7,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyString
+import org.mockito.ArgumentMatchers
 import org.mockito.Mock
 import org.mockito.Mockito.clearInvocations
 import org.mockito.Mockito.times
@@ -16,6 +16,13 @@ import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 
 class LastUsedBankManagerTest {
+
+    companion object {
+        private const val PREFERENCES_NAME = "preferencesName"
+    }
+
+    @Mock
+    private lateinit var mockSharedPreferencesEditor: SharedPreferences.Editor
 
     @Mock
     private lateinit var mockSharedPreferences: SharedPreferences
@@ -30,35 +37,50 @@ class LastUsedBankManagerTest {
     fun setUp() {
         MockitoAnnotations.openMocks(this)
 
-        `when`(mockContext.getSharedPreferences("last_used_bank", Context.MODE_PRIVATE)).thenReturn(
-            mockSharedPreferences
-        )
+        `when`(
+            mockSharedPreferencesEditor.putInt(
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyInt()
+            )
+        ).thenReturn(mockSharedPreferencesEditor)
+        `when`(
+            mockSharedPreferencesEditor.putString(
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyString()
+            )
+        ).thenReturn(mockSharedPreferencesEditor)
+        `when`(mockSharedPreferences.edit()).thenReturn(mockSharedPreferencesEditor)
+        `when`(mockContext.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)).thenReturn(mockSharedPreferences)
     }
 
     @After
     fun tearDown() {
-        clearInvocations(mockContext, mockTrustlyStorage, mockSharedPreferences)
+        clearInvocations(mockContext, mockSharedPreferencesEditor, mockSharedPreferences)
     }
 
     @Test
     fun shouldValidateLastUsedBankManagerGetLastUser() {
+        `when`(mockTrustlyStorage.readStringDataFrom(ArgumentMatchers.anyString())).thenReturn("lastUser")
         `when`(
-            mockTrustlyStorage.readStringDataFrom(
-                anyString()
+            mockSharedPreferences.getString(
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.any()
             )
         ).thenReturn("lastUser")
 
-        val lastUsedBank = LastUsedBankManager(mockTrustlyStorage).getLastUsedBank()
+        val lastUsedBank = LastUsedBankManager(mockContext).getLastUsedBank()
 
-        verify(mockTrustlyStorage, times(1)).readStringDataFrom("last_used_bank_id")
+        verify(mockSharedPreferences, times(1)).getString("preferenceId", null)
+        verify(mockSharedPreferences, times(0)).edit()
         assertEquals("lastUser", lastUsedBank)
     }
 
     @Test
     fun shouldValidateLastUsedBankManagerSaveLastUser() {
-        LastUsedBankManager(mockTrustlyStorage).saveLastUsedBank("lastUser")
+        LastUsedBankManager(mockContext).saveLastUsedBank("lastUser")
 
-        verify(mockTrustlyStorage, times(1)).saveData("last_used_bank_id", "lastUser")
+        verify(mockSharedPreferencesEditor, times(1)).putString("last_used_bank_id", "lastUser")
+        verify(mockSharedPreferencesEditor, times(1)).apply()
     }
 
 }
