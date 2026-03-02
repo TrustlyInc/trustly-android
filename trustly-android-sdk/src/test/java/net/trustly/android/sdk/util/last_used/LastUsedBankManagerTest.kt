@@ -55,19 +55,19 @@ class LastUsedBankManagerTest {
     }
 
     @Test
-    fun shouldValidateLastUsedBankManagerGetLastUser() {
+    fun shouldValidateLastUsedBankManagerGetLastUserBase64() {
         `when`(
             mockSharedPreferences.getString(
                 ArgumentMatchers.anyString(),
                 ArgumentMatchers.any()
             )
-        ).thenReturn("lastUser")
+        ).thenReturn("bGFzdFVzZWQ=")
 
-        val lastUsedBank = LastUsedBankManager.getLastUsedBank(mockContext)
+        val lastUsedBank = LastUsedBankManager.getLastUsedBankBase64(mockContext)
 
         verify(mockSharedPreferences, times(1)).getString("last_used_bank_id", null)
         verify(mockSharedPreferences, times(0)).edit()
-        assertEquals("lastUser", lastUsedBank)
+        assertEquals("bGFzdFVzZWQ=", lastUsedBank)
     }
 
     @Test

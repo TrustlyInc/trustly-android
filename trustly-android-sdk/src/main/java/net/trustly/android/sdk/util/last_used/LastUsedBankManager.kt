@@ -1,7 +1,6 @@
 package net.trustly.android.sdk.util.last_used
 
 import android.content.Context
-import net.trustly.android.sdk.util.UrlUtils
 
 object LastUsedBankManager {
 
@@ -11,12 +10,7 @@ object LastUsedBankManager {
         LastUsedBankStorage.saveData(context, LAST_USED_BANK_ID, lastUsedBank)
     }
 
-    fun getLastUsedBank(context: Context, isDecodeFromBase64: Boolean = false): String? {
-        val lastUsedBank = LastUsedBankStorage.readStringDataFrom(context, LAST_USED_BANK_ID)
-        if (isDecodeFromBase64) {
-            return UrlUtils.decodeBase64ToString(lastUsedBank!!)
-        }
-        return lastUsedBank
-    }
+    fun getLastUsedBankBase64(context: Context) =
+        LastUsedBankStorage.readStringDataFrom(context, LAST_USED_BANK_ID)
 
 }

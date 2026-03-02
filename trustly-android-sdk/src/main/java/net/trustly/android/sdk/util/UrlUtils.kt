@@ -104,7 +104,7 @@ object UrlUtils {
     fun encodeStringToBase64(value: String): String =
         Base64.encodeToString(value.toByteArray(StandardCharsets.UTF_8), Base64.DEFAULT)
 
-    fun decodeBase64ToString(value: String): String =
+    fun decodeBase64ToString(value: String?): String =
         Base64.decode(value, Base64.DEFAULT).toString(StandardCharsets.UTF_8)
 
     fun getEndpointUrl(function: String, establishData: Map<String, String>): String {

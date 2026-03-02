@@ -84,7 +84,7 @@ class TrustlyLightbox(
         sessionCidValues[CidManager.SESSION_CID_PARAM]?.let { data[SESSION_CID] = it }
         sessionCidValues[CidManager.CID_PARAM]?.let { data[METADATA_CID] = it }
 
-        LastUsedBankManager.getLastUsedBank(context)?.let {
+        LastUsedBankManager.getLastUsedBankBase64(context)?.let {
             data[METADATA_TRUSTLY_CONTEXT] = it
         }
 

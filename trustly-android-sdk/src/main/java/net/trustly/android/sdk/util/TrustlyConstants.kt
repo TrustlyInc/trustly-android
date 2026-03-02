@@ -42,6 +42,7 @@ object TrustlyConstants {
     const val METADATA_FLOWTYPE: String = "metadata.flowType"
     const val SESSION_CID: String = "sessionCid"
     const val TRUSTLY_CONTEXT: String = "trustlyContext"
+    const val LAST_USED_BANK: String = "lastUsed"
 
     const val EVENT: String = "event"
     const val EVENT_PAGE: String = "page"

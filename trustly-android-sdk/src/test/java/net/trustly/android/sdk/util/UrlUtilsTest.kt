@@ -3,6 +3,7 @@ package net.trustly.android.sdk.util
 import android.net.Uri
 import android.util.Base64
 import net.trustly.android.sdk.BuildConfig
+import net.trustly.android.sdk.util.UrlUtils.decodeBase64ToString
 import net.trustly.android.sdk.util.UrlUtils.encodeStringToBase64
 import net.trustly.android.sdk.util.UrlUtils.getDomain
 import net.trustly.android.sdk.util.UrlUtils.getEndpointUrl
@@ -276,6 +277,15 @@ class UrlUtilsTest {
         val jsonParameters = "{\"key1\":\"value1\",\"key2\":\"value2\",\"key3\":\"value3\"}"
         val result = encodeStringToBase64(jsonParameters)
         assertEquals("eyJrZXkxIjoidmFsdWUxImtleTMiOiJ2YWx1ZTMifQ==", result)
+    }
+
+    @Test
+    fun shouldValidateReturnedValueWhenDecodeBase64ToString() {
+        mockedStaticBase64.`when`<Any> { Base64.decode(ArgumentMatchers.anyString(), ArgumentMatchers.anyInt()) }.thenReturn("{\"key1\":\"value1\",\"key2\":\"value2\",\"key3\":\"value3\"}".toByteArray())
+
+        val base64Parameters = "eyJrZXkxIjoidmFsdWUxImtleTMiOiJ2YWx1ZTMifQ=="
+        val result = decodeBase64ToString(base64Parameters)
+        assertEquals("{\"key1\":\"value1\",\"key2\":\"value2\",\"key3\":\"value3\"}", result)
     }
 
     @Test

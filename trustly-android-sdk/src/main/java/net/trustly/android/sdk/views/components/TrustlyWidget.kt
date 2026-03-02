@@ -12,8 +12,8 @@ import net.trustly.android.sdk.util.TrustlyConstants.DEVICE_TYPE
 import net.trustly.android.sdk.util.TrustlyConstants.DYNAMIC_WIDGET
 import net.trustly.android.sdk.util.TrustlyConstants.GRP
 import net.trustly.android.sdk.util.TrustlyConstants.LANG
+import net.trustly.android.sdk.util.TrustlyConstants.LAST_USED_BANK
 import net.trustly.android.sdk.util.TrustlyConstants.METADATA_LANG
-import net.trustly.android.sdk.util.TrustlyConstants.METADATA_TRUSTLY_CONTEXT
 import net.trustly.android.sdk.util.TrustlyConstants.SESSION_CID
 import net.trustly.android.sdk.util.TrustlyConstants.WIDGET
 import net.trustly.android.sdk.util.UrlUtils
@@ -52,8 +52,8 @@ class TrustlyWidget(
         sessionCidValues[CidManager.SESSION_CID_PARAM]?.let { data[SESSION_CID] = it }
         sessionCidValues[CidManager.CID_PARAM]?.let { data[CID] = it }
 
-        LastUsedBankManager.getLastUsedBank(context, true)?.let {
-            data[METADATA_TRUSTLY_CONTEXT] = it
+        LastUsedBankManager.getLastUsedBankBase64(context)?.let {
+            data[LAST_USED_BANK] = UrlUtils.decodeBase64ToString(it)
         }
 
         val dataParameters = UrlUtils.getParameterString(data)
