@@ -2,6 +2,7 @@ package net.trustly.android.sdk.data
 
 import android.content.Context
 import android.content.SharedPreferences
+import net.trustly.android.sdk.util.last_used.LastUsedBankStorage
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -14,11 +15,10 @@ import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 
-class TrustlyStorageTest {
+class LastUsedBankStorageTest {
 
     companion object {
-        private const val PREFERENCES_NAME = "preferencesName"
-        private const val PREFERENCE_ID = "preferenceId"
+        private const val PREFERENCES_NAME = "last_used_bank"
     }
 
     @Mock
@@ -57,7 +57,7 @@ class TrustlyStorageTest {
 
     @Test
     fun shouldValidateTrustlyStorageSavingIntData() {
-        TrustlyStorage(mockContext, PREFERENCES_NAME).saveData(PREFERENCE_ID, 32)
+        LastUsedBankStorage.saveData(mockContext, "preferenceId", 32)
 
         verify(mockSharedPreferencesEditor, times(1)).putInt("preferenceId", 32)
         verify(mockSharedPreferencesEditor, times(1)).apply()
@@ -65,7 +65,7 @@ class TrustlyStorageTest {
 
     @Test
     fun shouldValidateTrustlyStorageSavingStringData() {
-        TrustlyStorage(mockContext, PREFERENCES_NAME).saveData(PREFERENCE_ID, "preferenceValue")
+        LastUsedBankStorage.saveData(mockContext, "preferenceId", "preferenceValue")
 
         verify(mockSharedPreferencesEditor, times(1)).putString("preferenceId", "preferenceValue")
         verify(mockSharedPreferencesEditor, times(1)).apply()
@@ -80,7 +80,7 @@ class TrustlyStorageTest {
             )
         ).thenReturn(54)
 
-        val apiRequest = TrustlyStorage(mockContext, PREFERENCES_NAME).readIntDataFrom("preferenceId")
+        val apiRequest = LastUsedBankStorage.readIntDataFrom(mockContext, "preferenceId")
 
         verify(mockSharedPreferences, times(1)).getInt("preferenceId", -1)
         verify(mockSharedPreferences, times(0)).edit()
@@ -96,7 +96,7 @@ class TrustlyStorageTest {
             )
         ).thenReturn(-1)
 
-        val apiRequest = TrustlyStorage(mockContext, PREFERENCES_NAME).readIntDataFrom("preferenceId")
+        val apiRequest = LastUsedBankStorage.readIntDataFrom(mockContext, "preferenceId")
 
         verify(mockSharedPreferences, times(1)).getInt("preferenceId", -1)
         verify(mockSharedPreferences, times(0)).edit()
@@ -112,7 +112,7 @@ class TrustlyStorageTest {
             )
         ).thenReturn("preferenceValue")
 
-        val apiRequest = TrustlyStorage(mockContext, PREFERENCES_NAME).readStringDataFrom("preferenceId")
+        val apiRequest = LastUsedBankStorage.readStringDataFrom(mockContext, "preferenceId")
 
         verify(mockSharedPreferences, times(1)).getString("preferenceId", null)
         verify(mockSharedPreferences, times(0)).edit()
@@ -128,7 +128,7 @@ class TrustlyStorageTest {
             )
         ).thenReturn(null)
 
-        val apiRequest = TrustlyStorage(mockContext, PREFERENCES_NAME).readStringDataFrom("preferenceId")
+        val apiRequest = LastUsedBankStorage.readStringDataFrom(mockContext, "preferenceId")
 
         verify(mockSharedPreferences, times(1)).getString("preferenceId", null)
         verify(mockSharedPreferences, times(0)).edit()

@@ -37,7 +37,7 @@ class TrustlyCustomTabsManagerActivity : Activity() {
         if (serializableExtra != null) {
             val transactionDetails = serializableExtra as Map<String, String>
             transactionDetails[TrustlyConstants.TRUSTLY_CONTEXT]?.let {
-                LastUsedBankManager(this).saveLastUsedBank(it)
+                LastUsedBankManager.saveLastUsedBank(this, it)
             }
             if (transactionDetails[STATUS_PARAM] == SUCCESS_STATUS_PARAM) {
                 this.trustlyEvents.handleOnReturn(this.trustlyView, transactionDetails)

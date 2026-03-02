@@ -2,7 +2,6 @@ package net.trustly.android.sdk.util.last_used
 
 import android.content.Context
 import android.content.SharedPreferences
-import net.trustly.android.sdk.data.TrustlyStorage
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -18,7 +17,7 @@ import org.mockito.MockitoAnnotations
 class LastUsedBankManagerTest {
 
     companion object {
-        private const val PREFERENCES_NAME = "preferencesName"
+        private const val PREFERENCES_NAME = "last_used_bank"
     }
 
     @Mock
@@ -29,9 +28,6 @@ class LastUsedBankManagerTest {
 
     @Mock
     private lateinit var mockContext: Context
-
-    @Mock
-    private lateinit var mockTrustlyStorage: TrustlyStorage
 
     @Before
     fun setUp() {
@@ -60,7 +56,6 @@ class LastUsedBankManagerTest {
 
     @Test
     fun shouldValidateLastUsedBankManagerGetLastUser() {
-        `when`(mockTrustlyStorage.readStringDataFrom(ArgumentMatchers.anyString())).thenReturn("lastUser")
         `when`(
             mockSharedPreferences.getString(
                 ArgumentMatchers.anyString(),
@@ -68,16 +63,16 @@ class LastUsedBankManagerTest {
             )
         ).thenReturn("lastUser")
 
-        val lastUsedBank = LastUsedBankManager(mockContext).getLastUsedBank()
+        val lastUsedBank = LastUsedBankManager.getLastUsedBank(mockContext)
 
-        verify(mockSharedPreferences, times(1)).getString("preferenceId", null)
+        verify(mockSharedPreferences, times(1)).getString("last_used_bank_id", null)
         verify(mockSharedPreferences, times(0)).edit()
         assertEquals("lastUser", lastUsedBank)
     }
 
     @Test
     fun shouldValidateLastUsedBankManagerSaveLastUser() {
-        LastUsedBankManager(mockContext).saveLastUsedBank("lastUser")
+        LastUsedBankManager.saveLastUsedBank(mockContext, "lastUser")
 
         verify(mockSharedPreferencesEditor, times(1)).putString("last_used_bank_id", "lastUser")
         verify(mockSharedPreferencesEditor, times(1)).apply()
