@@ -11,8 +11,8 @@ import net.trustly.android.sdk.interfaces.TrustlyEvents
 import net.trustly.android.sdk.mock.MockActivity
 import net.trustly.android.sdk.util.api.APIRequestManager
 import net.trustly.android.sdk.util.api.APIRequestStorage
+import net.trustly.android.sdk.util.last_used.LastUsedBankManager
 import net.trustly.android.sdk.views.TrustlyView
-import net.trustly.android.sdk.views.events.TrustlyEventsImpl
 import org.junit.After
 import org.junit.Assert.assertNotNull
 import org.junit.Before
@@ -34,15 +34,14 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
     @Mock
     private lateinit var mockWebSettings: WebSettings
 
-    private lateinit var trustlyEvents: TrustlyEvents
+    @Mock
+    private lateinit var mockTrustlyEvents: TrustlyEvents
 
     @Before
     override fun setUp() {
         super.setUp()
 
         MockitoAnnotations.openMocks(this)
-
-        trustlyEvents = TrustlyEventsImpl
 
         `when`(mockWebView.settings).thenReturn(mockWebSettings)
     }
@@ -51,7 +50,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
     override fun tearDown() {
         super.tearDown()
 
-        clearInvocations(mockWebView, mockWebSettings)
+        clearInvocations(mockWebView, mockWebSettings, mockTrustlyEvents)
     }
 
     @Test
@@ -146,6 +145,20 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
         }
     }
 
+    @Test
+    fun shouldValidateTrustlyLightboxInstanceWithEstablishDataWithLastUsedBank() {
+        scenario.onActivity { activity ->
+            LastUsedBankManager.saveLastUsedBank(activity, "MTIzNDU2")
+
+            val trustlyLightbox = getTrustlyLightboxInstance(activity)
+            val establishData = EstablishDataMock.getEstablishDataValues()
+            trustlyLightbox.updateEstablishData(establishData, 0)
+
+            waitToCloseCustomTabs()
+            assertNotNull(trustlyLightbox)
+        }
+    }
+
     private fun getTrustlyLightboxInstance(activity: MockActivity): TrustlyLightbox {
         return TrustlyLightbox(
             TrustlyView(activity),
@@ -153,7 +166,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
             mockWebView,
             "returnUrl",
             "cancelUrl",
-            trustlyEvents
+            mockTrustlyEvents
         )
     }
 

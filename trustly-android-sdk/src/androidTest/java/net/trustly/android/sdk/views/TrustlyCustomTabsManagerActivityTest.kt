@@ -99,4 +99,27 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
         waitToCloseCustomTabs()
     }
 
+    @Test
+    fun shouldValidateCustomTabsManagerActivityOpenCustomTabsIntentMethodWithSuccessStatusEstablishDataAndTrustlyContext() {
+        scenario.onActivity { activity: MockActivity ->
+            val establishData = HashMap<String, String>()
+            establishData["accessId"] = "123456"
+            establishData["merchantId"] = "654321"
+            establishData["status"] = "2"
+            establishData["trustlyContext"] = "MTIzNDU2"
+
+            val intent = Intent(activity, TrustlyCustomTabsManagerActivity::class.java)
+                .putExtra(
+                    TrustlyCustomTabsManagerActivity.ESTABLISH_DATA,
+                    establishData as Serializable
+                )
+            activity.startActivity(intent)
+            Assert.assertEquals(
+                11,
+                TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
+            )
+        }
+        waitToCloseCustomTabs()
+    }
+
 }
