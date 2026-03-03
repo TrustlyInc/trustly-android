@@ -52,7 +52,7 @@ class TrustlyWidget(
         sessionCidValues[CidManager.SESSION_CID_PARAM]?.let { data[SESSION_CID] = it }
         sessionCidValues[CidManager.CID_PARAM]?.let { data[CID] = it }
 
-        LastUsedBankManager.getLastUsedBankBase64(context)?.let {
+        LastUsedBankManager.getLastUsedBankBase64(context).let {
             data[LAST_USED_BANK] = UrlUtils.decodeBase64ToString(it)
         }
 
