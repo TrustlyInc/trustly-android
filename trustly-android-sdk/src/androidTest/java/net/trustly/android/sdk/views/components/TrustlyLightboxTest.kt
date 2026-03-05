@@ -148,7 +148,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
     @Test
     fun shouldValidateTrustlyLightboxInstanceWithEstablishDataWithLastUsedBank() {
         scenario.onActivity { activity ->
-            LastUsedBankManager.saveLastUsedBank(activity, "MTIzNDU2")
+            LastUsedBankManager.saveLastUsedBank(activity, "eyJsYXN0VXNlZCI6eyJVUyI6IjEyMzQ1Njc4OSJ9fQ==")
 
             val trustlyLightbox = getTrustlyLightboxInstance(activity)
             val establishData = EstablishDataMock.getEstablishDataValues()

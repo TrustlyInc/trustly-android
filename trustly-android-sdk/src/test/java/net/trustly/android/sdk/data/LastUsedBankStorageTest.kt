@@ -18,7 +18,7 @@ import org.mockito.MockitoAnnotations
 class LastUsedBankStorageTest {
 
     companion object {
-        private const val PREFERENCES_NAME = "last_used_bank"
+        private const val PREFERENCES_NAME = "LAST_USED_BANK"
     }
 
     @Mock

@@ -108,12 +108,12 @@ class TrustlyWidgetTest : TrustlyActivityTest() {
     @Test
     fun shouldValidateTrustlyWidgetInstanceWithEstablishDataWithLastUsedBank() {
         scenario.onActivity { activity ->
-            LastUsedBankManager.saveLastUsedBank(activity, "MTIzNDU2")
+            LastUsedBankManager.saveLastUsedBank(activity, "eyJsYXN0VXNlZCI6eyJVUyI6IjEyMzQ1Njc4OSJ9fQ==")
 
             val trustlyWidget = getTrustlyWidgetInstance(activity)
             trustlyWidget.updateEstablishData(EstablishDataMock.getEstablishDataValues(), 0)
             verify(mockWebView).loadUrl(argThat { url ->
-                url.contains("lastUsed=123456")
+                url.contains("lastUsed=123456789")
             })
         }
     }

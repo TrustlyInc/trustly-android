@@ -106,7 +106,7 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
             establishData["accessId"] = "123456"
             establishData["merchantId"] = "654321"
             establishData["status"] = "2"
-            establishData["trustlyContext"] = "MTIzNDU2"
+            establishData["trustlyContext"] = "eyJsYXN0VXNlZCI6eyJVUyI6IjEyMzQ1Njc4OSJ9fQ=="
 
             val intent = Intent(activity, TrustlyCustomTabsManagerActivity::class.java)
                 .putExtra(

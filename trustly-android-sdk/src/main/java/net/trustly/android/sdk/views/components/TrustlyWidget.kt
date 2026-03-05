@@ -52,8 +52,8 @@ class TrustlyWidget(
         sessionCidValues[CidManager.SESSION_CID_PARAM]?.let { data[SESSION_CID] = it }
         sessionCidValues[CidManager.CID_PARAM]?.let { data[CID] = it }
 
-        LastUsedBankManager.getLastUsedBankBase64(context)?.let {
-            data[LAST_USED_BANK] = UrlUtils.decodeBase64ToString(it)
+        LastUsedBankManager.getLaseUsedBankByCountryCode(context, data[CUSTOMER_ADDRESS_COUNTRY].toString())?.let {
+            data[LAST_USED_BANK] = it
         }
 
         val dataParameters = UrlUtils.getParameterString(data)

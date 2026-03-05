@@ -5,7 +5,7 @@ import androidx.core.content.edit
 
 object LastUsedBankStorage {
 
-    private const val LAST_USED_BANK_PREFERENCES_NAME = "last_used_bank"
+    private const val LAST_USED_BANK_PREFERENCES_NAME = "LAST_USED_BANK"
 
     fun saveData(context: Context, preferenceId: String, preferenceValue: Int) {
         getSharedPreferences(context).edit { putInt(preferenceId, preferenceValue) }
