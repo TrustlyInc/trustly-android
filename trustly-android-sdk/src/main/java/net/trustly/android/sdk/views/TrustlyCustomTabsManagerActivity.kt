@@ -29,7 +29,7 @@ class TrustlyCustomTabsManagerActivity : Activity() {
         }
     }
 
-    @Suppress("DEPRECATION")
+    @Suppress("DEPRECATION", "UNCHECKED_CAST")
     override fun onResume() {
         super.onResume()
 

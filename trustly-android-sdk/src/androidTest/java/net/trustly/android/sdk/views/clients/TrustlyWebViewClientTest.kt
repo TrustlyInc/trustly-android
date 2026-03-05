@@ -272,6 +272,19 @@ class TrustlyWebViewClientTest : TrustlyActivityTest() {
     }
 
     @Test
+    fun shouldValidateTrustlyWebViewClientShouldOverrideUrlLoadingWithReturnUrlTrustlyContext() {
+        scenario.onActivity { activity: MockActivity ->
+            trustlyView = TrustlyView(activity.applicationContext)
+            val webView = WebView(activity.applicationContext)
+            val trustlyWebViewClient = TrustlyWebViewClient(trustlyView, RETURN_URL, CANCEL_URL, trustlyEvents)
+            TrustlyView.setIsLocalEnvironment(false)
+            val result = trustlyWebViewClient.shouldOverrideUrlLoading(webView, "msg://return?www.url.com&trustlyContext=eyJsYXN0VXNlZCI6eyJVUyI6IjEyMzQ1Njc4OSJ9fQ==")
+            assertTrue(result)
+            assertNotNull(trustlyWebViewClient)
+        }
+    }
+
+    @Test
     fun shouldValidateTrustlyWebViewClientShouldOverrideUrlLoadingWithCancelUrl() {
         scenario.onActivity { activity: MockActivity ->
             trustlyView = TrustlyView(activity.applicationContext)
