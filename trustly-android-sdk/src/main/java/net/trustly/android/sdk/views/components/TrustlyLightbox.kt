@@ -27,6 +27,7 @@ import net.trustly.android.sdk.util.TrustlyConstants.METADATA_FLOWTYPE
 import net.trustly.android.sdk.util.TrustlyConstants.METADATA_INTEGRATION_CONTEXT
 import net.trustly.android.sdk.util.TrustlyConstants.METADATA_LANG
 import net.trustly.android.sdk.util.TrustlyConstants.METADATA_SDK_ANDROID_VERSION
+import net.trustly.android.sdk.util.TrustlyConstants.METADATA_TRUSTLY_CONTEXT
 import net.trustly.android.sdk.util.TrustlyConstants.METADATA_URL_SCHEME
 import net.trustly.android.sdk.util.TrustlyConstants.PAYMENT_PROVIDER_ID
 import net.trustly.android.sdk.util.TrustlyConstants.RETURN_URL
@@ -36,6 +37,7 @@ import net.trustly.android.sdk.util.TrustlyConstants.WIDGET_LOADED
 import net.trustly.android.sdk.util.UrlUtils
 import net.trustly.android.sdk.util.api.APIRequestManager
 import net.trustly.android.sdk.util.cid.CidManager
+import net.trustly.android.sdk.util.last_used.LastUsedBankManager
 import net.trustly.android.sdk.views.TrustlyCustomTabsManagerActivity
 import net.trustly.android.sdk.views.TrustlyView
 import java.nio.charset.StandardCharsets
@@ -81,6 +83,10 @@ class TrustlyLightbox(
         val sessionCidValues = CidManager.getOrCreateSessionCid(context)
         sessionCidValues[CidManager.SESSION_CID_PARAM]?.let { data[SESSION_CID] = it }
         sessionCidValues[CidManager.CID_PARAM]?.let { data[METADATA_CID] = it }
+
+        LastUsedBankManager.getLastUsedBankBase64(context)?.let {
+            data[METADATA_TRUSTLY_CONTEXT] = it
+        }
 
         if (ENV_LOCAL == data[ENV]) {
             TrustlyView.setIsLocalEnvironment(true)

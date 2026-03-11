@@ -20,7 +20,7 @@ class TrustlyRedirectActivityTest : TrustlyActivityTest() {
             val intent = Intent(activity, TrustlyRedirectActivity::class.java)
             activity.startActivity(intent)
             Assert.assertEquals(
-                5,
+                4,
                 TrustlyRedirectActivity::class.java.declaredMethods.size
             )
         }
@@ -35,7 +35,7 @@ class TrustlyRedirectActivityTest : TrustlyActivityTest() {
             val intent = Intent(Intent.ACTION_VIEW, transactionDetail.toUri())
             activity.startActivity(intent)
             Assert.assertEquals(
-                5,
+                4,
                 TrustlyRedirectActivity::class.java.declaredMethods.size
             )
         }
@@ -50,7 +50,7 @@ class TrustlyRedirectActivityTest : TrustlyActivityTest() {
             val intent = Intent(Intent.ACTION_VIEW, transactionDetail.toUri())
             activity.startActivity(intent)
             Assert.assertEquals(
-                5,
+                4,
                 TrustlyRedirectActivity::class.java.declaredMethods.size
             )
         }
@@ -65,7 +65,7 @@ class TrustlyRedirectActivityTest : TrustlyActivityTest() {
             val intent = Intent(Intent.ACTION_VIEW, transactionDetail.toUri())
             activity.startActivity(intent)
             Assert.assertEquals(
-                5,
+                4,
                 TrustlyRedirectActivity::class.java.declaredMethods.size
             )
         }

@@ -65,7 +65,7 @@ class TrustlyUrlFetcher {
         connection.instanceFollowRedirects = followRedirects
     }
 
-    fun getHeaderField(field: String): String = connection.getHeaderField(field);
+    fun getHeaderField(field: String): String = connection.getHeaderField(field)
 
     enum class Method {
         GET, POST
