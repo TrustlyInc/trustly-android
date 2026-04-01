@@ -24,8 +24,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # actions/checkout -> v6.0.2
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Get Git Revision (Commit SHA)
         id: git_revision
@@ -36,8 +37,9 @@ jobs:
           echo "GIT_REVISION=$GIT_REVISION" >> $GITHUB_ENV
           echo "Git Revision: $GIT_REVISION"
 
+      # actions/setup-java -> v5.2.0
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -50,8 +52,9 @@ jobs:
           fi
           sudo chmod 666 /dev/kvm
 
+      # gradle/actions/setup-gradle -> v6.0.1
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@39e147cb9de83bb9910b8ef8bd7fff0ee20fcd6f # v6.0.1
 
       - name: Run Clean
         run: |
@@ -68,15 +71,16 @@ jobs:
           cd ${{ env.PROJECT_DIR }}
           ./gradlew createDebugUnitTestCoverageReport
 
+      # reactivecircus/android-emulator-runner -> v2.37.0
       - name: Start Emulator and Run Android Test Coverage
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: reactivecircus/android-emulator-runner@e89f39f1abbbd05b1113a29cf4db69e7540cae5a # v2.37.0
         with:
           api-level: 29
           target: google_apis
           arch: x86_64
           profile: Nexus 6
           force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-snapshot-save -no-window -gpu off -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           ram-size: 2048M
           heap-size: 512M
