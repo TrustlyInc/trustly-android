@@ -13,7 +13,6 @@ object TrustlyConstants {
     const val FUNCTION_MOBILE: String = "mobile"
 
     const val GRP: String = "grp"
-    const val ENV_HOST: String = "envHost"
     const val PAYMENT_PROVIDER_ID: String = "paymentProviderId"
     const val PAYMENT_TYPE: String = "paymentType"
     const val DEVICE_TYPE: String = "deviceType"
