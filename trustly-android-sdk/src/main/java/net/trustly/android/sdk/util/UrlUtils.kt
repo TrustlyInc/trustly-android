@@ -30,8 +30,8 @@ object UrlUtils {
     private const val SEPARATOR: String = "\\."
     private const val PROTOCOL: String = "https://"
     private const val LOCAL_PROTOCOL: String = "http://"
-    private const val PAYWITHMYBANK: String = "paywithmybank"
-    private const val DOMAIN: String = "$PAYWITHMYBANK.com"
+    private const val TRUSTLY: String = "trustly"
+    private const val DOMAIN: String = "$TRUSTLY.one"
 
     fun getQueryParameterNames(uri: Uri): Map<String, String> {
         val query = uri.encodedQuery ?: return emptyMap()
@@ -120,16 +120,15 @@ object UrlUtils {
     fun getDomain(function: String, establishData: Map<String, String>): String {
         var environment = establishData[ENV] ?: return PROTOCOL + DOMAIN
         environment = environment.lowercase(Locale.ROOT)
-        if (environment == ENV_DYNAMIC) {
-            return "${PROTOCOL}${PAYWITHMYBANK}.int.trustly.one"
-        }
-        if (environment == ENV_LOCAL || environment == ENV_LOCALHOST) {
-            val port = if (FUNCTION_MOBILE == function) ":10000" else ":8000"
+        if (environment.startsWith(ENV_DYNAMIC))
+            return "${PROTOCOL}${environment}.int.trustly.one"
+        val port = if (FUNCTION_MOBILE == function) ":10000" else ":8000"
+        if (environment == ENV_LOCAL || environment == ENV_LOCALHOST)
             return "$LOCAL_PROTOCOL${BuildConfig.LOCAL_IP}$port"
-        }
-        if (environment == ENV_PROD || environment == ENV_PRODUCTION) {
+        if (environment.matches(Regex("^(?:\\d{1,3}\\.){3}\\d{1,3}$")))
+            return "$LOCAL_PROTOCOL${environment}$port"
+        if (environment == ENV_PROD || environment == ENV_PRODUCTION)
             return PROTOCOL + DOMAIN
-        }
         return "$PROTOCOL$environment.$DOMAIN"
     }
 

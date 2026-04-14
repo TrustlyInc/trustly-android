@@ -295,13 +295,13 @@ class UrlUtilsTest {
         )
 
         val result = getEndpointUrl("widget", values)
-        assertEquals("https://paywithmybank.com/start/selectBank/widget?v=${SDK_VERSION}-android-sdk", result)
+        assertEquals("https://trustly.one/start/selectBank/widget?v=${SDK_VERSION}-android-sdk", result)
     }
 
     @Test
     fun shouldValidateReturnedValueWhenGetEndpointUrlWithEstablishDataWithSdkVersionValueAndMobileFunctionDefaultDomain() {
         val result = getEndpointUrl("mobile", mapOf())
-        assertEquals("https://paywithmybank.com/frontend/mobile/establish", result)
+        assertEquals("https://trustly.one/frontend/mobile/establish", result)
     }
 
     @Test
@@ -311,7 +311,7 @@ class UrlUtilsTest {
         )
 
         val result = getEndpointUrl("index", values)
-        assertEquals("https://paywithmybank.com/start/selectBank/index?v=${SDK_VERSION}-android-sdk", result)
+        assertEquals("https://trustly.one/start/selectBank/index?v=${SDK_VERSION}-android-sdk", result)
     }
 
     @Test
@@ -322,7 +322,7 @@ class UrlUtilsTest {
         )
 
         val result = getEndpointUrl("index", values)
-        assertEquals("https://paywithmybank.com/start/selectBank/index?v=${SDK_VERSION}-android-sdk", result)
+        assertEquals("https://trustly.one/start/selectBank/index?v=${SDK_VERSION}-android-sdk", result)
     }
 
     @Test
@@ -333,7 +333,7 @@ class UrlUtilsTest {
         )
 
         val result = getEndpointUrl("index", values)
-        assertEquals("https://paywithmybank.com/start/selectBank/index?v=${SDK_VERSION}-android-sdk", result)
+        assertEquals("https://trustly.one/start/selectBank/index?v=${SDK_VERSION}-android-sdk", result)
     }
 
     @Test
@@ -344,7 +344,7 @@ class UrlUtilsTest {
         )
 
         val result = getEndpointUrl("index", values)
-        assertEquals("https://paywithmybank.com/start/selectBank/selectBank?v=${SDK_VERSION}-android-sdk", result)
+        assertEquals("https://trustly.one/start/selectBank/selectBank?v=${SDK_VERSION}-android-sdk", result)
     }
 
     @Test
@@ -356,22 +356,22 @@ class UrlUtilsTest {
         )
 
         val result = getEndpointUrl("index", values)
-        assertEquals("https://paywithmybank.com/start/selectBank/selectBank?v=${SDK_VERSION}-android-sdk", result)
+        assertEquals("https://trustly.one/start/selectBank/selectBank?v=${SDK_VERSION}-android-sdk", result)
     }
 
     @Test
     fun shouldValidateReturnedValueWhenGetDomainWithEmptyEstablishDataMobileFunction() {
         val result = getDomain("mobile", mapOf())
-        assertEquals("https://paywithmybank.com", result)
+        assertEquals("https://trustly.one", result)
     }
 
     @Test
     fun shouldValidateReturnedValueWhenGetDomainWithEstablishDataMobileFunctionEnvDynamic() {
         val values = mapOf(
-            "env" to "dynamic"
+            "env" to "dev-123456"
         )
         val result = getDomain("mobile", values)
-        assertEquals("https://paywithmybank.int.trustly.one", result)
+        assertEquals("https://dev-123456.int.trustly.one", result)
     }
 
     @Test
@@ -380,7 +380,7 @@ class UrlUtilsTest {
             "env" to "paywithmybank"
         )
         val result = getDomain("mobile", values)
-        assertEquals("https://paywithmybank.paywithmybank.com", result)
+        assertEquals("https://paywithmybank.trustly.one", result)
     }
 
     @Test
@@ -389,7 +389,7 @@ class UrlUtilsTest {
             "env" to "prod"
         )
         val result = getDomain("mobile", values)
-        assertEquals("https://paywithmybank.com", result)
+        assertEquals("https://trustly.one", result)
     }
 
     @Test
@@ -398,7 +398,7 @@ class UrlUtilsTest {
             "env" to "production"
         )
         val result = getDomain("mobile", values)
-        assertEquals("https://paywithmybank.com", result)
+        assertEquals("https://trustly.one", result)
     }
 
     @Test
@@ -407,7 +407,7 @@ class UrlUtilsTest {
             "env" to "uat"
         )
         val result = getDomain("mobile", values)
-        assertEquals("https://uat.paywithmybank.com", result)
+        assertEquals("https://uat.trustly.one", result)
     }
 
     @Test
@@ -435,6 +435,15 @@ class UrlUtilsTest {
         )
         val result = getDomain("widget", values)
         assertEquals("http://10.0.2.2:8000", result)
+    }
+
+    @Test
+    fun shouldValidateReturnedValueWhenGetDomainWithEstablishDataWidgetFunctionWithEnvIPAddress() {
+        val values = mapOf(
+            "env" to "192.168.0.1"
+        )
+        val result = getDomain("widget", values)
+        assertEquals("http://192.168.0.1:8000", result)
     }
 
 }
