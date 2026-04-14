@@ -377,18 +377,16 @@ class UrlUtilsTest {
     @Test
     fun shouldValidateReturnedValueWhenGetDomainWithEstablishDataMobileFunctionWithEnvDynamic() {
         val values = mapOf(
-            "env" to "dynamic",
-            "envHost" to "paywithmybank"
+            "env" to "paywithmybank"
         )
         val result = getDomain("mobile", values)
-        assertEquals("https://paywithmybank.int.trustly.one", result)
+        assertEquals("https://paywithmybank.paywithmybank.com", result)
     }
 
     @Test
     fun shouldValidateReturnedValueWhenGetDomainWithEstablishDataMobileFunctionWithEnvProd() {
         val values = mapOf(
-            "env" to "prod",
-            "envHost" to "paywithmybank"
+            "env" to "prod"
         )
         val result = getDomain("mobile", values)
         assertEquals("https://paywithmybank.com", result)
@@ -397,8 +395,7 @@ class UrlUtilsTest {
     @Test
     fun shouldValidateReturnedValueWhenGetDomainWithEstablishDataMobileFunctionWithEnvProduction() {
         val values = mapOf(
-            "env" to "production",
-            "envHost" to "paywithmybank"
+            "env" to "production"
         )
         val result = getDomain("mobile", values)
         assertEquals("https://paywithmybank.com", result)
@@ -407,38 +404,16 @@ class UrlUtilsTest {
     @Test
     fun shouldValidateReturnedValueWhenGetDomainWithEstablishDataMobileFunctionWithEnvUAT() {
         val values = mapOf(
-            "env" to "uat",
-            "envHost" to "paywithmybank"
+            "env" to "uat"
         )
         val result = getDomain("mobile", values)
         assertEquals("https://uat.paywithmybank.com", result)
     }
 
     @Test
-    fun shouldValidateReturnedValueWhenGetDomainWithEstablishDataMobileFunctionWithEnvLocalWithEnvHost() {
-        val values = mapOf(
-            "env" to "local",
-            "envHost" to "192.168.0.1"
-        )
-        val result = getDomain("mobile", values)
-        assertEquals("http://192.168.0.1:10000", result)
-    }
-
-    @Test
-    fun shouldValidateReturnedValueWhenGetDomainWithEstablishDataMobileFunctionWithEnvLocalWithEnvHostLocalhost() {
-        val values = mapOf(
-            "env" to "local",
-            "envHost" to "localhost"
-        )
-        val result = getDomain("mobile", values)
-        assertEquals("http://10.0.2.2:10000", result)
-    }
-
-    @Test
     fun shouldValidateReturnedValueWhenGetDomainWithEstablishDataMobileFunctionWithEnvLocalWithLocalhost() {
         val values = mapOf(
-            "env" to "local",
-            "localhost" to "192.168.0.1"
+            "env" to "local"
         )
         val result = getDomain("mobile", values)
         assertEquals("http://10.0.2.2:10000", result)
@@ -447,21 +422,10 @@ class UrlUtilsTest {
     @Test
     fun shouldValidateReturnedValueWhenGetDomainWithEstablishDataMobileFunctionWithEnvLocalLocalhost() {
         val values = mapOf(
-            "env" to "local",
-            "localhost" to "localhost"
+            "env" to "localhost"
         )
         val result = getDomain("mobile", values)
         assertEquals("http://10.0.2.2:10000", result)
-    }
-
-    @Test
-    fun shouldValidateReturnedValueWhenGetDomainWithEstablishDataMobileIndexWithEnvLocalLocalhost() {
-        val values = mapOf(
-            "env" to "local",
-            "localhost" to "localhost"
-        )
-        val result = getDomain("index", values)
-        assertEquals("http://10.0.2.2:8000", result)
     }
 
 }

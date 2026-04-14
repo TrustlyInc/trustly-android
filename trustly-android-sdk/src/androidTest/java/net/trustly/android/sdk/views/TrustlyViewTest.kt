@@ -33,7 +33,6 @@ class TrustlyViewTest : TrustlyActivityTest() {
         const val GRP_KEY: String = "grp"
         const val ENV: String = "env"
         const val ENV_LOCAL: String = "local"
-        const val ENV_HOST: String = "envHost"
         const val DEVICE_TYPE: String = "deviceType"
         const val ANDROID: String = "android"
         const val PT_BR: String = "pt_BR"
@@ -446,44 +445,40 @@ class TrustlyViewTest : TrustlyActivityTest() {
     }
 
     @Test
-    fun shouldValidateTrustlyViewEstablishMethodWithEnvHostNullValue() {
+    fun shouldValidateTrustlyViewEstablishMethodWithEnvDevValue() {
         scenario.onActivity { activity: MockActivity ->
             val establishDataNewValues = HashMap<String, String>()
-            establishDataNewValues[ENV] = "dynamic"
-            establishDataNewValues[ENV_HOST] = "dev-224190"
+            establishDataNewValues[ENV] = "dev-224190"
             val establishData = getCustomEstablishData(establishDataNewValues)
             callTrustlyViewEstablishMethod(activity, establishData)
         }
     }
 
     @Test
-    fun shouldValidateTrustlyViewEstablishMethodWithEnvHostLocalhostValue() {
+    fun shouldValidateTrustlyViewEstablishMethodWithEnvLocalhostValue() {
         scenario.onActivity { activity: MockActivity ->
             val establishDataNewValues = HashMap<String, String>()
-            establishDataNewValues[ENV] = ENV_LOCAL
-            establishDataNewValues[ENV_HOST] = "localhost"
+            establishDataNewValues[ENV] = "localhost"
             val establishData = getCustomEstablishData(establishDataNewValues)
             callTrustlyViewEstablishMethod(activity, establishData)
         }
     }
 
     @Test
-    fun shouldValidateTrustlyViewEstablishMethodWithEnvHostLocalhostEmptyValue() {
+    fun shouldValidateTrustlyViewEstablishMethodWithEnvLocalhostEmptyValue() {
         scenario.onActivity { activity: MockActivity ->
             val establishDataNewValues = HashMap<String, String>()
-            establishDataNewValues[ENV] = ENV_LOCAL
-            establishDataNewValues[ENV_HOST] = ""
+            establishDataNewValues[ENV] = ""
             val establishData = getCustomEstablishData(establishDataNewValues)
             callTrustlyViewEstablishMethod(activity, establishData)
         }
     }
 
     @Test
-    fun shouldValidateTrustlyViewEstablishMethodWithEnvHostLocalhostWithIPValue() {
+    fun shouldValidateTrustlyViewEstablishMethodWithEnvLocalhostWithIPValue() {
         scenario.onActivity { activity: MockActivity ->
             val establishDataNewValues = HashMap<String, String>()
-            establishDataNewValues[ENV] = ENV_LOCAL
-            establishDataNewValues[ENV_HOST] = "X.X.X.X"
+            establishDataNewValues[ENV] = "X.X.X.X"
             val establishData = getCustomEstablishData(establishDataNewValues)
             callTrustlyViewEstablishMethod(activity, establishData)
         }
