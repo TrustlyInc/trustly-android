@@ -366,6 +366,15 @@ class UrlUtilsTest {
     }
 
     @Test
+    fun shouldValidateReturnedValueWhenGetDomainWithEstablishDataMobileFunctionEnvEmpty() {
+        val values = mapOf(
+            "env" to ""
+        )
+        val result = getDomain("mobile", values)
+        assertEquals("https://trustly.one", result)
+    }
+
+    @Test
     fun shouldValidateReturnedValueWhenGetDomainWithEstablishDataMobileFunctionEnvDynamic() {
         val values = mapOf(
             "env" to "dev-123456"

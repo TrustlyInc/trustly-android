@@ -118,17 +118,17 @@ object UrlUtils {
     }
 
     fun getDomain(function: String, establishData: Map<String, String>): String {
-        var environment = establishData[ENV] ?: return PROTOCOL + DOMAIN
+        var environment = establishData[ENV] ?: return "$PROTOCOL$DOMAIN"
         environment = environment.lowercase(Locale.ROOT)
         if (environment.startsWith(ENV_DYNAMIC))
-            return "${PROTOCOL}${environment}.int.trustly.one"
+            return "${PROTOCOL}${environment}.int.$DOMAIN"
         val port = if (FUNCTION_MOBILE == function) ":10000" else ":8000"
         if (environment == ENV_LOCAL || environment == ENV_LOCALHOST)
             return "$LOCAL_PROTOCOL${BuildConfig.LOCAL_IP}$port"
         if (environment.matches(Regex("^(?:\\d{1,3}\\.){3}\\d{1,3}$")))
             return "$LOCAL_PROTOCOL${environment}$port"
-        if (environment == ENV_PROD || environment == ENV_PRODUCTION)
-            return PROTOCOL + DOMAIN
+        if (environment == ENV_PROD || environment == ENV_PRODUCTION || environment.isBlank())
+            return "$PROTOCOL$DOMAIN"
         return "$PROTOCOL$environment.$DOMAIN"
     }
 
