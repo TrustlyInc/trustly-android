@@ -6,9 +6,7 @@ import com.google.gson.JsonObject
 import net.trustly.android.sdk.BuildConfig
 import net.trustly.android.sdk.util.TrustlyConstants.ENV
 import net.trustly.android.sdk.util.TrustlyConstants.ENV_DYNAMIC
-import net.trustly.android.sdk.util.TrustlyConstants.ENV_HOST
 import net.trustly.android.sdk.util.TrustlyConstants.ENV_LOCAL
-import net.trustly.android.sdk.util.TrustlyConstants.ENV_LOCALHOST
 import net.trustly.android.sdk.util.TrustlyConstants.ENV_PROD
 import net.trustly.android.sdk.util.TrustlyConstants.ENV_PRODUCTION
 import net.trustly.android.sdk.util.TrustlyConstants.FUNCTION_INDEX
@@ -19,8 +17,8 @@ import net.trustly.android.sdk.util.TrustlyConstants.PAYMENT_TYPE
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.Locale
-import java.util.Objects
 import androidx.core.net.toUri
+import net.trustly.android.sdk.util.TrustlyConstants.ENV_LOCALHOST
 
 object UrlUtils {
 
@@ -32,8 +30,8 @@ object UrlUtils {
     private const val SEPARATOR: String = "\\."
     private const val PROTOCOL: String = "https://"
     private const val LOCAL_PROTOCOL: String = "http://"
-    private const val PAYWITHMYBANK: String = "paywithmybank"
-    private const val DOMAIN: String = "$PAYWITHMYBANK.com"
+    private const val TRUSTLY: String = "trustly"
+    private const val DOMAIN: String = "$TRUSTLY.one"
 
     fun getQueryParameterNames(uri: Uri): Map<String, String> {
         val query = uri.encodedQuery ?: return emptyMap()
@@ -120,29 +118,18 @@ object UrlUtils {
     }
 
     fun getDomain(function: String, establishData: Map<String, String>): String {
-        var environment = if (establishData[ENV] != null) Objects.requireNonNull<String>(
-            establishData[ENV]
-        ).lowercase(Locale.getDefault()) else null
-        if (environment == null) {
-            return PROTOCOL + DOMAIN
-        }
-        val envHost = establishData[ENV_HOST]
-        environment = when (environment) {
-            ENV_DYNAMIC -> {
-                val host = envHost ?: PAYWITHMYBANK
-                return "$PROTOCOL$host.int.trustly.one"
-            }
-
-            ENV_LOCAL -> {
-                val host = if (envHost != null && envHost != ENV_LOCALHOST) envHost else BuildConfig.LOCAL_IP
-                val port = if (FUNCTION_MOBILE == function) ":10000" else ":8000"
-                return LOCAL_PROTOCOL + host + port
-            }
-
-            ENV_PROD, ENV_PRODUCTION -> ""
-            else -> "$environment."
-        }
-        return PROTOCOL + environment + DOMAIN
+        var environment = establishData[ENV] ?: return "$PROTOCOL$DOMAIN"
+        environment = environment.lowercase(Locale.ROOT)
+        if (environment.startsWith(ENV_DYNAMIC))
+            return "${PROTOCOL}${environment}.int.$DOMAIN"
+        val port = if (FUNCTION_MOBILE == function) ":10000" else ":8000"
+        if (environment == ENV_LOCAL || environment == ENV_LOCALHOST)
+            return "$LOCAL_PROTOCOL${BuildConfig.LOCAL_IP}$port"
+        if (environment.matches(Regex("^(?:\\d{1,3}\\.){3}\\d{1,3}$")))
+            return "$LOCAL_PROTOCOL${environment}$port"
+        if (environment == ENV_PROD || environment == ENV_PRODUCTION || environment.isBlank())
+            return "$PROTOCOL$DOMAIN"
+        return "$PROTOCOL$environment.$DOMAIN"
     }
 
 }

@@ -2,7 +2,7 @@ package net.trustly.android.sdk.util
 
 object TrustlyConstants {
 
-    const val ENV_DYNAMIC: String = "dynamic"
+    const val ENV_DYNAMIC: String = "dev-"
     const val ENV_LOCAL: String = "local"
     const val ENV_LOCALHOST: String = "localhost"
     const val ENV_PROD: String = "prod"
@@ -13,7 +13,6 @@ object TrustlyConstants {
     const val FUNCTION_MOBILE: String = "mobile"
 
     const val GRP: String = "grp"
-    const val ENV_HOST: String = "envHost"
     const val PAYMENT_PROVIDER_ID: String = "paymentProviderId"
     const val PAYMENT_TYPE: String = "paymentType"
     const val DEVICE_TYPE: String = "deviceType"
