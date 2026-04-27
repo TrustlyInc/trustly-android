@@ -97,10 +97,30 @@ Action items:
     - URL scheme: `metadata.urlScheme`
     - App Links: `metadata.deepLinkUrl`
 4. `metadata.urlScheme` and `metadata.deepLinkUrl` are mutually exclusive. Send only one, never both.
-5. App Links require additional configuration (for example, AndroidManifest intent filters, Digital Asset Links, and domain association validation).
-6. `metadata.deepLinkUrl` (App Links) is new and also requires Trustly-side configuration/enablement.
-7. Contact Trustly Support to enable App Links before rollout.
-8. Test return-to-app behavior on real devices.
+5. For `metadata.deepLinkUrl` to work, override the SDK default App Links intent filter in your own `AndroidManifest.xml` by redeclaring `TrustlyRedirectActivity` with your App Link domain/path:
+
+```xml
+<!-- Overriding the SDK's default redirect activity allows you to handle the redirect in your own way. -->
+<activity
+    android:name="net.trustly.android.sdk.views.TrustlyRedirectActivity"
+    android:exported="true">
+    <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+
+        <data android:scheme="https" />
+        <data android:host="alpha-merchant.tools.devent.trustly.one" />
+        <data android:path="/start/oauth/app/" />
+    </intent-filter>
+</activity>
+```
+
+6. App Links also require Digital Asset Links/domain association validation for your App Link host.
+7. `metadata.deepLinkUrl` (App Links) is new and also requires Trustly-side configuration/enablement.
+8. Contact Trustly Support to enable App Links before rollout.
+9. Test return-to-app behavior on real devices.
 
 ## 5. Re-test callback behavior end-to-end
 
@@ -309,10 +329,11 @@ trustlyView
 3. Confirm deep-link strategy is valid and mutually exclusive in establish data:
     - URL scheme via `metadata.urlScheme`, or
     - App Links via `metadata.deepLinkUrl`.
-4. If using App Links, complete required platform setup (intent filters, Digital Asset Links, and verified domain configuration).
-5. If using App Links (`metadata.deepLinkUrl`), contact Trustly Support to enable Trustly-side configuration before production rollout.
-6. Validate return-to-app behavior from secure browser on physical devices.
-7. Ensure your release manifest merge does not break SDK-declared activities.
+4. If using App Links (`metadata.deepLinkUrl`), override `TrustlyRedirectActivity` in your app `AndroidManifest.xml` with your own `https` host/path intent filter.
+5. If using App Links, complete required platform setup (intent filters, Digital Asset Links, and verified domain configuration).
+6. If using App Links (`metadata.deepLinkUrl`), contact Trustly Support to enable Trustly-side configuration before production rollout.
+7. Validate return-to-app behavior from secure browser on physical devices.
+8. Ensure your release manifest merge does not break SDK-declared activities.
 
 ## QA and release
 
