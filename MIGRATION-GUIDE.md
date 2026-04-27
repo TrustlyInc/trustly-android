@@ -106,13 +106,12 @@ Action items:
     android:exported="true">
     <intent-filter android:autoVerify="true">
         <action android:name="android.intent.action.VIEW" />
-
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
 
         <data android:scheme="https" />
-        <data android:host="alpha-merchant.tools.devent.trustly.one" />
-        <data android:path="/start/oauth/app/" />
+        <data android:host="your_host_domain" />
+        <data android:path="/your_path/" />
     </intent-filter>
 </activity>
 ```
@@ -210,6 +209,7 @@ Note: these repositories do not include a merchant app/example module under `/ap
 val trustlyView = TrustlyView(this)
 
 trustlyView
+    .selectBankWidget(establishData)
     .onBankSelected { _, bankData ->
         // Continue to light-box after bank selection
         trustlyView.establish(bankData)
@@ -220,7 +220,6 @@ trustlyView
     .onCancel { _, cancelParams ->
         // Cancel or failure flow
     }
-    .selectBankWidget(establishData)
 ```
 
 ### After (v4.2.0 style)
@@ -229,6 +228,7 @@ trustlyView
 val trustlyView = TrustlyView(this)
 
 trustlyView
+    .selectBankWidget(establishData)
     .onBankSelected { _, bankData ->
         // Continue to light-box after bank selection
         trustlyView.establish(bankData)
@@ -242,7 +242,6 @@ trustlyView
     .setListener { eventName, eventDetails ->
         // Optional telemetry
     }
-    .selectBankWidget(establishData)
 ```
 
 ### What changed under the hood for light-box launch
@@ -271,19 +270,7 @@ What changed is the internal dispatch model:
 
 ## Migration guidance for success/error listeners
 
-### v3 style
-
-```kotlin
-trustlyView
-    .onReturn { trustly, params ->
-        // Handle success
-    }
-    .onCancel { trustly, params ->
-        // Handle cancel/error
-    }
-```
-
-### v4 style
+### v3 and v4 style
 
 ```kotlin
 trustlyView
@@ -367,12 +354,3 @@ trustlyView
 5. Expand after stability is confirmed.
 
 ---
-
-## Reference Files
-
-This repository does not vendor the v3 and v4 SDK source trees side-by-side under
-`trustly-android-v3/...` and `trustly-android-v4/...`, so the previous workspace-relative
-reference links were removed to avoid broken links for readers.
-
-If you want to restore this section later, replace it with verified links to real locations
-such as release tags, branches, or commit permalinks for the corresponding SDK versions.
