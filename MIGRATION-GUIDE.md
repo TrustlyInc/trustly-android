@@ -347,30 +347,11 @@ trustlyView
 
 ---
 
-## Reference Files in This Workspace
+## Reference Files
 
-### v3 references
+This repository does not vendor the v3 and v4 SDK source trees side-by-side under
+`trustly-android-v3/...` and `trustly-android-v4/...`, so the previous workspace-relative
+reference links were removed to avoid broken links for readers.
 
-- [trustly-android-v3/README.md](trustly-android-v3/README.md)
-- [trustly-android-v3/trustly-android-sdk/build.gradle](trustly-android-v3/trustly-android-sdk/build.gradle)
-- [trustly-android-v3/trustly-android-sdk/src/main/AndroidManifest.xml](trustly-android-v3/trustly-android-sdk/src/main/AndroidManifest.xml)
-- [trustly-android-v3/trustly-android-sdk/src/main/java/net/trustly/android/sdk/interfaces/Trustly.java](trustly-android-v3/trustly-android-sdk/src/main/java/net/trustly/android/sdk/interfaces/Trustly.java)
-- [trustly-android-v3/trustly-android-sdk/src/main/java/net/trustly/android/sdk/interfaces/TrustlyCallback.java](trustly-android-v3/trustly-android-sdk/src/main/java/net/trustly/android/sdk/interfaces/TrustlyCallback.java)
-- [trustly-android-v3/trustly-android-sdk/src/main/java/net/trustly/android/sdk/interfaces/TrustlyListener.java](trustly-android-v3/trustly-android-sdk/src/main/java/net/trustly/android/sdk/interfaces/TrustlyListener.java)
-- [trustly-android-v3/trustly-android-sdk/src/main/java/net/trustly/android/sdk/views/TrustlyView.java](trustly-android-v3/trustly-android-sdk/src/main/java/net/trustly/android/sdk/views/TrustlyView.java)
-
-### v4 references
-
-- [trustly-android-v4/README.md](trustly-android-v4/README.md)
-- [trustly-android-v4/trustly-android-sdk/build.gradle](trustly-android-v4/trustly-android-sdk/build.gradle)
-- [trustly-android-v4/trustly-android-sdk/src/main/AndroidManifest.xml](trustly-android-v4/trustly-android-sdk/src/main/AndroidManifest.xml)
-- [trustly-android-v4/trustly-android-sdk/src/main/res/values/strings.xml](trustly-android-v4/trustly-android-sdk/src/main/res/values/strings.xml)
-- [trustly-android-v4/trustly-android-sdk/src/main/java/net/trustly/android/sdk/interfaces/Trustly.kt](trustly-android-v4/trustly-android-sdk/src/main/java/net/trustly/android/sdk/interfaces/Trustly.kt)
-- [trustly-android-v4/trustly-android-sdk/src/main/java/net/trustly/android/sdk/interfaces/TrustlyCallback.kt](trustly-android-v4/trustly-android-sdk/src/main/java/net/trustly/android/sdk/interfaces/TrustlyCallback.kt)
-- [trustly-android-v4/trustly-android-sdk/src/main/java/net/trustly/android/sdk/interfaces/TrustlyListener.kt](trustly-android-v4/trustly-android-sdk/src/main/java/net/trustly/android/sdk/interfaces/TrustlyListener.kt)
-- [trustly-android-v4/trustly-android-sdk/src/main/java/net/trustly/android/sdk/interfaces/TrustlyEvents.kt](trustly-android-v4/trustly-android-sdk/src/main/java/net/trustly/android/sdk/interfaces/TrustlyEvents.kt)
-- [trustly-android-v4/trustly-android-sdk/src/main/java/net/trustly/android/sdk/views/TrustlyView.kt](trustly-android-v4/trustly-android-sdk/src/main/java/net/trustly/android/sdk/views/TrustlyView.kt)
-- [trustly-android-v4/trustly-android-sdk/src/main/java/net/trustly/android/sdk/views/components/TrustlyLightbox.kt](trustly-android-v4/trustly-android-sdk/src/main/java/net/trustly/android/sdk/views/components/TrustlyLightbox.kt)
-- [trustly-android-v4/trustly-android-sdk/src/main/java/net/trustly/android/sdk/views/TrustlyCustomTabsManagerActivity.kt](trustly-android-v4/trustly-android-sdk/src/main/java/net/trustly/android/sdk/views/TrustlyCustomTabsManagerActivity.kt)
-- [trustly-android-v4/trustly-android-sdk/src/main/java/net/trustly/android/sdk/views/TrustlyRedirectActivity.kt](trustly-android-v4/trustly-android-sdk/src/main/java/net/trustly/android/sdk/views/TrustlyRedirectActivity.kt)
-- [trustly-android-v4/trustly-android-sdk/src/main/java/net/trustly/android/sdk/views/events/TrustlyEventsImpl.kt](trustly-android-v4/trustly-android-sdk/src/main/java/net/trustly/android/sdk/views/events/TrustlyEventsImpl.kt)
+If you want to restore this section later, replace it with verified links to real locations
+such as release tags, branches, or commit permalinks for the corresponding SDK versions.
