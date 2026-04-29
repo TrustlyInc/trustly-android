@@ -29,6 +29,10 @@ This repository contains the source code for the Trustly Android SDK, including 
 [Get started](https://amer.developers.trustly.com/payments/docs/getting-started) with Trustly concepts and sandbox environment testing.
 Understand the functions and user flows of [Trustly UI](https://amer.developers.trustly.com/payments/docs/sdk).
 
+## Upgrading
+---
+If you are upgrading from a previous version, see the [Migration Guide](MIGRATION-GUIDE.md) for version-specific instructions.
+
 ## Installation
 ---
 
