@@ -73,10 +73,15 @@ afterEvaluate {
 }
 
 signing {
-    useInMemoryPgpKeys(
-            rootProject.ext["signing.keyId"],
-            rootProject.ext["signing.key"],
-            rootProject.ext["signing.password"]
-    )
-    sign publishing.publications
+    def signingKey = rootProject.ext["signing.key"]
+    def signingKeyId = rootProject.ext["signing.keyId"]
+    def signingPassword = rootProject.ext["signing.password"]
+
+    // Only sign when credentials are present — skips signing for local builds
+    required { signingKey != null && !signingKey.isEmpty() }
+
+    if (signingKey != null && !signingKey.isEmpty()) {
+        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+        sign publishing.publications
+    }
 }
