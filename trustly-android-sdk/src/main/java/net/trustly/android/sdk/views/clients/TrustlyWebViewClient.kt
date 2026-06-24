@@ -9,9 +9,7 @@ import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
 import net.trustly.android.sdk.interfaces.TrustlyEvents
 import net.trustly.android.sdk.util.EstablishDataManager
-import net.trustly.android.sdk.util.TrustlyConstants
 import net.trustly.android.sdk.util.UrlUtils
-import net.trustly.android.sdk.util.last_used.LastUsedBankManager
 import net.trustly.android.sdk.views.TrustlyView
 import java.util.regex.Pattern
 
@@ -81,10 +79,11 @@ class TrustlyWebViewClient(
 
     private fun handleWebViewClientShouldOverrideUrlLoading(url: String): Boolean {
         if (url.startsWith(returnURL) || url.startsWith(cancelURL)) {
-            val queryParametersFromUrl = UrlUtils.getQueryParametersFromUrl(url)
-            queryParametersFromUrl[TrustlyConstants.TRUSTLY_CONTEXT]?.let {
-                LastUsedBankManager.saveLastUsedBank(trustlyView.context, it)
-            }
+            val queryParametersFromUrl =
+                EstablishDataManager.saveLastUsedBankByTrustlyContext(
+                    trustlyView.context,
+                    UrlUtils.getQueryParametersFromUrl(url)
+                )
             if (url.startsWith(returnURL)) {
                 trustlyEvents.handleOnReturn(trustlyView, queryParametersFromUrl)
             } else {
