@@ -7,6 +7,7 @@ import android.os.Looper
 import android.webkit.WebView
 import androidx.core.content.ContextCompat
 import net.trustly.android.sdk.BuildConfig
+import net.trustly.android.sdk.R
 import net.trustly.android.sdk.data.Settings
 import net.trustly.android.sdk.data.TrustlyUrlFetcher
 import net.trustly.android.sdk.interfaces.TrustlyEvents
@@ -109,10 +110,10 @@ class TrustlyLightbox(
         if (useWebView) {
             establishData[METADATA_INTEGRATION_CONTEXT] = "InAppBrowser"
         } else {
-            establishData[METADATA_URL_SCHEME]?.let {
-                establishData[RETURN_URL] = it
-                establishData[CANCEL_URL] = it
-            }
+            val urlScheme = establishData[METADATA_URL_SCHEME]
+                ?: (context.getString(R.string.trustly_url_scheme) + "://")
+            establishData[RETURN_URL] = urlScheme
+            establishData[CANCEL_URL] = urlScheme
             establishData[METADATA_INTEGRATION_CONTEXT] = "SecureBrowser"
         }
         establishData[STORAGE] = "supported"

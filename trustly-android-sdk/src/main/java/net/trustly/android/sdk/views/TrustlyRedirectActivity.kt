@@ -25,7 +25,7 @@ class TrustlyRedirectActivity : Activity() {
         } else {
             Handler(Looper.getMainLooper()).postDelayed({
                 finish()
-            }, 700)
+            }, 1000)
         }
     }
 
