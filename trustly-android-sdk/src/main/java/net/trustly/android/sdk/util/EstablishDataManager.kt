@@ -19,11 +19,11 @@ object EstablishDataManager {
         return getEstablishData()
     }
 
-    fun saveLastUsedBankByTrustlyContext(context: Context, establishData: Map<String, String>): Map<String, String> {
-        establishData[TrustlyConstants.TRUSTLY_CONTEXT]?.let {
+    fun saveLastUsedBankByTrustlyContext(context: Context, transactionDetails: Map<String, String>): Map<String, String> {
+        transactionDetails[TrustlyConstants.TRUSTLY_CONTEXT]?.let {
             LastUsedBankManager.saveLastUsedBank(context, it)
         }
-        return establishData.toMutableMap().apply {
+        return transactionDetails.toMutableMap().apply {
             remove(TrustlyConstants.TRUSTLY_CONTEXT)
         }
     }

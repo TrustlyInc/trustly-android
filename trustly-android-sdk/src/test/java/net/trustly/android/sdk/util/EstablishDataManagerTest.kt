@@ -26,6 +26,8 @@ class EstablishDataManagerTest {
 
     @Before
     fun setUp() {
+        EstablishDataManager.getEstablishData().clear()
+
         mockSharedPreferencesEditor = mock(SharedPreferences.Editor::class.java)
         mockSharedPreferences = mock(SharedPreferences::class.java)
         mockContext = mock(Context::class.java)
@@ -66,7 +68,7 @@ class EstablishDataManagerTest {
     }
 
     @Test
-    fun shouldValidateEstablishDataManagerSaveLastUsedBankByWithoutTrustlyContext() {
+    fun shouldValidateEstablishDataManagerSaveLastUsedBankWithoutTrustlyContext() {
         val establishData = mapOf("key" to "value", "key2" to "value2")
         val result = EstablishDataManager.saveLastUsedBankByTrustlyContext(mockContext, establishData)
         assertEquals("value", result["key"])
