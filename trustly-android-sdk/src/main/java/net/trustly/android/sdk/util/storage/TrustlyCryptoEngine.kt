@@ -6,6 +6,7 @@ import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import android.util.Log
+import androidx.annotation.RequiresApi
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.security.GeneralSecurityException
@@ -19,6 +20,7 @@ import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
+@RequiresApi(Build.VERSION_CODES.M)
 class TrustlyCryptoEngine(private val keyAlias: String = DEFAULT_KEY_ALIAS) {
 
     fun encrypt(plainText: String): String? {

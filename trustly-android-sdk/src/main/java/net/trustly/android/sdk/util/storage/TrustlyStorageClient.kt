@@ -1,12 +1,15 @@
 package net.trustly.android.sdk.util.storage
 
 import android.database.sqlite.SQLiteFullException
+import android.os.Build
 import android.util.Base64
 import android.util.Log
 import android.webkit.CookieManager
+import androidx.annotation.RequiresApi
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 
+@RequiresApi(Build.VERSION_CODES.M)
 class TrustlyStorageClient(
     private val storageUrl: String = DEFAULT_STORAGE_URL,
     private val cryptoEngine: TrustlyCryptoEngine = TrustlyCryptoEngine(),

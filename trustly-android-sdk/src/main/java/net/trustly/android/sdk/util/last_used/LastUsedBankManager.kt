@@ -1,6 +1,7 @@
 package net.trustly.android.sdk.util.last_used
 
 import android.content.Context
+import android.os.Build
 import com.google.gson.Gson
 import net.trustly.android.sdk.data.LastUsedBank
 import net.trustly.android.sdk.util.UrlUtils
@@ -12,13 +13,19 @@ object LastUsedBankManager {
     private var storageClientFactory: (() -> TrustlyStorageClient)? = null
 
     fun saveLastUsedBank(context: Context, lastUsedBank: String) {
-        getStorageClient().setItem(LAST_USED_BANK_ID, lastUsedBank)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val client = storageClientFactory?.invoke() ?: TrustlyStorageClient()
+            client.setItem(LAST_USED_BANK_ID, lastUsedBank)
+        }
         LastUsedBankStorage.saveData(context, LAST_USED_BANK_ID, lastUsedBank)
     }
 
     fun getLastUsedBankBase64(context: Context): String? {
-        getStorageClient().getItem(LAST_USED_BANK_ID)?.let {
-            return it
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val client = storageClientFactory?.invoke() ?: TrustlyStorageClient()
+            client.getItem(LAST_USED_BANK_ID)?.let {
+                return it
+            }
         }
 
         return LastUsedBankStorage.readStringDataFrom(context, LAST_USED_BANK_ID)
@@ -34,12 +41,9 @@ object LastUsedBankManager {
         return null
     }
 
-
     @Suppress("unused")
     internal fun setStorageClientFactoryForTesting(factory: (() -> TrustlyStorageClient)?) {
         storageClientFactory = factory
     }
-
-    private fun getStorageClient() = storageClientFactory?.invoke() ?: TrustlyStorageClient()
 
 }
