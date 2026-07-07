@@ -1,26 +1,38 @@
 package net.trustly.android.sdk.util.storage
 
+import android.content.Context
+import android.content.SharedPreferences
 import org.junit.Assert.assertNull
+import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
 
 class TrustlyCryptoEngineTest {
+    private lateinit var context: Context
 
-    @Test
-    fun shouldReturnNullOnEncryptWhenApiLevelDoesNotSupportKeystoreAes() {
-        val cryptoEngine = TrustlyCryptoEngine()
-
-        val encrypted = cryptoEngine.encrypt("plain_text")
-
-        assertNull(encrypted)
+    @Before
+    fun setUp() {
+        context = mock(Context::class.java)
+        val sharedPreferences = mock(SharedPreferences::class.java)
+        `when`(context.applicationContext).thenReturn(context)
+        `when`(
+            context.getSharedPreferences(
+                "trustly_storage_crypto",
+                Context.MODE_PRIVATE
+            )
+        ).thenReturn(sharedPreferences)
     }
 
     @Test
-    fun shouldReturnNullOnDecryptWhenApiLevelDoesNotSupportKeystoreAes() {
-        val cryptoEngine = TrustlyCryptoEngine()
+    fun shouldReturnNullOnDecryptWhenPayloadIsNotBase64() {
+        val cryptoEngine = TrustlyCryptoEngine(context)
+        assertNull(cryptoEngine.decrypt("%%invalid%%"))
+    }
 
-        val decrypted = cryptoEngine.decrypt("invalid")
-
-        assertNull(decrypted)
+    @Test
+    fun shouldReturnNullOnDecryptWhenPayloadTooShort() {
+        val cryptoEngine = TrustlyCryptoEngine(context)
+        assertNull(cryptoEngine.decrypt("aGVsbG8"))
     }
 }
-

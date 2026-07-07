@@ -1,6 +1,6 @@
 package net.trustly.android.sdk.util.storage
 
-import android.os.Build
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import org.junit.Assert.assertEquals
@@ -14,29 +14,22 @@ import org.junit.runner.RunWith
 class TrustlyCryptoEngineInstrumentedTest {
 
     @Test
-    fun shouldEncryptAndDecryptOnSupportedApis() {
-        val cryptoEngine = TrustlyCryptoEngine()
+    fun shouldEncryptAndDecryptOnApi19AndAbove() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val cryptoEngine = TrustlyCryptoEngine(context)
         val plainText = "bank_preference"
 
         val encrypted = cryptoEngine.encrypt(plainText)
+        assertNotNull(encrypted)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            assertNotNull(encrypted)
-            val decrypted = cryptoEngine.decrypt(encrypted!!)
-            assertEquals(plainText, decrypted)
-        } else {
-            assertNull(encrypted)
-        }
+        val decrypted = cryptoEngine.decrypt(encrypted!!)
+        assertEquals(plainText, decrypted)
     }
 
     @Test
     fun shouldReturnNullForTamperedPayload() {
-        val cryptoEngine = TrustlyCryptoEngine()
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            assertNull(cryptoEngine.decrypt("invalid"))
-            return
-        }
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val cryptoEngine = TrustlyCryptoEngine(context)
 
         val encrypted = cryptoEngine.encrypt("value")
         assertNotNull(encrypted)
@@ -47,4 +40,3 @@ class TrustlyCryptoEngineInstrumentedTest {
         assertNull(decrypted)
     }
 }
-

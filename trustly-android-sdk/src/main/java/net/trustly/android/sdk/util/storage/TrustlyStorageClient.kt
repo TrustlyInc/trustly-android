@@ -1,20 +1,21 @@
 package net.trustly.android.sdk.util.storage
 
-import android.database.sqlite.SQLiteFullException
+import android.content.Context
 import android.os.Build
 import android.util.Base64
-import android.util.Log
 import android.webkit.CookieManager
-import androidx.annotation.RequiresApi
-import java.io.IOException
+import android.webkit.CookieSyncManager
+import net.trustly.android.sdk.util.error.TrustlyExceptionHandler
 import java.nio.charset.StandardCharsets
 
-@RequiresApi(Build.VERSION_CODES.M)
 class TrustlyStorageClient(
+    context: Context,
     private val storageUrl: String = DEFAULT_STORAGE_URL,
-    private val cryptoEngine: TrustlyCryptoEngine = TrustlyCryptoEngine(),
-    private val cookieManagerProvider: () -> CookieManager = { CookieManager.getInstance() }
+    private val cryptoEngine: TrustlyCryptoEngine = TrustlyCryptoEngine(context),
+    private val cookieManagerProvider: () -> CookieManager = { CookieManager.getInstance() },
+    private val legacyCookieSync: (() -> Unit)? = null
 ) {
+    private val appContext = context.applicationContext ?: context
 
     fun setItem(key: String, value: String): Boolean {
         val encryptedValue = cryptoEngine.encrypt(value) ?: return false
@@ -24,16 +25,10 @@ class TrustlyStorageClient(
         try {
             val cookieManager = cookieManagerProvider()
             cookieManager.setCookie(storageUrl, cookieValue)
-            cookieManager.flush()
+            persistCookies(cookieManager)
             return true
-        } catch (_: SQLiteFullException) {
-            Log.w(TAG, "Cookie storage full; personalization disabled")
-        } catch (_: IOException) {
-            Log.w(TAG, "Cookie storage I/O failure; personalization disabled")
-        } catch (_: IllegalStateException) {
-            Log.w(TAG, "Cookie manager unavailable in current process context")
-        } catch (_: SecurityException) {
-            Log.w(TAG, "Cookie access restricted by runtime or profile policy")
+        } catch (e: Exception) {
+            showLogError("Unexpected error during cookie write: ${e.message}")
         }
         return false
     }
@@ -51,14 +46,8 @@ class TrustlyStorageClient(
                 clearCookie(cookieManager, cookieName)
             }
             return plainValue
-        } catch (_: SQLiteFullException) {
-            Log.w(TAG, "Cookie storage full during read; personalization disabled")
-        } catch (_: IOException) {
-            Log.w(TAG, "Cookie storage I/O failure during read; personalization disabled")
-        } catch (_: IllegalStateException) {
-            Log.w(TAG, "Cookie manager unavailable in current process context")
-        } catch (_: SecurityException) {
-            Log.w(TAG, "Cookie access restricted by runtime or profile policy")
+        } catch (e: Exception) {
+            showLogError("Unexpected error during cookie read: ${e.message}")
         }
         return null
     }
@@ -66,7 +55,20 @@ class TrustlyStorageClient(
     private fun clearCookie(cookieManager: CookieManager, cookieName: String) {
         val expiredCookie = buildCookie(cookieName, "", 0)
         cookieManager.setCookie(storageUrl, expiredCookie)
-        cookieManager.flush()
+        persistCookies(cookieManager)
+    }
+
+    private fun persistCookies(cookieManager: CookieManager) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            cookieManager.flush()
+            return
+        }
+
+        val syncAction = legacyCookieSync ?: {
+            CookieSyncManager.createInstance(appContext)
+            CookieSyncManager.getInstance().sync()
+        }
+        syncAction.invoke()
     }
 
     private fun normalizeKey(key: String): String {
@@ -103,12 +105,17 @@ class TrustlyStorageClient(
         return "$cookieName=$value; Max-Age=$maxAgeSeconds; Path=/; Secure; HttpOnly; SameSite=Strict"
     }
 
+    private fun showLogError(message: String) {
+        TrustlyExceptionHandler().uncaughtException(
+            Thread.currentThread(),
+            Exception(Throwable(message))
+        )
+    }
+
     private companion object {
-        const val TAG = "TrustlyStorageClient"
         const val DEFAULT_STORAGE_URL = "https://storage.trustly.com"
         const val COOKIE_MAX_AGE_SECONDS = 31536000
         const val COOKIE_KEY_PREFIX = "tk_"
         const val KEY_TOKEN_PATTERN = "^[A-Za-z0-9_-]+$"
     }
 }
-

@@ -1,6 +1,5 @@
 package net.trustly.android.sdk.util.storage
 
-import android.os.Build
 import android.webkit.CookieManager
 import android.webkit.WebView
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -33,7 +32,7 @@ class TrustlyStorageClientInstrumentedTest {
         }
 
         cookieManager = CookieManager.getInstance()
-        storageClient = TrustlyStorageClient(storageUrl)
+        storageClient = TrustlyStorageClient(instrumentation.targetContext, storageUrl)
         clearCookieForKey()
     }
 
@@ -43,17 +42,12 @@ class TrustlyStorageClientInstrumentedTest {
     }
 
     @Test
-    fun shouldSetAndGetOnSupportedApiLevels() {
+    fun shouldSetAndGetOnApi19AndAbove() {
         val setResult = storageClient.setItem(key, "Chase")
         val restored = storageClient.getItem(key)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            assertTrue(setResult)
-            assertEquals("Chase", restored)
-        } else {
-            assertFalse(setResult)
-            assertNull(restored)
-        }
+        assertTrue(setResult)
+        assertEquals("Chase", restored)
     }
 
     @Test
@@ -65,11 +59,6 @@ class TrustlyStorageClientInstrumentedTest {
 
     @Test
     fun shouldClearTamperedPayload() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            assertNull(storageClient.getItem(key))
-            return
-        }
-
         val setResult = storageClient.setItem(key, "sensitive")
         assertTrue(setResult)
 
@@ -94,4 +83,3 @@ class TrustlyStorageClientInstrumentedTest {
         cookieManager.flush()
     }
 }
-
