@@ -28,12 +28,27 @@ class TrustlyStorageClientTest {
     @Before
     fun setUp() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val context = instrumentation.targetContext
+        
+        // Clear shared preferences (crypto keys)
+        val prefs = context.getSharedPreferences("trustly_storage_crypto", android.content.Context.MODE_PRIVATE)
+        prefs.edit().clear().apply()
+        
+        // Clear KeyStore
+        val keyStore = java.security.KeyStore.getInstance("AndroidKeyStore")
+        keyStore.load(null)
+        try {
+            keyStore.deleteEntry("TrustlyRSAKey")
+        } catch (_: Exception) {
+            // Key doesn't exist yet, which is fine
+        }
+        
         instrumentation.runOnMainSync {
-            WebView(instrumentation.targetContext)
+            WebView(context)
         }
 
         cookieManager = CookieManager.getInstance()
-        storageClient = TrustlyStorageClient(instrumentation.targetContext, storageUrl)
+        storageClient = TrustlyStorageClient(context, storageUrl)
         clearCookieForKey()
     }
 

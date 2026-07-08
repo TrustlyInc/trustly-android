@@ -138,6 +138,7 @@ class TrustlyCryptoEngine(
             SecretKeySpec(unwrapped, AES_KEY_ALGORITHM)
         } catch (e: Exception) {
             showLogError("Unexpected error while unwrapping AES key: ${e.message}")
+            clearWrappedAesKey()
             null
         }
     }
@@ -153,16 +154,20 @@ class TrustlyCryptoEngine(
             val cipher = Cipher.getInstance(RSA_TRANSFORMATION)
             cipher.init(Cipher.ENCRYPT_MODE, getOrCreateRsaKeyPair().public)
             cipher.doFinal(secretKey.encoded)
-        } catch (_: GeneralSecurityException) {
-            showLogError("Unable to wrap AES key")
+        } catch (e: Exception) {
+            showLogError("Unable to wrap AES key: ${e.message}")
             null
         }
     }
 
     private fun unwrapAesKey(wrappedKey: ByteArray): ByteArray {
-        val cipher = Cipher.getInstance(RSA_TRANSFORMATION)
-        cipher.init(Cipher.DECRYPT_MODE, getOrCreateRsaKeyPair().private)
-        return cipher.doFinal(wrappedKey)
+        return try {
+            val cipher = Cipher.getInstance(RSA_TRANSFORMATION)
+            cipher.init(Cipher.DECRYPT_MODE, getOrCreateRsaKeyPair().private)
+            cipher.doFinal(wrappedKey)
+        } catch (e: Exception) {
+            throw Exception("Failed to unwrap AES key: ${e.message}", e)
+        }
     }
 
     private fun getWrappedAesKey(): ByteArray? {
@@ -221,7 +226,7 @@ class TrustlyCryptoEngine(
                 KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
             )
                 .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
-                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_OAEP)
+                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
                 .build()
             generator.initialize(spec)
         } else {
