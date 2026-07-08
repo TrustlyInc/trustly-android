@@ -1,6 +1,7 @@
 package net.trustly.android.sdk.util.storage
 
 import android.webkit.CookieManager
+import android.webkit.CookieSyncManager
 import android.webkit.WebView
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -16,7 +17,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-class TrustlyStorageClientInstrumentedTest {
+class TrustlyStorageClientTest {
 
     private val storageUrl = "https://storage.trustly.com"
     private val key = "trustly_storage_it_key"
@@ -66,7 +67,13 @@ class TrustlyStorageClientInstrumentedTest {
             storageUrl,
             "$key=invalid_payload; Max-Age=31536000; Path=/; Secure; HttpOnly; SameSite=Strict"
         )
-        cookieManager.flush()
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            cookieManager.flush()
+        } else {
+            CookieSyncManager.createInstance(InstrumentationRegistry.getInstrumentation().targetContext)
+            CookieSyncManager.getInstance().sync()
+        }
 
         val restored = storageClient.getItem(key)
         val cookieHeader = cookieManager.getCookie(storageUrl)
@@ -80,6 +87,11 @@ class TrustlyStorageClientInstrumentedTest {
             storageUrl,
             "$key=; Max-Age=0; Path=/; Secure; HttpOnly; SameSite=Strict"
         )
-        cookieManager.flush()
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            cookieManager.flush()
+        } else {
+            CookieSyncManager.createInstance(InstrumentationRegistry.getInstrumentation().targetContext)
+            CookieSyncManager.getInstance().sync()
+        }
     }
 }

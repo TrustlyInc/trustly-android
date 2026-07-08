@@ -183,7 +183,7 @@ class TrustlyCryptoEngine(
     private fun showLogError(message: String) {
         TrustlyExceptionHandler().uncaughtException(
             Thread.currentThread(),
-            Exception(Throwable(message))
+            Exception(message)
         )
     }
 

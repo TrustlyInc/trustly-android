@@ -36,7 +36,6 @@ object LastUsedBankManager {
         return null
     }
 
-    @Suppress("unused")
     internal fun setStorageClientFactoryForTesting(factory: (() -> TrustlyStorageClient)?) {
         storageClientFactory = factory
     }
