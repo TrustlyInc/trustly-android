@@ -221,7 +221,7 @@ class TrustlyCryptoEngine(
                 KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
             )
                 .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
-                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
+                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_OAEP)
                 .build()
             generator.initialize(spec)
         } else {
@@ -251,7 +251,7 @@ class TrustlyCryptoEngine(
         const val PREF_WRAPPED_AES_KEY = "wrapped_aes_key"
         const val ANDROID_KEYSTORE = "AndroidKeyStore"
         const val AES_TRANSFORMATION = "AES/GCM/NoPadding"
-        const val RSA_TRANSFORMATION = "RSA/ECB/PKCS1Padding"
+        const val RSA_TRANSFORMATION = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding"
         const val AES_KEY_ALGORITHM = "AES"
         const val RSA_ALGORITHM = "RSA"
         const val AES_KEY_SIZE_BITS = 256
