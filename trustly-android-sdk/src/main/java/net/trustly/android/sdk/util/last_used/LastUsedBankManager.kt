@@ -4,27 +4,25 @@ import android.content.Context
 import com.google.gson.Gson
 import net.trustly.android.sdk.data.LastUsedBank
 import net.trustly.android.sdk.util.UrlUtils
-import net.trustly.android.sdk.util.storage.TrustlyStorageClient
 
+/**
+ * Holds the last used bank context for the current session only.
+ *
+ * Cross-app and cross-session persistence of the last used bank is owned by the
+ * web layer (localStorage on trustly.com within the shared Custom Tabs browser).
+ * The SDK no longer persists this value to device storage, so no PII is written
+ * to disk. This in-memory cache only forwards the context received from the web
+ * back to subsequent flows within the same session.
+ */
 object LastUsedBankManager {
 
-    private const val LAST_USED_BANK_ID = "LAST_USED_BANK_ID"
-    private var storageClientFactory: (() -> TrustlyStorageClient)? = null
+    private var lastUsedBankBase64: String? = null
 
     fun saveLastUsedBank(context: Context, lastUsedBank: String) {
-        val client = storageClientFactory?.invoke() ?: TrustlyStorageClient(context)
-        client.setItem(LAST_USED_BANK_ID, lastUsedBank)
-        LastUsedBankStorage.saveData(context, LAST_USED_BANK_ID, lastUsedBank)
+        lastUsedBankBase64 = lastUsedBank
     }
 
-    fun getLastUsedBankBase64(context: Context): String? {
-        val client = storageClientFactory?.invoke() ?: TrustlyStorageClient(context)
-        client.getItem(LAST_USED_BANK_ID)?.let {
-            return it
-        }
-
-        return LastUsedBankStorage.readStringDataFrom(context, LAST_USED_BANK_ID)
-    }
+    fun getLastUsedBankBase64(context: Context): String? = lastUsedBankBase64
 
     fun getLaseUsedBankByCountryCode(context: Context, countryCode: String): String? {
         val lastUsedBankBase64 = getLastUsedBankBase64(context) ?: return null
@@ -36,8 +34,8 @@ object LastUsedBankManager {
         return null
     }
 
-    internal fun setStorageClientFactoryForTesting(factory: (() -> TrustlyStorageClient)?) {
-        storageClientFactory = factory
+    internal fun clearForTesting() {
+        lastUsedBankBase64 = null
     }
 
 }
