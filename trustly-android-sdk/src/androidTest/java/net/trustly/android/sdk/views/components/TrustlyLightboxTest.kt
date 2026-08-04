@@ -181,11 +181,7 @@ class TrustlyLightboxTest : TrustlyActivityTest() {
     @Test
     fun shouldValidateTrustlyLightboxInstanceWithEstablishDataWithLastUsedBankNull() {
         scenario.onActivity { activity ->
-            `when`(
-                mockContext.getSharedPreferences(
-                    "LAST_USED_BANK", Context.MODE_PRIVATE
-                )
-            ).thenReturn(null)
+            LastUsedBankManager.clearForTesting()
 
             val trustlyLightbox = getTrustlyLightboxInstance(activity)
             val establishData = EstablishDataMock.getEstablishDataValues()
