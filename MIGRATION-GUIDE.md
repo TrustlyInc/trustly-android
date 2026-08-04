@@ -157,6 +157,11 @@ v4 interface style:
 1. Merchant-facing callback registration points are still on `Trustly`/`TrustlyView`.
 2. `hybrid(...)` is documented as deprecated in v4 and marked as not available in future versions.
 3. `proceedToChooseAccount()` remains available in both versions.
+4. Last used bank persistence: the SDK no longer stores the last used bank on
+   device. Cross-app and cross-session personalization is owned by the web layer
+   (localStorage on `trustly.com` within the shared Custom Tabs browser); the SDK
+   only forwards the context in memory for the current session. No PII is written
+   to device storage. This is transparent to merchant integration code.
 
 ## B. build.gradle / dependency differences
 
@@ -179,6 +184,8 @@ implementation 'net.trustly:trustly-android-sdk:4.2.0'
 1. `com.android.library` plugin: `8.11.0` -> `8.12.0`
 2. `targetSdkVersion`: `34` -> `36`
 3. Gradle wrapper distribution: `8.14.2` -> `8.14.3`
+4. Removed the `org.conscrypt:conscrypt-android` dependency (it backed the
+   native storage crypto engine, which no longer exists).
 
 ## C. AndroidManifest permissions
 
