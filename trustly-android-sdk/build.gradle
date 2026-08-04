@@ -61,7 +61,6 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.13.1'
     implementation 'com.google.code.gson:gson:2.13.1'
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation 'org.conscrypt:conscrypt-android:2.5.2'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'com.google.code.gson:gson:2.13.1'
