@@ -106,6 +106,13 @@ class TrustlyLightbox(
     }
 
     private fun openWebViewOrCustomTabs(settings: Settings, establishData: HashMap<String, String>) {
+        // When cross-origin storage is enabled, the web layer owns the last used
+        // bank via shared localStorage on trustly.com; drop the legacy native
+        // context to avoid a double source (mirrors server-side suppression).
+        if (settings.isCrossOriginStorageEnabled()) {
+            establishData.remove(METADATA_TRUSTLY_CONTEXT)
+        }
+
         val useWebView = settings.settings.integrationStrategy == INTEGRATION_STRATEGY_DEFAULT
         if (useWebView) {
             establishData[METADATA_INTEGRATION_CONTEXT] = "InAppBrowser"

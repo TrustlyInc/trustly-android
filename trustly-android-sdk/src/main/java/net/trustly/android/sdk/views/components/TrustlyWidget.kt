@@ -17,6 +17,7 @@ import net.trustly.android.sdk.util.TrustlyConstants.METADATA_LANG
 import net.trustly.android.sdk.util.TrustlyConstants.SESSION_CID
 import net.trustly.android.sdk.util.TrustlyConstants.WIDGET
 import net.trustly.android.sdk.util.UrlUtils
+import net.trustly.android.sdk.util.api.APIRequestManager
 import net.trustly.android.sdk.util.cid.CidManager
 import net.trustly.android.sdk.util.last_used.LastUsedBankManager
 import net.trustly.android.sdk.views.TrustlyView
@@ -52,8 +53,13 @@ class TrustlyWidget(
         sessionCidValues[CidManager.SESSION_CID_PARAM]?.let { data[SESSION_CID] = it }
         sessionCidValues[CidManager.CID_PARAM]?.let { data[CID] = it }
 
-        LastUsedBankManager.getLaseUsedBankByCountryCode(context, data[CUSTOMER_ADDRESS_COUNTRY].toString())?.let {
-            data[LAST_USED_BANK] = it
+        // Skip the legacy lastUsed injection when cross-origin storage is on: the
+        // web layer sources it from shared localStorage on trustly.com. Defaults
+        // to the legacy path when settings are absent (feature off).
+        if (!APIRequestManager.getAPIRequestSettings(context).isCrossOriginStorageEnabled()) {
+            LastUsedBankManager.getLaseUsedBankByCountryCode(context, data[CUSTOMER_ADDRESS_COUNTRY].toString())?.let {
+                data[LAST_USED_BANK] = it
+            }
         }
 
         val dataParameters = UrlUtils.getParameterString(data)
