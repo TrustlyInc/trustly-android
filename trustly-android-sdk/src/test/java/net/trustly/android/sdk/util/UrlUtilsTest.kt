@@ -305,6 +305,22 @@ class UrlUtilsTest {
     }
 
     @Test
+    fun shouldValidateReturnedValueWhenGetEndpointUrlWithMissingSdkVersionUsesBuildConfigValue() {
+        val result = getEndpointUrl("widget", mapOf())
+        assertEquals("https://trustly.one/start/selectBank/widget?v=${SDK_VERSION}-android-sdk", result)
+    }
+
+    @Test
+    fun shouldValidateReturnedValueWhenGetEndpointUrlWithBlankSdkVersionUsesBuildConfigValue() {
+        val values = mapOf(
+            "metadata.sdkAndroidVersion" to "",
+        )
+
+        val result = getEndpointUrl("widget", values)
+        assertEquals("https://trustly.one/start/selectBank/widget?v=${SDK_VERSION}-android-sdk", result)
+    }
+
+    @Test
     fun shouldValidateReturnedValueWhenGetEndpointUrlWithEstablishDataWithSdkVersionValueAndIndexFunction() {
         val values = mapOf(
             "metadata.sdkAndroidVersion" to SDK_VERSION,
