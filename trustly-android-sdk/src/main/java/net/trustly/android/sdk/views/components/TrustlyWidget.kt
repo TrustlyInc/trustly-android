@@ -40,7 +40,7 @@ class TrustlyWidget(
 
         val data = HashMap<String, String>(establishData)
         data[METADATA_SDK_ANDROID_VERSION] = BuildConfig.SDK_VERSION
-        data[DEVICE_TYPE] = "${establishData[DEVICE_TYPE] ?: "mobile"}:android:hybrid"
+        data[DEVICE_TYPE] = "${establishData[DEVICE_TYPE] ?: "mobile"}:android:native"
 
         val lang = establishData[METADATA_LANG]
         if (lang != null) data[LANG] = lang
