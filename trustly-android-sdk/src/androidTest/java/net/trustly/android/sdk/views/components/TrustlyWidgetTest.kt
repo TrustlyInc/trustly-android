@@ -3,6 +3,7 @@ package net.trustly.android.sdk.views.components
 import android.webkit.WebView
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import net.trustly.android.sdk.BuildConfig
 import net.trustly.android.sdk.TrustlyActivityTest
 import net.trustly.android.sdk.interfaces.TrustlyEvents
 import net.trustly.android.sdk.mock.MockActivity
@@ -101,6 +102,28 @@ class TrustlyWidgetTest : TrustlyActivityTest() {
             trustlyWidget.updateEstablishData(establishDataValues, 0)
             verify(mockWebView).loadUrl(argThat { url ->
                 url.contains("customer.address.country=CA")
+            })
+        }
+    }
+
+    @Test
+    fun shouldValidateTrustlyWidgetInstanceAddsSdkVersionMetadata() {
+        scenario.onActivity { activity ->
+            val trustlyWidget = getTrustlyWidgetInstance(activity)
+            trustlyWidget.updateEstablishData(EstablishDataMock.getEstablishDataValues(), 0)
+            verify(mockWebView).loadUrl(argThat { url ->
+                url.contains("metadata.sdkAndroidVersion=${BuildConfig.SDK_VERSION}")
+            })
+        }
+    }
+
+    @Test
+    fun shouldValidateTrustlyWidgetInstanceAddsSdkVersionToEndpointVersionParameter() {
+        scenario.onActivity { activity ->
+            val trustlyWidget = getTrustlyWidgetInstance(activity)
+            trustlyWidget.updateEstablishData(EstablishDataMock.getEstablishDataValues(), 0)
+            verify(mockWebView).loadUrl(argThat { url ->
+                url.contains("v=${BuildConfig.SDK_VERSION}-android-sdk")
             })
         }
     }

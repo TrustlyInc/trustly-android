@@ -3,6 +3,7 @@ package net.trustly.android.sdk.views.components
 import android.content.Context
 import android.graphics.Color
 import android.webkit.WebView
+import net.trustly.android.sdk.BuildConfig
 import net.trustly.android.sdk.interfaces.TrustlyEvents
 import net.trustly.android.sdk.interfaces.TrustlyJsInterface
 import net.trustly.android.sdk.util.EstablishDataManager
@@ -14,6 +15,7 @@ import net.trustly.android.sdk.util.TrustlyConstants.GRP
 import net.trustly.android.sdk.util.TrustlyConstants.LANG
 import net.trustly.android.sdk.util.TrustlyConstants.LAST_USED_BANK
 import net.trustly.android.sdk.util.TrustlyConstants.METADATA_LANG
+import net.trustly.android.sdk.util.TrustlyConstants.METADATA_SDK_ANDROID_VERSION
 import net.trustly.android.sdk.util.TrustlyConstants.SESSION_CID
 import net.trustly.android.sdk.util.TrustlyConstants.WIDGET
 import net.trustly.android.sdk.util.UrlUtils
@@ -37,7 +39,8 @@ class TrustlyWidget(
         EstablishDataManager.updateEstablishData(establishData)
 
         val data = HashMap<String, String>(establishData)
-        data[DEVICE_TYPE] = "${establishData[DEVICE_TYPE] ?: "mobile"}:android:hybrid"
+        data[METADATA_SDK_ANDROID_VERSION] = BuildConfig.SDK_VERSION
+        data[DEVICE_TYPE] = "${establishData[DEVICE_TYPE] ?: "mobile"}:android:native"
 
         val lang = establishData[METADATA_LANG]
         if (lang != null) data[LANG] = lang

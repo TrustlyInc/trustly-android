@@ -66,7 +66,7 @@ class TrustlyLightbox(
         val lang = establishData[METADATA_LANG]
         if (lang != null) data[LANG] = lang
 
-        data[METADATA_SDK_ANDROID_VERSION] = SDK_VERSION
+        data[METADATA_SDK_ANDROID_VERSION] = BuildConfig.SDK_VERSION
         data[DEVICE_TYPE] = "${establishData[DEVICE_TYPE] ?: "mobile"}:android:native"
         data[RETURN_URL] = returnURL
         data[CANCEL_URL] = cancelURL
@@ -149,12 +149,6 @@ class TrustlyLightbox(
     private fun getTokenByEncodedParameters(data: Map<String, String>): String {
         val jsonFromParameters = UrlUtils.getJsonFromParameters(data)
         return UrlUtils.encodeStringToBase64(jsonFromParameters).replace("\n", "")
-    }
-
-    companion object {
-
-        const val SDK_VERSION: String = BuildConfig.SDK_VERSION
-
     }
     
 }

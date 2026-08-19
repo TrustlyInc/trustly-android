@@ -108,13 +108,15 @@ object UrlUtils {
     fun getEndpointUrl(function: String, establishData: Map<String, String>): String {
         var endPoint = function
         val domain = getDomain(function, establishData)
+        val sdkVersion = establishData[METADATA_SDK_ANDROID_VERSION].takeUnless { it.isNullOrBlank() }
+            ?: BuildConfig.SDK_VERSION
         if (FUNCTION_MOBILE == function) {
             return "$domain/frontend/mobile/establish"
         }
         if (FUNCTION_INDEX == function && "Verification" != establishData[PAYMENT_TYPE] && establishData[PAYMENT_PROVIDER_ID] != null) {
             endPoint = "selectBank"
         }
-        return "$domain/start/selectBank/$endPoint?v=${establishData[METADATA_SDK_ANDROID_VERSION]}-android-sdk"
+        return "$domain/start/selectBank/$endPoint?v=$sdkVersion-android-sdk"
     }
 
     fun getDomain(function: String, establishData: Map<String, String>): String {
