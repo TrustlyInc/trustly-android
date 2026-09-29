@@ -18,6 +18,9 @@ class TrustlyCustomTabsManagerActivity : Activity() {
     private var trustlyEvents: TrustlyEvents = TrustlyEventsImpl
     private var trustlyView: TrustlyView? = null
 
+    internal var customTabsLaunched: Boolean = false
+    private var establishDataHandled: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -42,6 +45,7 @@ class TrustlyCustomTabsManagerActivity : Activity() {
             } else {
                 this.trustlyEvents.handleOnCancel(this.trustlyView, transactionDetails)
             }
+            establishDataHandled = true
             finish()
         }
     }
@@ -49,6 +53,9 @@ class TrustlyCustomTabsManagerActivity : Activity() {
     override fun onRestart() {
         super.onRestart()
 
+        if (customTabsLaunched && !establishDataHandled) {
+            this.trustlyEvents.handleOnCancel(this.trustlyView, HashMap())
+        }
         finish()
     }
 
@@ -61,6 +68,7 @@ class TrustlyCustomTabsManagerActivity : Activity() {
                 customTabsIntent.intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
             }
             customTabsIntent.launchUrl(context, url.toUri())
+            customTabsLaunched = true
         } catch (_: Exception) {
             showDisabledBrowserMessage(context)
         }
