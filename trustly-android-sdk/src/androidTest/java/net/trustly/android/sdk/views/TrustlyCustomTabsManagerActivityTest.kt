@@ -266,6 +266,30 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
     }
 
     @Test
+    fun shouldValidateCustomTabsManagerActivityDoesNotRelaunchCustomTabsOnRecreateWhenUrlIntentPresent() {
+        trustlyEvents.setOnCancelCallback(mockTrustlyCallback)
+
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            TrustlyCustomTabsManagerActivity::class.java
+        )
+
+        ActivityScenario.launch<TrustlyCustomTabsManagerActivity>(intent).use { customTabsScenario ->
+            customTabsScenario.onActivity {
+                it.customTabsLaunched = true
+                it.intent = Intent(it.intent).putExtra("URL", "http://www.url.com")
+            }
+
+            try {
+                customTabsScenario.recreate()
+            } catch (_: AssertionError) {
+            }
+        }
+
+        verify(mockTrustlyCallback, times(1)).handle(null, mapOf())
+    }
+
+    @Test
     fun shouldValidateCustomTabsManagerActivityFiresOnCancelExactlyOnceForEstablishData() {
         trustlyEvents.setOnCancelCallback(mockTrustlyCallback)
 
