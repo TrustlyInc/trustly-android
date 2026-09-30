@@ -290,6 +290,21 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
     }
 
     @Test
+    fun shouldValidateCustomTabsManagerActivityPendingCancelAfterRecreateAccessors() {
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            TrustlyCustomTabsManagerActivity::class.java
+        )
+        ActivityScenario.launch<TrustlyCustomTabsManagerActivity>(intent).use { customTabsScenario ->
+            customTabsScenario.onActivity {
+                Assert.assertFalse(it.pendingCancelAfterRecreate)
+                it.pendingCancelAfterRecreate = true
+                Assert.assertTrue(it.pendingCancelAfterRecreate)
+            }
+        }
+    }
+
+    @Test
     fun shouldValidateCustomTabsManagerActivityFiresOnCancelExactlyOnceForEstablishData() {
         trustlyEvents.setOnCancelCallback(mockTrustlyCallback)
 
