@@ -58,7 +58,7 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
                 startIntent(activity, "http://www.url.com")
             }
             Assert.assertEquals(
-                13,
+                15,
                 TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
             )
         }
@@ -73,7 +73,7 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
                 startIntent(activity, "http://www.url.com", false)
             }
             Assert.assertEquals(
-                13,
+                15,
                 TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
             )
         }
@@ -94,7 +94,7 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
                 )
             activity.startActivity(intent)
             Assert.assertEquals(
-                13,
+                15,
                 TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
             )
         }
@@ -116,7 +116,7 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
                 )
             activity.startActivity(intent)
             Assert.assertEquals(
-                13,
+                15,
                 TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
             )
         }
@@ -139,7 +139,7 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
                 )
             activity.startActivity(intent)
             Assert.assertEquals(
-                13,
+                15,
                 TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
             )
         }
@@ -150,8 +150,6 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
     fun shouldValidateCustomTabsManagerActivityFiresOnCancelWhenDismissedWithoutRedirect() {
         trustlyEvents.setOnCancelCallback(mockTrustlyCallback)
 
-        // ActivityScenario.launch()/moveToState() must run on the instrumentation thread,
-        // not inside scenario.onActivity() (which runs on the activity's main thread).
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
             TrustlyCustomTabsManagerActivity::class.java
@@ -163,12 +161,53 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
             try {
                 customTabsScenario.moveToState(Lifecycle.State.RESUMED)
             } catch (_: AssertionError) {
-                // onRestart() calls finish(), so the framework aborts the resume and
-                // destroys the activity instead of settling back at RESUMED.
             }
         }
 
         verify(mockTrustlyCallback, times(1)).handle(null, mapOf())
+    }
+
+    @Test
+    fun shouldValidateCustomTabsManagerActivityDoesNotFireOnCancelWhenEstablishDataAlreadyHandled() {
+        trustlyEvents.setOnCancelCallback(mockTrustlyCallback)
+
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            TrustlyCustomTabsManagerActivity::class.java
+        )
+        ActivityScenario.launch<TrustlyCustomTabsManagerActivity>(intent).use { customTabsScenario ->
+            customTabsScenario.onActivity {
+                it.customTabsLaunched = true
+                it.establishDataHandled = true
+            }
+
+            customTabsScenario.moveToState(Lifecycle.State.CREATED)
+            try {
+                customTabsScenario.moveToState(Lifecycle.State.RESUMED)
+            } catch (_: AssertionError) {
+            }
+        }
+
+        verify(mockTrustlyCallback, times(0)).handle(null, mapOf())
+    }
+
+    @Test
+    fun shouldValidateCustomTabsManagerActivityDoesNotFireOnCancelWhenCustomTabsNeverLaunched() {
+        trustlyEvents.setOnCancelCallback(mockTrustlyCallback)
+
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            TrustlyCustomTabsManagerActivity::class.java
+        )
+        ActivityScenario.launch<TrustlyCustomTabsManagerActivity>(intent).use { customTabsScenario ->
+            customTabsScenario.moveToState(Lifecycle.State.CREATED)
+            try {
+                customTabsScenario.moveToState(Lifecycle.State.RESUMED)
+            } catch (_: AssertionError) {
+            }
+        }
+
+        verify(mockTrustlyCallback, times(0)).handle(null, mapOf())
     }
 
     @Test

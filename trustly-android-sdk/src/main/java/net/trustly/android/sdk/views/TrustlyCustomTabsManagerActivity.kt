@@ -19,7 +19,7 @@ class TrustlyCustomTabsManagerActivity : Activity() {
     private var trustlyView: TrustlyView? = null
 
     internal var customTabsLaunched: Boolean = false
-    private var establishDataHandled: Boolean = false
+    internal var establishDataHandled: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
