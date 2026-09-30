@@ -20,6 +20,7 @@ class TrustlyCustomTabsManagerActivity : Activity() {
 
     internal var customTabsLaunched: Boolean = false
     internal var establishDataHandled: Boolean = false
+    internal var pendingCancelAfterRecreate: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,12 +28,23 @@ class TrustlyCustomTabsManagerActivity : Activity() {
         if (savedInstanceState != null) {
             customTabsLaunched = savedInstanceState.getBoolean(CUSTOM_TABS_LAUNCHED)
             establishDataHandled = savedInstanceState.getBoolean(ESTABLISH_DATA_HANDLED)
+            pendingCancelAfterRecreate = customTabsLaunched && !establishDataHandled
         }
 
         val url = intent.getStringExtra(URL)
         val useWebView = intent.getBooleanExtra(USE_WEBVIEW, false)
         if (url != null && !customTabsLaunched) {
             openCustomTabsIntent(this, url, useWebView)
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        if (pendingCancelAfterRecreate) {
+            pendingCancelAfterRecreate = false
+            this.trustlyEvents.handleOnCancel(this.trustlyView, HashMap())
+            finish()
         }
     }
 
