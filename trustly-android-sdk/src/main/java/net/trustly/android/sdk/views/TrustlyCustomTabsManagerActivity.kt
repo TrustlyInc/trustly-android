@@ -24,11 +24,23 @@ class TrustlyCustomTabsManagerActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        if (savedInstanceState != null) {
+            customTabsLaunched = savedInstanceState.getBoolean(CUSTOM_TABS_LAUNCHED)
+            establishDataHandled = savedInstanceState.getBoolean(ESTABLISH_DATA_HANDLED)
+        }
+
         val url = intent.getStringExtra(URL)
         val useWebView = intent.getBooleanExtra(USE_WEBVIEW, false)
-        if (url != null) {
+        if (url != null && !customTabsLaunched) {
             openCustomTabsIntent(this, url, useWebView)
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putBoolean(CUSTOM_TABS_LAUNCHED, customTabsLaunched)
+        outState.putBoolean(ESTABLISH_DATA_HANDLED, establishDataHandled)
     }
 
     @Suppress("DEPRECATION", "UNCHECKED_CAST")
@@ -106,6 +118,8 @@ class TrustlyCustomTabsManagerActivity : Activity() {
         private const val USE_WEBVIEW = "USE_WEBVIEW"
         private const val STATUS_PARAM = "status"
         private const val SUCCESS_STATUS_PARAM = "2"
+        private const val CUSTOM_TABS_LAUNCHED = "CUSTOM_TABS_LAUNCHED"
+        private const val ESTABLISH_DATA_HANDLED = "ESTABLISH_DATA_HANDLED"
 
     }
 

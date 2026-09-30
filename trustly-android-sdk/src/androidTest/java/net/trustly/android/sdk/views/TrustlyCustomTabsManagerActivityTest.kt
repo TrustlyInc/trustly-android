@@ -58,7 +58,7 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
                 startIntent(activity, "http://www.url.com")
             }
             Assert.assertEquals(
-                15,
+                16,
                 TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
             )
         }
@@ -73,7 +73,7 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
                 startIntent(activity, "http://www.url.com", false)
             }
             Assert.assertEquals(
-                15,
+                16,
                 TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
             )
         }
@@ -94,7 +94,7 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
                 )
             activity.startActivity(intent)
             Assert.assertEquals(
-                15,
+                16,
                 TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
             )
         }
@@ -116,7 +116,7 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
                 )
             activity.startActivity(intent)
             Assert.assertEquals(
-                15,
+                16,
                 TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
             )
         }
@@ -139,7 +139,7 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
                 )
             activity.startActivity(intent)
             Assert.assertEquals(
-                15,
+                16,
                 TrustlyCustomTabsManagerActivity::class.java.declaredMethods.size
             )
         }
@@ -208,6 +208,34 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
         }
 
         verify(mockTrustlyCallback, times(0)).handle(null, mapOf())
+    }
+
+    @Test
+    fun shouldValidateCustomTabsManagerActivityRestoresFlagsAfterRecreationAndStillFiresOnCancelOnce() {
+        trustlyEvents.setOnCancelCallback(mockTrustlyCallback)
+
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            TrustlyCustomTabsManagerActivity::class.java
+        )
+        ActivityScenario.launch<TrustlyCustomTabsManagerActivity>(intent).use { customTabsScenario ->
+            customTabsScenario.onActivity { it.customTabsLaunched = true }
+
+            customTabsScenario.recreate()
+
+            customTabsScenario.onActivity {
+                Assert.assertTrue(it.customTabsLaunched)
+                Assert.assertFalse(it.establishDataHandled)
+            }
+
+            customTabsScenario.moveToState(Lifecycle.State.CREATED)
+            try {
+                customTabsScenario.moveToState(Lifecycle.State.RESUMED)
+            } catch (_: AssertionError) {
+            }
+        }
+
+        verify(mockTrustlyCallback, times(1)).handle(null, mapOf())
     }
 
     @Test
