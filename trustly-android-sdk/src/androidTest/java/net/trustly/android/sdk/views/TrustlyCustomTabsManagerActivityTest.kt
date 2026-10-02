@@ -323,4 +323,54 @@ class TrustlyCustomTabsManagerActivityTest : TrustlyActivityTest() {
         verify(mockTrustlyCallback, times(1)).handle(null, establishData)
     }
 
+    @Test
+    fun shouldValidateCustomTabsManagerActivityFinishesWhenDismissedWithoutRedirect() {
+        trustlyEvents.setOnCancelCallback(mockTrustlyCallback)
+
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            TrustlyCustomTabsManagerActivity::class.java
+        )
+        ActivityScenario.launch<TrustlyCustomTabsManagerActivity>(intent).use { customTabsScenario ->
+            customTabsScenario.onActivity { it.customTabsLaunched = true }
+
+            customTabsScenario.moveToState(Lifecycle.State.CREATED)
+            try {
+                customTabsScenario.moveToState(Lifecycle.State.RESUMED)
+            } catch (_: AssertionError) {
+            }
+
+            Assert.assertTrue(
+                customTabsScenario.state == Lifecycle.State.DESTROYED ||
+                    customTabsScenario.state == Lifecycle.State.CREATED
+            )
+        }
+    }
+
+    @Test
+    fun shouldValidateCustomTabsManagerActivityPropagatesTrustlyViewInstanceOnCancel() {
+        trustlyEvents.setOnCancelCallback(mockTrustlyCallback)
+
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            TrustlyCustomTabsManagerActivity::class.java
+        )
+        var trustlyView: TrustlyView? = null
+        ActivityScenario.launch<TrustlyCustomTabsManagerActivity>(intent).use { customTabsScenario ->
+            customTabsScenario.onActivity {
+                trustlyView = TrustlyView(it.applicationContext)
+                it.setEventsCallback(trustlyView, trustlyEvents)
+                it.customTabsLaunched = true
+            }
+
+            customTabsScenario.moveToState(Lifecycle.State.CREATED)
+            try {
+                customTabsScenario.moveToState(Lifecycle.State.RESUMED)
+            } catch (_: AssertionError) {
+            }
+        }
+
+        verify(mockTrustlyCallback, times(1)).handle(trustlyView, mapOf())
+    }
+
 }
