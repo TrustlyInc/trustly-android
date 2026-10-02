@@ -18,14 +18,41 @@ class TrustlyCustomTabsManagerActivity : Activity() {
     private var trustlyEvents: TrustlyEvents = TrustlyEventsImpl
     private var trustlyView: TrustlyView? = null
 
+    internal var customTabsLaunched: Boolean = false
+    internal var establishDataHandled: Boolean = false
+    internal var pendingCancelAfterRecreate: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        if (savedInstanceState != null) {
+            customTabsLaunched = savedInstanceState.getBoolean(CUSTOM_TABS_LAUNCHED)
+            establishDataHandled = savedInstanceState.getBoolean(ESTABLISH_DATA_HANDLED)
+            pendingCancelAfterRecreate = customTabsLaunched && !establishDataHandled
+        }
+
         val url = intent.getStringExtra(URL)
         val useWebView = intent.getBooleanExtra(USE_WEBVIEW, false)
-        if (url != null) {
+        if (url != null && !customTabsLaunched) {
             openCustomTabsIntent(this, url, useWebView)
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        if (pendingCancelAfterRecreate) {
+            pendingCancelAfterRecreate = false
+            this.trustlyEvents.handleOnCancel(this.trustlyView, HashMap())
+            finish()
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putBoolean(CUSTOM_TABS_LAUNCHED, customTabsLaunched)
+        outState.putBoolean(ESTABLISH_DATA_HANDLED, establishDataHandled)
     }
 
     @Suppress("DEPRECATION", "UNCHECKED_CAST")
@@ -42,6 +69,7 @@ class TrustlyCustomTabsManagerActivity : Activity() {
             } else {
                 this.trustlyEvents.handleOnCancel(this.trustlyView, transactionDetails)
             }
+            establishDataHandled = true
             finish()
         }
     }
@@ -49,6 +77,9 @@ class TrustlyCustomTabsManagerActivity : Activity() {
     override fun onRestart() {
         super.onRestart()
 
+        if (customTabsLaunched && !establishDataHandled) {
+            this.trustlyEvents.handleOnCancel(this.trustlyView, HashMap())
+        }
         finish()
     }
 
@@ -61,6 +92,7 @@ class TrustlyCustomTabsManagerActivity : Activity() {
                 customTabsIntent.intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY
             }
             customTabsIntent.launchUrl(context, url.toUri())
+            customTabsLaunched = true
         } catch (_: Exception) {
             showDisabledBrowserMessage(context)
         }
@@ -98,6 +130,8 @@ class TrustlyCustomTabsManagerActivity : Activity() {
         private const val USE_WEBVIEW = "USE_WEBVIEW"
         private const val STATUS_PARAM = "status"
         private const val SUCCESS_STATUS_PARAM = "2"
+        private const val CUSTOM_TABS_LAUNCHED = "CUSTOM_TABS_LAUNCHED"
+        private const val ESTABLISH_DATA_HANDLED = "ESTABLISH_DATA_HANDLED"
 
     }
 
